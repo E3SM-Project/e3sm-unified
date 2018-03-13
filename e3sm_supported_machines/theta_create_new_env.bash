@@ -31,7 +31,7 @@ conda install -y $channels $packages
 # * libgcc* and libstdcxx-ng are messed up by gcc
 conda install -y --force -c conda-forge six libgcc libgcc-ng libstdcxx-ng
 cd $base_path
-chown -R $USER:OceanClimate .
+chown -R $USER:ClimateEnergy_2 .
 chmod -R g+rX .
 chmod -R g-w .
 chmod -R o-rwx .
