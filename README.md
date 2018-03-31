@@ -3,16 +3,16 @@
 A metapackage for a unified anaconda environment for analysis of results from
 the Energy Exascale Earth System Model (E3SM).
 
-To install the metapackage with x-windows support under UV-CDAT, use:
+To install the metapackage with x-windows support under CDAT, use:
 ```
-conda install -c conda-forge -c e3sm -c acme -c uvcdat e3sm-unified
+conda install -c conda-forge -c e3sm -c cdat e3sm-unified
 ```
 To install without x-windows, use:
 ```
-conda install -c conda-forge -c e3sm -c acme -c uvcdat e3sm-unified mesalib
+conda install -c conda-forge -c e3sm -c cdat e3sm-unified mesalib
 ```
 
-Note: UV-CDAT's version of VTK automatically installs an older version of `six`
+Note: CDAT's version of VTK automatically installs an older version of `six`
 that overwrites the newer version required by many other packages.  Similarly,
 the `gcc` package downgrades `libstdcxx`, in conflict with several related
 packages.  To overcome these issues, it is currently necessary to force a
