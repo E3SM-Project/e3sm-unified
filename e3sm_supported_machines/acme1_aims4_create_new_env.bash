@@ -4,7 +4,7 @@
 # the python version or to specify whether to support x-windows
 # under uv-cdat (x) or not (nox).  Typically, run the script once
 # each for x and nox
-version=1.1.2
+version=1.1.4
 python=2
 x_or_nox=nox
 
@@ -12,7 +12,7 @@ x_or_nox=nox
 miniconda=Miniconda${python}-latest-Linux-x86_64.sh
 base_path=/usr/local/e3sm_unified/envs/e3sm_unified_${version}_py${python}_${x_or_nox}
 
-channels="-c conda-forge -c e3sm -c acme -c uvcdat"
+channels="-c conda-forge -c e3sm -c dat"
 if [ $x_or_nox = "x" ]; then
    packages="e3sm-unified=${version}"
 else
