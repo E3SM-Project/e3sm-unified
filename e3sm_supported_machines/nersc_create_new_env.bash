@@ -32,6 +32,8 @@ conda install -y $channels $packages
 # * six gets messed up by vtk-cdat
 # * the rest are messed up by gcc
 conda install -y --force -c conda-forge six libgcc libgcc-ng libstdcxx-ng
+# delete the tarballs and any unused packages
+conda clean -y -p -t
 cd $base_path
 chown -R $USER:acme .
 chmod -R g+rX .
