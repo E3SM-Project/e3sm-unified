@@ -21,6 +21,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "wk ==8.0" \
     "thermo ==8.0" \
     "cdp ==1.2.3" \
+    "e3sm_nex ==0.0.1" \
     "cibots ==0.2" \
     "xarray ==0.10.2" \
     "dask ==0.17.2" \
