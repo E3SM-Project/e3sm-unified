@@ -23,7 +23,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "cdp ==1.2.3" \
     "e3sm_nex ==0.0.1" \
     "cibots ==0.2" \
-    "xarray ==0.10.2" \
+    "xarray ==0.10.3" \
     "dask ==0.17.2" \
     "nco ==4.7.4" \
     "lxml ==4.2.1" \
