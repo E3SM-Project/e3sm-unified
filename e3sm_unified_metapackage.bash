@@ -51,4 +51,5 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "f90nml" \
     "globus-cli" \
     "globus-sdk" \
-    "mpas_analysis ==0.7.0"
+    "mpas_analysis ==0.7.0" \
+    "tabulate"
