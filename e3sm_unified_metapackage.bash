@@ -33,7 +33,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "pytest ==3.5.0" \
     "shapely  ==1.6.4" \
     "cartopy  ==0.16.0" \
-    "progressbar ==2.3" \
+    "progressbar2" \
     "pillow ==5.0.0" \
     "numpy >1.13" \
     "scipy <1.0.0" \
@@ -47,7 +47,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "bottleneck ==1.2.1" \
     "hdf5 ==1.10.1" \
     "netcdf4 ==1.3.1" \
-    "pyevtk ==1.0.1" \
+    "evtk ==1.1.1" \
     "f90nml" \
     "globus-cli" \
     "globus-sdk" \
