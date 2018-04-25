@@ -1,6 +1,6 @@
 #!/bin/bash
-export BUILD=0
-export VERSION=1.1.4
+BUILD=0
+VERSION=1.1.4
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \
@@ -21,7 +21,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "wk ==8.0" \
     "thermo ==8.0" \
     "cdp ==1.3.3" \
-    "e3sm_nex ==0.0.1" \
+    "e3sm_nex ==0.0.2" \
     "acme_diags ==1.3.2" \
     "cibots ==0.2" \
     "xarray ==0.10.3" \
