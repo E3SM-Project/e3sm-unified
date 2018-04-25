@@ -1,6 +1,6 @@
 #!/bin/bash
 BUILD=0
-VERSION=1.1.4
+VERSION=1.2.0
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \

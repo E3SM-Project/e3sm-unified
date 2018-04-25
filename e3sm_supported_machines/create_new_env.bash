@@ -4,7 +4,7 @@
 # the python version(s) are installed and whether to make an environment with
 # x-windows support under cdat (x), without (nox) or both (nox x).  Typically,
 # both x and nox environments should be created.
-versions=(1.1.4)
+versions=(1.2.0)
 pythons=(2.7 3.6)
 x_or_noxs=(nox x)
 
