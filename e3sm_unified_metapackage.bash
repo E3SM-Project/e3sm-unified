@@ -22,7 +22,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "thermo ==8.0" \
     "cdp ==1.3.3" \
     "e3sm_nex ==0.0.2" \
-    "acme_diags ==1.3.2" \
+    "e3sm_diags ==1.3.3" \
     "cibots ==0.2" \
     "xarray ==0.10.3" \
     "dask ==0.17.2" \
@@ -36,7 +36,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "progressbar2" \
     "pillow ==5.0.0" \
     "numpy >1.13" \
-    "scipy <1.0.0" \
+    "scipy" \
     "matplotlib" \
     "basemap" \
     "blas" \
@@ -51,5 +51,5 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "f90nml" \
     "globus-cli" \
     "globus-sdk" \
-    "mpas_analysis ==0.7.0" \
+    "mpas_analysis ==0.7.5" \
     "tabulate"
