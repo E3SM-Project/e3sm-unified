@@ -52,4 +52,6 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "globus-cli" \
     "globus-sdk" \
     "mpas_analysis ==0.7.5" \
-    "tabulate"
+    "tabulate" \
+    "cmocean" \
+    "gsw"
