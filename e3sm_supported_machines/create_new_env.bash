@@ -4,9 +4,11 @@
 # the python version(s) are installed and whether to make an environment with
 # x-windows support under cdat (x), without (nox) or both (nox x).  Typically,
 # both x and nox environments should be created.
-versions=(1.2.0)
-pythons=(2.7 3.6)
+versions=(1.2.1)
+pythons=(2.7)
 x_or_noxs=(nox x)
+
+world_read="False"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "edison"* ]]; then
@@ -22,11 +24,13 @@ elif [[ $HOSTNAME = "blogin"* ]]; then
   env_path="/lcrc/soft/climate/e3sm-unified"
   group="climate"
 elif [[ $HOSTNAME = "rhea"* ]]; then
-  env_path="/ccs/proj/cli115/software/anaconda_envs"
-  group="cli115"
-elif [[ $HOSTNAME = "theta"* ]]; then
-  env_path="/projects/ClimateEnergy_2/software/e3sm_unified"
-  group="ClimateEnergy_2"
+  env_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
+  group="cli900"
+  world_read="True"
+elif [[ $HOSTNAME = "cooley"* ]]; then
+  env_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
+  group="ccsm"
+  world_read="True"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
 fi
@@ -72,6 +76,11 @@ done
 conda clean -y -p -t
 cd $base_path
 chown -R $USER:$group .
-chmod -R g+rX .
-chmod -R g-w .
-chmod -R o-rwx .
+if [ $world_read == "True" ]; then
+  chmod -R go+rX .
+  chmod -R go-w 
+else
+  chmod -R g+rX .
+  chmod -R g-w .
+  chmod -R o-rwx .
+fi
