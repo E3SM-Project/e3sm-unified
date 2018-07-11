@@ -1,6 +1,6 @@
 #!/bin/bash
 BUILD=0
-VERSION=1.2.0
+VERSION=1.2.1
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \
@@ -26,7 +26,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "cibots ==0.2" \
     "xarray ==0.10.3" \
     "dask ==0.17.2" \
-    "nco ==4.7.4" \
+    "nco ==4.7.5" \
     "lxml ==4.2.1" \
     "sympy ==1.1.1" \
     "pyproj ==1.9.5.1" \
@@ -51,7 +51,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "f90nml" \
     "globus-cli" \
     "globus-sdk" \
-    "mpas_analysis ==0.7.5" \
+    "mpas_analysis ==1.0" \
     "processflow ==1.1.1" \
     "tabulate" \
     "cmocean" \
