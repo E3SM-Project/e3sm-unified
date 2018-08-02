@@ -8,6 +8,10 @@ versions=(1.2.1)
 pythons=(2.7)
 x_or_noxs=(nox x)
 
+# Any subsequent commands which fail will cause the shell script to exit
+# immediately
+set -e
+
 world_read="False"
 
 # The rest of the script should not need to be modified
@@ -68,6 +72,11 @@ do
       # * six gets messed up by vtk-cdat
       # * the rest are messed up by gcc
       conda install -y -n $env_name --force -c conda-forge six libgcc libgcc-ng libstdcxx-ng
+
+      conda activate $env_name
+      python -c "import vcs"
+      python -c "import mpas_analysis"
+
     done
   done
 done
@@ -78,7 +87,7 @@ cd $base_path
 chown -R $USER:$group .
 if [ $world_read == "True" ]; then
   chmod -R go+rX .
-  chmod -R go-w 
+  chmod -R go-w
 else
   chmod -R g+rX .
   chmod -R g-w .
