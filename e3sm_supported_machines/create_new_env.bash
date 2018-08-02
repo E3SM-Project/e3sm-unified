@@ -76,6 +76,7 @@ do
       conda activate $env_name
       python -c "import vcs"
       python -c "import mpas_analysis"
+      livv --version
 
     done
   done

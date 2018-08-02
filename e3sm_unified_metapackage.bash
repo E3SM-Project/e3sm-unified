@@ -56,5 +56,6 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "tabulate" \
     "cmocean" \
     "gsw" \
-    "libnetcdf >=4.6.1"
+    "libnetcdf ==4.6.1" \
+    "livvkit ==2.1.6"
 
