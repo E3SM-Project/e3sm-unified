@@ -77,6 +77,10 @@ do
       python -c "import vcs"
       python -c "import mpas_analysis"
       livv --version
+      python -c "import acme_diags"
+      processflow.py -v
+
+      conda deactivate
 
     done
   done

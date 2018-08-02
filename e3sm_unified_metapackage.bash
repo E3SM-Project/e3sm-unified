@@ -52,7 +52,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "globus-cli" \
     "globus-sdk" \
     "mpas_analysis ==1.0" \
-    "processflow ==1.1.1" \
+    "processflow ==2.0.2" \
     "tabulate" \
     "cmocean" \
     "gsw" \
