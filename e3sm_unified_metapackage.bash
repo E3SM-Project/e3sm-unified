@@ -22,7 +22,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "thermo ==8.0" \
     "cdp ==1.3.3" \
     "e3sm_nex ==0.0.2" \
-    "e3sm_diags ==1.3.3" \
+    "e3sm_diags ==1.3.4" \
     "cibots ==0.2" \
     "xarray ==0.10.3" \
     "dask ==0.17.2" \
@@ -55,5 +55,6 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "processflow ==1.1.1" \
     "tabulate" \
     "cmocean" \
-    "gsw"
+    "gsw" \
+    "libnetcdf >=4.6.1"
 
