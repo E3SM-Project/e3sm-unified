@@ -1,10 +1,10 @@
 #!/bin/bash
 BUILD=0
-VERSION=1.2.0
+VERSION=1.2.1
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \
-    e3sm-unified ${VERSION} --build-number ${BUILD}  \
+    e3sm-unified ${VERSION} --build-number ${BUILD} \
     --dependencies \
     "cdat ==8.0" \
     "cdat_info ==8.0" \
@@ -22,11 +22,11 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "thermo ==8.0" \
     "cdp ==1.3.3" \
     "e3sm_nex ==0.0.2" \
-    "e3sm_diags ==1.3.3" \
+    "e3sm_diags ==1.3.4" \
     "cibots ==0.2" \
     "xarray ==0.10.3" \
     "dask ==0.17.2" \
-    "nco ==4.7.4" \
+    "nco ==4.7.5" \
     "lxml ==4.2.1" \
     "sympy ==1.1.1" \
     "pyproj ==1.9.5.1" \
@@ -45,15 +45,17 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "ipython" \
     "plotly" \
     "bottleneck ==1.2.1" \
-    "hdf5 ==1.10.1" \
+    "hdf5 ==1.10.2" \
     "netcdf4 ==1.3.1" \
     "evtk ==1.1.1" \
     "f90nml" \
     "globus-cli" \
     "globus-sdk" \
-    "mpas_analysis ==0.7.5" \
-    "processflow ==1.1.1" \
+    "mpas_analysis ==1.0" \
+    "processflow ==2.0.2" \
     "tabulate" \
     "cmocean" \
-    "gsw"
+    "gsw" \
+    "libnetcdf ==4.6.1" \
+    "livvkit ==2.1.6"
 
