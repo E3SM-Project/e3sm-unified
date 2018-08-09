@@ -1,5 +1,5 @@
 #!/bin/bash
-BUILD=0
+BUILD=1
 VERSION=1.2.1
 
 
@@ -9,7 +9,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "cdat ==8.0" \
     "cdat_info ==8.0" \
     "distarray ==2.12.2" \
-    "cdms2 ==3.0" \
+    "cdms2 ==3.0.1" \
     "cdtime ==3.0" \
     "cdutil ==8.0" \
     "genutil ==8.0" \
