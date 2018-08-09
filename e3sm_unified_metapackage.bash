@@ -4,7 +4,7 @@ VERSION=1.2.1
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \
-    e3sm-unified ${VERSION} --build-number ${BUILD}  \
+    e3sm-unified ${VERSION} --build-number ${BUILD} \
     --dependencies \
     "cdat ==8.0" \
     "cdat_info ==8.0" \
@@ -45,7 +45,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "ipython" \
     "plotly" \
     "bottleneck ==1.2.1" \
-    "hdf5 ==1.10.1" \
+    "hdf5 ==1.10.2" \
     "netcdf4 ==1.3.1" \
     "evtk ==1.1.1" \
     "f90nml" \
