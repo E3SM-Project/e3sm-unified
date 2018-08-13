@@ -146,7 +146,7 @@ cd $base_path
 chown -R $USER:$group .
 if [ $world_read == "True" ]; then
   chmod -R go+rX .
-  chmod -R go-w
+  chmod -R go-w .
 else
   chmod -R g+rX .
   chmod -R g-w .
