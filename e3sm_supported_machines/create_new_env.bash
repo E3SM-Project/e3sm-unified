@@ -36,6 +36,7 @@ set -e
 
 world_read="False"
 support_mod="True"
+channels="-c conda-forge -c e3sm -c cdat"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "edison"* ]]; then
@@ -72,11 +73,10 @@ elif [[ $HOSTNAME = "eleven"* ]]; then
   base_path="/home/xylar/miniconda3"
   mod_path="/home/xylar/test_mod"
   group="xylar"
+  channels="$channels --use-local"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
 fi
-
-channels="-c conda-forge -c e3sm -c cdat"
 
 if [ ! -d $base_path ]; then
   miniconda=Miniconda2-latest-Linux-x86_64.sh
