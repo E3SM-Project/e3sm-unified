@@ -10,8 +10,12 @@ check_env () {
   echo "  livvkit passed"
   python -c "import acme_diags"
   echo "  acme_diags passed"
-  processflow.py -v
-  echo "  processflow passed"
+  if [[ $HOSTNAME == "blogin"* || $HOSTNAME == "rhea"* ]]; then
+    echo "  skipping processflow"
+  else
+    processflow.py -v
+    echo "  processflow passed"
+  fi
 }
   
 
@@ -112,6 +116,9 @@ do
       conda install -y -n $env_name --force -c conda-forge six libgcc libgcc-ng libstdcxx-ng
 
       conda activate $env_name
+      if [[ $HOSTNAME = "blogin"* ]]; then
+        unset LD_LIBRARY_PATH
+      fi
       check_env
       conda deactivate
 
@@ -146,7 +153,7 @@ cd $base_path
 chown -R $USER:$group .
 if [ $world_read == "True" ]; then
   chmod -R go+rX .
-  chmod -R go-w
+  chmod -R go-w .
 else
   chmod -R g+rX .
   chmod -R g-w .
