@@ -3,21 +3,46 @@
 check_env () {
   echo "Checking the environment $env_name"
   python -c "import vcs"
-  echo "  vcs passed"
+  if [ $? -eq 0 ]; then
+    echo "  vcs failed"
+    exit 1
+  else
+    echo "  vcs passed"
+  fi
   python -c "import mpas_analysis"
-  echo "  mpas_analysis passed"
+  if [ $? -eq 0 ]; then
+    echo "  mpas_analysis failed"
+    exit 1
+  else
+    echo "  mpas_analysis passed"
+  fi
   livv --version
-  echo "  livvkit passed"
+  if [ $? -eq 0 ]; then
+    echo "  livvkit failed"
+    exit 1
+  else
+    echo "  livvkit passed"
+  fi
   python -c "import acme_diags"
-  echo "  acme_diags passed"
+  if [ $? -eq 0 ]; then
+    echo "  acme_diags failed"
+    exit 1
+  else
+    echo "  acme_diags passed"
+  fi
   if [[ $HOSTNAME == "blogin"* || $HOSTNAME == "rhea"* ]]; then
     echo "  skipping processflow"
   else
     processflow.py -v
-    echo "  processflow passed"
+    if [ $? -eq 0 ]; then
+      echo "  processflow failed"
+      exit 1
+    else
+      echo "  processflow passed"
+    fi
   fi
 }
-  
+
 
 # Modify the following to choose which e3sm-unified version(s)
 # the python version(s) are installed and whether to make an environment with
@@ -72,6 +97,7 @@ elif [[ $HOSTNAME = "gr-fe"* ]]; then
 elif [[ $HOSTNAME = "eleven"* ]]; then
   base_path="/home/xylar/miniconda3"
   mod_path="/home/xylar/test_mod"
+  support_mod="False"
   group="xylar"
   channels="$channels --use-local"
 else
@@ -109,11 +135,8 @@ do
         packages="$packages mesalib"
       fi
       env_name=e3sm_unified_${version}_py${python}_${x_or_nox}
+      conda remove -n $env_name -y --all
       conda create -n $env_name -y $channels $packages
-      # force reinstallation of several packages:
-      # * six gets messed up by vtk-cdat
-      # * the rest are messed up by gcc
-      conda install -y -n $env_name --force -c conda-forge six libgcc libgcc-ng libstdcxx-ng
 
       conda activate $env_name
       if [[ $HOSTNAME = "blogin"* ]]; then
@@ -125,17 +148,17 @@ do
       # make module files
       if [ $support_mod == "True" ]; then
         mkdir -p $mod_path/e3sm-unified
-	mod_name=e3sm-unified/${version}_py${python}_${x_or_nox}
+        mod_name=e3sm-unified/${version}_py${python}_${x_or_nox}
         sed "s#@version#$version#g; s#@python#$python#g; s#@x_or_nox#$x_or_nox#g; s#@base_path#$base_path/envs/$env_name#g" module_template > $mod_path/$mod_name
 
         if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
           # make this the default version
           ln -sfn ${version}_py${python}_${x_or_nox} $mod_path/e3sm-unified/${version}
         fi
-	module use $mod_path
-	module load $mod_name
-	check_env
-	module unload $mod_name
+        module use $mod_path
+        module load $mod_name
+        check_env
+        module unload $mod_name
 
       fi
 
