@@ -10,8 +10,12 @@ check_env () {
   echo "  livvkit passed"
   python -c "import acme_diags"
   echo "  acme_diags passed"
-  processflow.py -v
-  echo "  processflow passed"
+  if [[ $HOSTNAME == "blogin"* || $HOSTNAME == "rhea"* ]]; then
+    echo "  skipping processflow"
+  else
+    processflow.py -v
+    echo "  processflow passed"
+  fi
 }
   
 
