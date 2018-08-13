@@ -108,10 +108,16 @@ do
       conda create -n $env_name -y $channels $packages
       # force reinstallation of several packages:
       # * six gets messed up by vtk-cdat
+      if [[ $HOSTNAME = "blogin"* ]]; then
+        unset LD_LIBRARY_PATH
+      fi
       # * the rest are messed up by gcc
       conda install -y -n $env_name --force -c conda-forge six libgcc libgcc-ng libstdcxx-ng
 
       conda activate $env_name
+      if [[ $HOSTNAME = "blogin"* ]]; then
+        unset LD_LIBRARY_PATH
+      fi
       check_env
       conda deactivate
 
