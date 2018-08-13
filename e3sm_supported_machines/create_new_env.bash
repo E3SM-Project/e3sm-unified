@@ -23,7 +23,7 @@ check_env () {
 # the python version(s) are installed and whether to make an environment with
 # x-windows support under cdat (x), without (nox) or both (nox x).  Typically,
 # both x and nox environments should be created.
-versions=(1.2.1)
+versions=(1.2.2)
 pythons=(2.7)
 x_or_noxs=(nox x)
 
