@@ -1,6 +1,6 @@
 #!/bin/bash
-BUILD=1
-VERSION=1.2.1
+BUILD=0
+VERSION=1.2.2
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \
@@ -24,17 +24,17 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "e3sm_nex ==0.0.2" \
     "e3sm_diags ==1.3.4" \
     "cibots ==0.2" \
-    "xarray ==0.10.3" \
-    "dask ==0.17.2" \
+    "xarray ==0.10.8" \
+    "dask ==0.18.2" \
     "nco ==4.7.6" \
-    "lxml ==4.2.1" \
-    "sympy ==1.1.1" \
-    "pyproj ==1.9.5.1" \
-    "pytest ==3.5.0" \
-    "shapely  ==1.6.4" \
-    "cartopy  ==0.16.0" \
+    "lxml" \
+    "sympy" \
+    "pyproj" \
+    "pytest" \
+    "shapely" \
+    "cartopy" \
     "progressbar2" \
-    "pillow ==5.0.0" \
+    "pillow" \
     "numpy >1.13" \
     "scipy" \
     "matplotlib" \
@@ -44,15 +44,15 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "nb_conda" \
     "ipython" \
     "plotly" \
-    "bottleneck ==1.2.1" \
+    "bottleneck" \
     "hdf5 ==1.10.2" \
-    "netcdf4 ==1.3.1" \
+    "netcdf4 ==1.4.1" \
     "evtk ==1.1.1" \
     "f90nml" \
     "globus-cli" \
     "globus-sdk" \
     "mpas_analysis ==1.0" \
-    "processflow ==2.0.2" \
+    "processflow ==2.0.4" \
     "tabulate" \
     "cmocean" \
     "gsw" \
