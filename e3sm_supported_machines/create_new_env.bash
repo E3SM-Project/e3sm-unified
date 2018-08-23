@@ -4,42 +4,38 @@ check_env () {
   echo "Checking the environment $env_name"
   python -c "import vcs"
   if [ $? -eq 0 ]; then
+    echo "  vcs passed"
+  else
     echo "  vcs failed"
     exit 1
-  else
-    echo "  vcs passed"
   fi
   python -c "import mpas_analysis"
   if [ $? -eq 0 ]; then
+    echo "  mpas_analysis passed"
+  else
     echo "  mpas_analysis failed"
     exit 1
-  else
-    echo "  mpas_analysis passed"
   fi
   livv --version
   if [ $? -eq 0 ]; then
+    echo "  livvkit passed"
+  else
     echo "  livvkit failed"
     exit 1
-  else
-    echo "  livvkit passed"
   fi
   python -c "import acme_diags"
   if [ $? -eq 0 ]; then
+    echo "  acme_diags passed"
+  else
     echo "  acme_diags failed"
     exit 1
-  else
-    echo "  acme_diags passed"
   fi
-  if [[ $HOSTNAME == "blogin"* || $HOSTNAME == "rhea"* ]]; then
-    echo "  skipping processflow"
+  processflow -v
+  if [ $? -eq 0 ]; then
+    echo "  processflow passed"
   else
-    processflow.py -v
-    if [ $? -eq 0 ]; then
-      echo "  processflow failed"
-      exit 1
-    else
-      echo "  processflow passed"
-    fi
+    echo "  processflow failed"
+    exit 1
   fi
 }
 
@@ -135,8 +131,9 @@ do
         packages="$packages mesalib"
       fi
       env_name=e3sm_unified_${version}_py${python}_${x_or_nox}
-      conda remove -n $env_name -y --all
-      conda create -n $env_name -y $channels $packages
+      if [ ! -d $base_path/envs/$env_name ]; then
+        conda create -n $env_name -y $channels $packages
+      fi
 
       conda activate $env_name
       if [[ $HOSTNAME = "blogin"* ]]; then
@@ -182,4 +179,3 @@ else
   chmod -R g-w .
   chmod -R o-rwx .
 fi
-
