@@ -30,16 +30,12 @@ check_env () {
     echo "  acme_diags failed"
     exit 1
   fi
-  if [[ $HOSTNAME == "rhea"* ]]; then
-    echo "  skipping processflow"
+  processflow -v
+  if [ $? -eq 0 ]; then
+    echo "  processflow passed"
   else
-    processflow -v
-    if [ $? -eq 0 ]; then
-      echo "  processflow passed"
-    else
-      echo "  processflow failed"
-      exit 1
-    fi
+    echo "  processflow failed"
+    exit 1
   fi
 }
 
