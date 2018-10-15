@@ -1,6 +1,6 @@
 #!/bin/bash
 BUILD=0
-VERSION=1.2.2
+VERSION=1.2.3
 
 
 conda metapackage -c conda-forge -c e3sm -c cdat \
@@ -20,13 +20,12 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "output_viewer ==1.2.5" \
     "wk ==8.0" \
     "thermo ==8.0" \
-    "cdp ==1.3.3" \
     "e3sm_nex ==0.0.2" \
-    "e3sm_diags ==1.3.4" \
+    "e3sm_diags ==1.4.0" \
     "cibots ==0.2" \
     "xarray ==0.10.8" \
     "dask ==0.18.2" \
-    "nco ==4.7.6" \
+    "nco ==4.7.7" \
     "lxml" \
     "sympy" \
     "pyproj" \
@@ -52,10 +51,11 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "globus-cli" \
     "globus-sdk" \
     "mpas_analysis ==1.0" \
-    "processflow ==2.0.4" \
+    "processflow ==2.1.0" \
     "tabulate" \
     "cmocean" \
     "gsw" \
     "libnetcdf ==4.6.1" \
-    "livvkit ==2.1.6"
-
+    "livvkit ==2.1.6" \
+    "pyflann" \
+    "scikit-image"
