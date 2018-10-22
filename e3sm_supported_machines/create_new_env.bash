@@ -62,37 +62,38 @@ channels="-c conda-forge -c e3sm -c cdat"
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "edison"* ]]; then
   base_path="/global/project/projectdirs/acme/software/anaconda_envs/edison/base"
-  mod_path="/global/project/projectdirs/acme/software/modulefiles/all"
+  activ_path="/global/project/projectdirs/acme/software/anaconda_envs"
   group="acme"
 elif [[ $HOSTNAME = "cori"* ]]; then
   base_path="/global/project/projectdirs/acme/software/anaconda_envs/cori/base"
-  mod_path="/global/project/projectdirs/acme/software/modulefiles/all"
+  activ_path="/global/project/projectdirs/acme/software/anaconda_envs"
   group="acme"
 elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
-  mod_path="/usr/local/e3sm_unified/modulefiles"
+  activ_path="/usr/local/e3sm_unified/envs"
   group="climate"
 elif [[ $HOSTNAME = "blogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
+  activ_path="/lcrc/soft/climate/e3sm-unified"
   group="climate"
   support_mod="False"
 elif [[ $HOSTNAME = "rhea"* ]]; then
   base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
-  mod_path="/ccs/proj/cli900/sw/rhea/modulefiles/all"
+  activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
   group="cli900"
   world_read="True"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
-  mod_path="/lus/theta-fs0/projects/ccsm/acme/tools/modulefiles"
+  activ_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
   group="ccsm"
   world_read="True"
-elif [[ $HOSTNAME = "gr-fe"* ]]; then
+elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
   base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
-  mod_path="/usr/projects/climate/SHARED_CLIMATE/modulefiles/all"
+  activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
   group="climate"
 elif [[ $HOSTNAME = "eleven"* ]]; then
   base_path="/home/xylar/miniconda3"
-  mod_path="/home/xylar/test_mod"
+  activ_path="/home/xylar/Desktop"
   support_mod="False"
   group="xylar"
   channels="$channels --use-local"
@@ -114,12 +115,6 @@ conda activate
 conda config --add channels conda-forge
 conda update -y --all
 
-template_downloaded="False"
-if [ ! -f module_template ]; then
-  wget https://raw.githubusercontent.com/E3SM-Project/e3sm-unified/master/e3sm_supported_machines/module_template
-  template_downloaded="True"
-fi
-
 for version in "${versions[@]}"
 do
   for python in "${pythons[@]}"
@@ -132,7 +127,10 @@ do
       fi
       env_name=e3sm_unified_${version}_py${python}_${x_or_nox}
       if [ ! -d $base_path/envs/$env_name ]; then
+        echo creating $env_name
         conda create -n $env_name -y $channels $packages
+      else
+        echo $env_name already exists
       fi
 
       conda activate $env_name
@@ -142,33 +140,42 @@ do
       check_env
       conda deactivate
 
-      # make module files
-      if [ $support_mod == "True" ]; then
-        mkdir -p $mod_path/e3sm-unified
-        mod_name=e3sm-unified/${version}_py${python}_${x_or_nox}
-        sed "s#@version#$version#g; s#@python#$python#g; s#@x_or_nox#$x_or_nox#g; s#@base_path#$base_path/envs/$env_name#g" module_template > $mod_path/$mod_name
-
-        if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
-          # make this the default version
-          ln -sfn ${version}_py${python}_${x_or_nox} $mod_path/e3sm-unified/${version}
+      # make activation scripts
+      for ext in sh csh
+      do
+        script=""
+        if [ $support_mod == "True" ]; then
+          script="module unload python e3sm-unified"
         fi
-        module use $mod_path
-        module load $mod_name
-        check_env
-        module unload $mod_name
-
-      fi
-
+        script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
+        script="${script}"$'\n'"conda activate $env_name"
+        if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
+          file_name=$activ_path/load_latest_e3sm_unified.${ext}
+        elif [[ $python == $default_python ]]; then
+          file_name=$activ_path/load_latest_e3sm_unified_${x_or_nox}.${ext}
+        else
+          file_name=$activ_path/load_latest_e3sm_unified_py${python}_${x_or_nox}.${ext}
+        fi
+        rm -f "$file_name"
+        echo "${script}" > "$file_name"
+      done
     done
   done
 done
 
-if [ $template_downloaded == "True" ]; then
-  rm -rf module_template
-fi
-
 # delete the tarballs and any unused packages
 conda clean -y -p -t
+
+chown -R $USER:$group $activ_path/load_latest_e3sm_unified*
+if [ $world_read == "True" ]; then
+  chmod -R go+r $activ_path/load_latest_e3sm_unified*
+  chmod -R go-w $activ_path/load_latest_e3sm_unified*
+else
+  chmod -R g+r $activ_path/load_latest_e3sm_unified*
+  chmod -R g-w $activ_path/load_latest_e3sm_unified*
+  chmod -R o-rwx $activ_path/load_latest_e3sm_unified*
+fi
+
 cd $base_path
 chown -R $USER:$group .
 if [ $world_read == "True" ]; then
@@ -179,3 +186,4 @@ else
   chmod -R g-w .
   chmod -R o-rwx .
 fi
+
