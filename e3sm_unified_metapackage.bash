@@ -1,5 +1,5 @@
 #!/bin/bash
-BUILD=0
+BUILD=1
 VERSION=1.2.3
 
 
@@ -45,7 +45,7 @@ conda metapackage -c conda-forge -c e3sm -c cdat \
     "plotly" \
     "bottleneck" \
     "hdf5 ==1.10.2" \
-    "netcdf4 ==1.4.1" \
+    "netcdf4 ==1.4.1=py27ha292673_200" \
     "evtk ==1.1.1" \
     "f90nml" \
     "globus-cli" \

@@ -127,7 +127,10 @@ do
       fi
       env_name=e3sm_unified_${version}_py${python}_${x_or_nox}
       if [ ! -d $base_path/envs/$env_name ]; then
+        echo creating $env_name
         conda create -n $env_name -y $channels $packages
+      else
+        echo $env_name already exists
       fi
 
       conda activate $env_name
