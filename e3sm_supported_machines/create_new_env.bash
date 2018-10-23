@@ -147,8 +147,17 @@ do
         if [ $support_mod == "True" ]; then
           script="module unload python e3sm-unified"
         fi
-        script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
+        if [[ $HOSTNAME = "edison"* ]] || [[ $HOSTNAME = "cori"* ]]; then
+          script="${script}"$'\n'
+          script="${script}source /global/project/projectdirs/acme/software/anaconda_envs/"
+          script="${script}"'${NERSC_HOST}'"/base/etc/profile.d/conda.${ext}"
+        else
+          script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
+        fi
         script="${script}"$'\n'"conda activate $env_name"
+        if [[ $HOSTNAME = "blogin"* ]]; then
+          script="${script}"$'\n'"unset LD_LIBRARY_PATH"
+        fi
         if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
           file_name=$activ_path/load_latest_e3sm_unified.${ext}
         elif [[ $python == $default_python ]]; then
@@ -166,6 +175,7 @@ done
 # delete the tarballs and any unused packages
 conda clean -y -p -t
 
+echo "changing permissions on activation scripts"
 chown -R $USER:$group $activ_path/load_latest_e3sm_unified*
 if [ $world_read == "True" ]; then
   chmod -R go+r $activ_path/load_latest_e3sm_unified*
@@ -176,14 +186,22 @@ else
   chmod -R o-rwx $activ_path/load_latest_e3sm_unified*
 fi
 
+echo "changing permissions on environments"
 cd $base_path
+  echo "  changing owner"
 chown -R $USER:$group .
 if [ $world_read == "True" ]; then
+  echo "  adding group/world read"
   chmod -R go+rX .
+  echo "  removing group/world write"
   chmod -R go-w .
 else
+  echo "  adding group read"
   chmod -R g+rX .
+  echo "  removing group write"
   chmod -R g-w .
+  echo "  removing world read/write"
   chmod -R o-rwx .
 fi
+  echo "  done."
 
