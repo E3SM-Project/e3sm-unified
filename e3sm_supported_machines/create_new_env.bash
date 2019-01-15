@@ -147,6 +147,9 @@ do
         if [ $support_mod == "True" ]; then
           script="module unload python e3sm-unified"
         fi
+        if [[ $HOSTNAME = "blogin"* ]]; then
+          script="${script}"$'\n'"soft delete +python-2.7"
+        fi
         if [[ $HOSTNAME = "edison"* ]] || [[ $HOSTNAME = "cori"* ]]; then
           script="${script}"$'\n'
           script="${script}source /global/project/projectdirs/acme/software/anaconda_envs/"
