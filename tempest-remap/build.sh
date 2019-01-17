@@ -3,10 +3,6 @@
 set -x
 set -e
 
-mkdir -p ${PREFIX}/bin
-
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PREFIX}
-
-make -f Makefile.gmake
-
-cp bin/* ${PREFIX}/bin
+autoreconf -vif
+./configure --prefix=${PREFIX}
+make install
