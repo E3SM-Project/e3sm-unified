@@ -1,0 +1,63 @@
+{% set name = "tempest-remap" %}
+{% set version = "2.0.3a1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  git_url: https://github.com/ClimateGlobalChange/tempestremap.git
+  git_rev: 30c3e4c02fd671bf767ca4f58267550921d4130b
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - openblas
+    - lapack
+    - netcdf4 =1.4.2
+    - hdf5 =1.10.3
+    - libnetcdf =4.6.1
+  run:
+    - openblas
+    - lapack
+    - netcdf4 =1.4.2
+    - hdf5 =1.10.3
+    - libnetcdf =4.6.1
+
+test:
+  commands:
+    - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g
+
+about:
+  home: https://github.com/ClimateGlobalChange/tempestremap
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: ''
+  summary: Remapping software for climate applications
+  description: |
+    This software constitutes the beta release of TempestRemap, a conservative,
+    consistent and monotone remapping package for arbitrary grid geometry with
+    support for finite volumes and finite elements. There is still quite a bit
+    of work to be done, but any feedback is appreciated on the software in its
+    current form.
+
+    If you choose to use this software in your work, please cite our papers:
+
+    Paul A. Ullrich and Mark A. Taylor, 2015: Arbitrary-Order Conservative and
+    Consistent Remapping and a Theory of Linear Maps: Part 1. Mon. Wea. Rev.,
+    143, 2419–2440, doi: 10.1175/MWR-D-14-00343.1
+
+    Paul A. Ullrich, Darshi Devendran and Hans Johansen, 2016: Arbitrary-Order
+    Conservative and Consistent Remapping and a Theory of Linear Maps, Part 2.
+    Mon. Weather Rev., 144, 1529-1549, doi: 10.1175/MWR-D-15-0301.1.
+  doc_url: 'https://github.com/ClimateGlobalChange/tempestremap'
+  dev_url: 'https://github.com/ClimateGlobalChange/tempestremap'
+
+extra:
+  recipe-maintainers: 'jhkennedy'
