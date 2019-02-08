@@ -157,6 +157,9 @@ do
         else
           script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
         fi
+        if [[ $ext = "csh" ]]; then
+          script="${script}"$'\n'"setenv PROJ_LIB ${base_path}/share/proj"
+        fi
         script="${script}"$'\n'"conda activate $env_name"
         if [[ $HOSTNAME = "blogin"* ]]; then
           script="${script}"$'\n'"unset LD_LIBRARY_PATH"
