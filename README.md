@@ -7,10 +7,10 @@ Note, only linux (and compatible HPC environments) are supported.  OSX and Windo
 
 To install the metapackage with x-windows support under CDAT, use:
 ```
-conda install -c conda-forge -c e3sm -c cdat e3sm-unified
+conda create -n e3sm-unified-x -c conda-forge -c e3sm -c cdat e3sm-unified
 ```
 To install without x-windows, use:
 ```
-conda install -c conda-forge -c e3sm -c cdat e3sm-unified mesalib
+conda create -n e3sm-unified-nox -c conda-forge -c e3sm -c cdat e3sm-unified mesalib
 ```
 
