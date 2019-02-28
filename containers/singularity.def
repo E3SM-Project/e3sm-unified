@@ -1,0 +1,18 @@
+#!/bin/bash
+
+BootStrap: docker
+From: continuumio/anaconda
+
+%runscript
+    #export PATH=/opt/conda/bin:${PATH}
+    #/bin/bash
+    #source activate unified
+
+%post
+    apt-get update && apt-get -y install wget build-essential
+    export PATH=/opt/conda/bin:${PATH}
+
+    conda create -n unified -c conda-forge -c e3sm -c cdat mesalib livvkit mpas_analysis e3sm_diags processflow jupyter nco
+
+%labels
+    MAINTAINER sterlingbaldwin
