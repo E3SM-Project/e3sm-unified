@@ -4,9 +4,9 @@ BootStrap: docker
 From: continuumio/anaconda
 
 %runscript
-    #export PATH=/opt/conda/bin:${PATH}
-    #/bin/bash
-    #source activate unified
+    export PATH=/opt/conda/bin:${PATH}
+    source activate unified
+    /bin/bash
 
 %post
     apt-get update && apt-get -y install wget build-essential
