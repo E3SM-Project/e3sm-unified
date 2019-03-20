@@ -57,7 +57,7 @@ set -e
 
 world_read="False"
 support_mod="True"
-channels="-c conda-forge -c e3sm -c cdat"
+channels="-c conda-forge -c e3sm -c cdat -c cdat/label/v81"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "edison"* ]]; then
