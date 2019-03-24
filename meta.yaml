@@ -19,13 +19,13 @@ requirements:
   run:
     ### main packages ###
     - python
-    - cdat 8.1 # [py<=36]
-    # - e3sm_diags 1.6.0
+    - cdat 8.1
+    - e3sm_diags 1.6.1  # [py27]
     - nco 4.7.9
     - jupyter
     - ipython
     - globus-cli
-    - mpas-analysis 1.2.2
+    - mpas-analysis 1.2.3
     # - processflow # [py27]
     - ilamb 2.3.1 # [py27]
     - ilamb 2.4 # [py>=36]
@@ -61,8 +61,8 @@ requirements:
     - matplotlib
     - basemap
     - blas
-    - nb_conda # [py<=36]
-    - nb_conda_kernels # [py<=36]
+    - nb_conda
+    - nb_conda_kernels
     - plotly
     - bottleneck
     - hdf5 1.10.4
@@ -81,12 +81,12 @@ requirements:
 test:
   imports:
     - mpas_analysis
-    # - acme_diags
+    - acme_diags
   commands:
     - livv --version
     - export CDAT_ANONYMOUS_LOG=no; python -c "import vcs"
     # - processflow -v
-    # - e3sm_diags -v
+    - e3sm_diags --help
 
 about:
   home: https://github.com/E3SM-Project/e3sm-unified
