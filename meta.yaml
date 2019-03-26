@@ -26,11 +26,11 @@ requirements:
     - ipython
     - globus-cli
     - mpas-analysis 1.2.3
-    # - processflow # [py27]
+    # - processflow # [linux and py27]
     - ilamb 2.3.1 # [py27]
     - ilamb 2.4 # [py>=36]
     - livvkit 2.1.6
-    - zstash 0.2.0 # [py27]
+    - zstash 0.2.0 # [linux and py27]
     ### dependencies ###
     - cdat_info 8.1.1
     - cdms2 3.1.2
