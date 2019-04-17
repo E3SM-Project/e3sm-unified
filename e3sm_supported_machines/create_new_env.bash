@@ -2,6 +2,7 @@
 
 check_env () {
   echo "Checking the environment $env_name"
+  export CDAT_ANONYMOUS_LOG=no
   python -c "import vcs"
   if [ $? -eq 0 ]; then
     echo "  vcs passed"
@@ -16,26 +17,84 @@ check_env () {
     echo "  mpas_analysis failed"
     exit 1
   fi
-  livv --version
+  python -c "import livvkit"
   if [ $? -eq 0 ]; then
     echo "  livvkit passed"
   else
     echo "  livvkit failed"
     exit 1
   fi
-  python -c "import acme_diags"
+  livv --version
   if [ $? -eq 0 ]; then
-    echo "  acme_diags passed"
+    echo "  livv passed"
   else
-    echo "  acme_diags failed"
+    echo "  livv failed"
     exit 1
   fi
-  processflow -v
+  python -c "import IPython"
   if [ $? -eq 0 ]; then
-    echo "  processflow passed"
+    echo "  IPython passed"
   else
-    echo "  processflow failed"
+    echo "  IPython failed"
     exit 1
+  fi
+  python -c "import globus_cli"
+  if [ $? -eq 0 ]; then
+    echo "  globus_cli passed"
+  else
+    echo "  globus_cli failed"
+    exit 1
+  fi
+  globus --help
+  if [ $? -eq 0 ]; then
+    echo "  globus passed"
+  else
+    echo "  globus failed"
+    exit 1
+  fi
+  python -c "import ILAMB"
+  if [ $? -eq 0 ]; then
+    echo "  ILAMB passed"
+  else
+    echo "  ILAMB failed"
+    exit 1
+  fi
+  if [[ $python == 2.7 ]]; then
+      python -c "import zstash"
+      if [ $? -eq 0 ]; then
+        echo "  import zstash passed"
+      else
+        echo "  import zstash failed"
+        exit 1
+      fi
+      python -c "import acme_diags"
+      if [ $? -eq 0 ]; then
+        echo "  acme_diags passed"
+      else
+        echo "  acme_diags failed"
+        exit 1
+      fi
+      e3sm_diags --help
+      if [ $? -eq 0 ]; then
+        echo "  e3sm_diags passed"
+      else
+        echo "  e3sm_diags failed"
+        exit 1
+      fi
+      processflow -v
+      if [ $? -eq 0 ]; then
+        echo "  processflow passed"
+      else
+        echo "  processflow failed"
+        exit 1
+      fi
+      zstash --help
+      if [ $? -eq 0 ]; then
+        echo "  zstash passed"
+      else
+        echo "  zstash failed"
+        exit 1
+      fi
   fi
 }
 
@@ -44,11 +103,11 @@ check_env () {
 # the python version(s) are installed and whether to make an environment with
 # x-windows support under cdat (x), without (nox) or both (nox x).  Typically,
 # both x and nox environments should be created.
-versions=(1.2.4)
-pythons=(2.7)
+versions=(1.2.5)
+pythons=(3.7 2.7)
 x_or_noxs=(nox x)
 
-default_python=2.7
+default_python=3.7
 default_x_or_nox=nox
 
 # Any subsequent commands which fail will cause the shell script to exit
@@ -57,7 +116,7 @@ set -e
 
 world_read="False"
 support_mod="True"
-channels="-c conda-forge -c e3sm -c cdat"
+channels="-c conda-forge -c e3sm -c cdat/label/v81"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "edison"* ]]; then
@@ -72,11 +131,10 @@ elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
   activ_path="/usr/local/e3sm_unified/envs"
   group="climate"
-elif [[ $HOSTNAME = "blogin"* ]]; then
+elif [[ $HOSTNAME = "blueslogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="climate"
-  support_mod="False"
 elif [[ $HOSTNAME = "rhea"* ]]; then
   base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
   activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
@@ -99,6 +157,7 @@ elif [[ $HOSTNAME = "eleven"* ]]; then
   channels="$channels --use-local"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
+  exit 1
 fi
 
 if [ ! -d $base_path ]; then
@@ -134,9 +193,6 @@ do
       fi
 
       conda activate $env_name
-      if [[ $HOSTNAME = "blogin"* ]]; then
-        unset LD_LIBRARY_PATH
-      fi
       check_env
       conda deactivate
 
@@ -147,9 +203,6 @@ do
         if [ $support_mod == "True" ]; then
           script="module unload python e3sm-unified"
         fi
-        if [[ $HOSTNAME = "blogin"* ]]; then
-          script="${script}"$'\n'"soft delete +python-2.7"
-        fi
         if [[ $HOSTNAME = "edison"* ]] || [[ $HOSTNAME = "cori"* ]]; then
           script="${script}"$'\n'
           script="${script}source /global/project/projectdirs/acme/software/anaconda_envs/"
@@ -157,10 +210,10 @@ do
         else
           script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
         fi
-        script="${script}"$'\n'"conda activate $env_name"
-        if [[ $HOSTNAME = "blogin"* ]]; then
-          script="${script}"$'\n'"unset LD_LIBRARY_PATH"
+        if [[ $ext = "csh" ]]; then
+          script="${script}"$'\n'"setenv PROJ_LIB ${base_path}/share/proj"
         fi
+        script="${script}"$'\n'"conda activate $env_name"
         if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
           file_name=$activ_path/load_latest_e3sm_unified.${ext}
         elif [[ $python == $default_python ]]; then
