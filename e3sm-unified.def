@@ -1,0 +1,17 @@
+BootStrap: docker
+From: continuumio/miniconda
+
+%runscript
+    source ~/.bashrc
+    export PATH=/opt/conda/bin:${PATH}
+    conda activate e3sm-unified-nox
+
+%post
+    apt-get update && apt-get -y install wget build-essential
+    export PATH=/opt/conda/bin:${PATH}
+    conda create -n e3sm-unified-nox -c conda-forge -c e3sm -c cdat/label/v81 e3sm-unified mesalib
+    conda clean --all
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
+
+%labels
+    MAINTAINER sterlingbaldwin
