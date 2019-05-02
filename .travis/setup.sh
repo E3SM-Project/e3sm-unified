@@ -1,12 +1,16 @@
 #!/bin/bash
 
-sudo apt-get update
+SINGULARITY_BASE="${GOPATH}/src/github.com/sylabs/singularity"
+export PATH="${GOPATH}/bin:${PATH}"
 
-sudo wget -O- http://neuro.debian.net/lists/xenial.us-ca.full | sudo tee /etc/apt/sources.list.d/neurodebian.sources.list && \
-    sudo apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9 && \
-    sudo apt-get update
+mkdir -p "${GOPATH}/src/github.com/sylabs"
+cd "${GOPATH}/src/github.com/sylabs"
 
-sudo apt-get install -y singularity-container
+git clone -b release-3.2 https://github.com/sylabs/singularity
+cd singularity
+./mconfig -v -p /usr/local
+make -j `nproc 2>/dev/null || echo 1` -C ./builddir all
+sudo make -C ./builddir install
 
 echo "Singularity version"
 singularity --version
