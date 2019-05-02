@@ -1,5 +1,7 @@
 # e3sm-unified
 
+[![Build Status](https://travis-ci.org/E3SM-Project/e3sm-unified.svg?branch=master)](https://travis-ci.org/E3SM-Project/e3sm-unified)
+
 A metapackage for a unified anaconda environment for analysis of results from
 the Energy Exascale Earth System Model (E3SM).
 
