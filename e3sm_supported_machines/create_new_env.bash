@@ -115,15 +115,10 @@ default_x_or_nox=nox
 set -e
 
 world_read="False"
-support_mod="True"
 channels="-c conda-forge -c e3sm -c cdat/label/v81"
 
 # The rest of the script should not need to be modified
-if [[ $HOSTNAME = "edison"* ]]; then
-  base_path="/global/project/projectdirs/acme/software/anaconda_envs/edison/base"
-  activ_path="/global/project/projectdirs/acme/software/anaconda_envs"
-  group="acme"
-elif [[ $HOSTNAME = "cori"* ]]; then
+if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
   base_path="/global/project/projectdirs/acme/software/anaconda_envs/cori/base"
   activ_path="/global/project/projectdirs/acme/software/anaconda_envs"
   group="acme"
@@ -152,7 +147,6 @@ elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
 elif [[ $HOSTNAME = "eleven"* ]]; then
   base_path="/home/xylar/miniconda3"
   activ_path="/home/xylar/Desktop"
-  support_mod="False"
   group="xylar"
   channels="$channels --use-local"
 else
@@ -199,17 +193,14 @@ do
       # make activation scripts
       for ext in sh csh
       do
-        script=""
-        if [ $support_mod == "True" ]; then
-          script="module unload python e3sm-unified"
-        fi
-        if [[ $HOSTNAME = "edison"* ]] || [[ $HOSTNAME = "cori"* ]]; then
-          script="${script}"$'\n'
-          script="${script}source /global/project/projectdirs/acme/software/anaconda_envs/"
-          script="${script}"'${NERSC_HOST}'"/base/etc/profile.d/conda.${ext}"
+        if [[ $ext = "sh" ]]; then
+          script="if [ -x \"\$(command -v module)\" ] ; then"
+          script="${script}"$'\n'"  module unload python"
+          script="${script}"$'\n'"fi"
         else
-          script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
+          script=""
         fi
+        script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
         if [[ $ext = "csh" ]]; then
           script="${script}"$'\n'"setenv PROJ_LIB ${base_path}/share/proj"
         fi
@@ -244,7 +235,7 @@ fi
 
 echo "changing permissions on environments"
 cd $base_path
-  echo "  changing owner"
+echo "  changing owner"
 chown -R $USER:$group .
 if [ $world_read == "True" ]; then
   echo "  adding group/world read"
@@ -259,5 +250,5 @@ else
   echo "  removing world read/write"
   chmod -R o-rwx .
 fi
-  echo "  done."
+echo "  done."
 
