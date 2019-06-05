@@ -145,6 +145,10 @@ elif [[ $HOSTNAME = "cooley"* ]]; then
   activ_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
   group="ccsm"
   world_read="True"
+elif [[ $HOSTNAME = "compy"* ]]; then
+  base_path="/compyfs/software/e3sm-unified/base"
+  activ_path="/compyfs/software/e3sm-unified"
+  group="users"
 elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
   base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
   activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
@@ -161,7 +165,7 @@ else
 fi
 
 if [ ! -d $base_path ]; then
-  miniconda=Miniconda2-latest-Linux-x86_64.sh
+  miniconda=Miniconda3-latest-Linux-x86_64.sh
   wget https://repo.continuum.io/miniconda/$miniconda
   /bin/bash $miniconda -b -p $base_path
   rm $miniconda
