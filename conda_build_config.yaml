@@ -1,0 +1,10 @@
+channel_sources:
+  - conda-forge,defaults,cdat/label/v81,e3sm
+
+channel_targets:
+  - e3sm main
+
+python:
+   - 3.7
+   - 3.6
+   - 2.7
