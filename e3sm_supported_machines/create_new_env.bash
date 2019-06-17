@@ -12,6 +12,13 @@ check_env () {
   fi
   python -c "import mpas_analysis"
   if [ $? -eq 0 ]; then
+    echo "  import mpas_analysis passed"
+  else
+    echo "  import mpas_analysis failed"
+    exit 1
+  fi
+  mpas_analysis -h
+  if [ $? -eq 0 ]; then
     echo "  mpas_analysis passed"
   else
     echo "  mpas_analysis failed"
@@ -59,28 +66,50 @@ check_env () {
     echo "  ILAMB failed"
     exit 1
   fi
-  if [[ $python == 2.7 ]]; then
-      python -c "import zstash"
-      if [ $? -eq 0 ]; then
-        echo "  import zstash passed"
-      else
-        echo "  import zstash failed"
-        exit 1
-      fi
-      python -c "import acme_diags"
-      if [ $? -eq 0 ]; then
-        echo "  acme_diags passed"
-      else
-        echo "  acme_diags failed"
-        exit 1
-      fi
-      e3sm_diags --help
-      if [ $? -eq 0 ]; then
-        echo "  e3sm_diags passed"
-      else
-        echo "  e3sm_diags failed"
-        exit 1
-      fi
+  python -c "import acme_diags"
+  if [ $? -eq 0 ]; then
+    echo "  import acme_diags passed"
+  else
+    echo "  import acme_diags failed"
+    exit 1
+  fi
+  e3sm_diags --help
+  if [ $? -eq 0 ]; then
+    echo "  e3sm_diags passed"
+  else
+    echo "  e3sm_diags failed"
+    exit 1
+  fi
+  python -c "import zstash"
+  if [ $? -eq 0 ]; then
+    echo "  import zstash passed"
+  else
+    echo "  import zstash failed"
+    exit 1
+  fi
+  zstash --help
+  if [ $? -eq 0 ]; then
+    echo "  zstash passed"
+  else
+    echo "  zstash failed"
+    exit 1
+  fi
+  zstash --help
+  if [ $? -eq 0 ]; then
+    echo "  zstash passed"
+  else
+    echo "  zstash failed"
+    exit 1
+  fi
+  GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g
+  if [ $? -eq 0 ]; then
+    echo "  tempest-remap passed"
+  else
+    echo "  tempest-remap failed"
+    exit 1
+  fi
+  if [ $python == "2.7" ]; then
+     echo "Checking the environment $env_name"
       processflow -v
       if [ $? -eq 0 ]; then
         echo "  processflow passed"
@@ -88,14 +117,8 @@ check_env () {
         echo "  processflow failed"
         exit 1
       fi
-      zstash --help
-      if [ $? -eq 0 ]; then
-        echo "  zstash passed"
-      else
-        echo "  zstash failed"
-        exit 1
-      fi
   fi
+
 }
 
 
@@ -103,9 +126,9 @@ check_env () {
 # the python version(s) are installed and whether to make an environment with
 # x-windows support under cdat (x), without (nox) or both (nox x).  Typically,
 # both x and nox environments should be created.
-versions=(1.2.5)
+versions=(1.2.6)
 pythons=(3.7 2.7)
-x_or_noxs=(nox x)
+x_or_noxs=(nox cdatx)
 
 default_python=3.7
 default_x_or_nox=nox
@@ -115,7 +138,7 @@ default_x_or_nox=nox
 set -e
 
 world_read="False"
-channels="-c conda-forge -c e3sm -c cdat/label/v81"
+channels="-c conda-forge -c defaults -c e3sm -c cdat/label/v81"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
@@ -170,6 +193,7 @@ fi
 conda activate
 
 conda config --add channels conda-forge
+conda config --set channel_priority strict
 conda update -y --all
 
 for version in "${versions[@]}"
@@ -182,7 +206,16 @@ do
       if [ $x_or_nox == "nox" ]; then
         packages="$packages mesalib"
       fi
-      env_name=e3sm_unified_${version}_py${python}_${x_or_nox}
+
+      if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
+        suffix=""
+      elif [[ $x_or_nox == $default_x_or_nox ]]; then
+        suffix=_py${python}
+      else
+        suffix=_py${python}_${x_or_nox}
+      fi
+
+      env_name=e3sm_unified_${version}${suffix}
       if [ ! -d $base_path/envs/$env_name ]; then
         echo creating $env_name
         conda create -n $env_name -y $channels $packages
@@ -205,17 +238,8 @@ do
           script=""
         fi
         script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
-        if [[ $ext = "csh" ]]; then
-          script="${script}"$'\n'"setenv PROJ_LIB ${base_path}/share/proj"
-        fi
         script="${script}"$'\n'"conda activate $env_name"
-        if [[ $python == $default_python && $x_or_nox == $default_x_or_nox ]]; then
-          file_name=$activ_path/load_latest_e3sm_unified.${ext}
-        elif [[ $python == $default_python ]]; then
-          file_name=$activ_path/load_latest_e3sm_unified_${x_or_nox}.${ext}
-        else
-          file_name=$activ_path/load_latest_e3sm_unified_py${python}_${x_or_nox}.${ext}
-        fi
+        file_name=$activ_path/load_latest_e3sm_unified${suffix}.${ext}
         rm -f "$file_name"
         echo "${script}" > "$file_name"
       done
