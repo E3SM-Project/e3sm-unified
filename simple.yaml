@@ -1,0 +1,55 @@
+# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
+
+# Jinja variables help maintain the recipe as you'll update the version only here.
+# Using the name variable with the URL in line 13 is convenient
+# when copying and pasting from another recipe, but not really needed.
+{% set name = "E3SM-Simple" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+requirements:
+  host:
+    - python
+  run:
+    ### main packages ###
+    - python
+    # channel: conda-forge
+    - evv4esm 0.2
+    ### dependencies ###
+    # channel: conda-forge
+    - six
+    - numpy >1.13
+    - scipy
+    - pandas
+    - matplotlib
+    - jinja2
+    - json_tricks 3.11.0
+    - pybtex >=0.21
+    - livvkit 2.1.6
+    - hdf5 1.10.5
+    - netcdf4 1.5.1.2
+    - libnetcdf 4.6.2
+test:
+  requires:
+    - pytest
+  imports:
+    - evv4esm
+  commands:
+    - evv --version
+about:
+  home: https://github.com/E3SM-Project/e3sm-unified
+  summary: |
+    A metapackage for a simple conda environment for the Energy Exascale Earth
+    System Model (E3SM) which can be used on compute nodes.
+  dev_url: https://github.com/E3SM-Project/e3sm-unified
+
+extra:
+  recipe-maintainers:
+    - xylar
+    - jhkennedy
