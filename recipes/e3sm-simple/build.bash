@@ -1,14 +1,11 @@
 #!/bin/bash
 
-
 #conda build -c conda-forge -c defaults -c e3sm -c cdat/label/v81 meta.yaml
-
 
 upload=True
 version=1.0.0
 pythons=(27 36 37)
 build=0
-
 
 if [ $upload == "True" ]
 then
