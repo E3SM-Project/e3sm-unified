@@ -20,7 +20,6 @@ conda create -n e3sm-unified-nox -c conda-forge -c e3sm -c cdat/label/v81 \
 ```
 
 The following packages are available only with the python 2.7 versions:
- - e3sm_diags
  - processflow
  - zstash
 
