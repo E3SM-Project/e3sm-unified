@@ -2,16 +2,16 @@ BootStrap: docker
 From: continuumio/miniconda
 
 %files
-    e3sm-simple-test.sh /.e3sm-simple-test.sh
+    cime-systests-test.sh /.cime-systests-test.sh
 
 %runscript
     #!/bin/bash
     . /opt/conda/etc/profile.d/conda.sh
-    conda activate e3sm-simple
+    conda activate cime-systests
 
 %post -c /bin/bash
     . /opt/conda/etc/profile.d/conda.sh
-    conda create -n e3sm-simple -c conda-forge -c e3sm e3sm-simple=1.0.0
+    conda create -n cime-systests -c conda-forge -c e3sm cime-systests=1.0.0
     conda clean --all
 
 %labels

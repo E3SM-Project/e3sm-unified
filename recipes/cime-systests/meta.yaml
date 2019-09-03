@@ -3,7 +3,7 @@
 # Jinja variables help maintain the recipe as you'll update the version only here.
 # Using the name variable with the URL in line 13 is convenient
 # when copying and pasting from another recipe, but not really needed.
-{% set name = "E3SM-Simple" %}
+{% set name = "CIME-SysTests" %}
 {% set version = "1.0.0" %}
 
 package:
@@ -20,7 +20,7 @@ requirements:
     ### main packages ###
     - python
     # channel: conda-forge
-    - evv4esm 0.2
+    - evv4esm 0.2.1
     ### dependencies ###
     # channel: conda-forge
     - six
@@ -45,8 +45,8 @@ test:
 about:
   home: https://github.com/E3SM-Project/e3sm-unified
   summary: |
-    A metapackage for a simple conda environment for the Energy Exascale Earth
-    System Model (E3SM) which can be used on compute nodes.
+    A metapackage for a conda environment used when running CIME SystemTests with
+    the Energy Exascale Earth System Model (E3SM) and can be used on compute nodes.
   dev_url: https://github.com/E3SM-Project/e3sm-unified
 
 extra:
