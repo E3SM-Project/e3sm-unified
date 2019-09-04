@@ -34,3 +34,4 @@ before_install:
 
 script:
     - bash .travis/build.sh e3sm-unified.def
+    - bash .travis/build.sh cime-env.def

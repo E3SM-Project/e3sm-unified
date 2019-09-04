@@ -1,0 +1,18 @@
+BootStrap: docker
+From: continuumio/miniconda
+
+%files
+    cime-env-test.sh /.cime-env-test.sh
+
+%runscript
+    #!/bin/bash
+    . /opt/conda/etc/profile.d/conda.sh
+    conda activate cime-env
+
+%post -c /bin/bash
+    . /opt/conda/etc/profile.d/conda.sh
+    conda create -n cime-env -c conda-forge -c e3sm cime-env=1.0.0
+    conda clean --all
+
+%labels
+    MAINTAINER jhkennedy
