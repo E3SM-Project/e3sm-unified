@@ -3,7 +3,7 @@
 # Jinja variables help maintain the recipe as you'll update the version only here.
 # Using the name variable with the URL in line 13 is convenient
 # when copying and pasting from another recipe, but not really needed.
-{% set name = "CIME-SysTests" %}
+{% set name = "CIME-env" %}
 {% set version = "1.0.0" %}
 
 package:

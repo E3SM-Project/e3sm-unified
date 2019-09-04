@@ -19,7 +19,7 @@ check_env () {
 }
 
 
-# Modify the following to choose which cime-systests version(s)
+# Modify the following to choose which cime-env version(s)
 # the python version(s) are installed
 versions=(1.0.0)
 pythons=(3.7 2.7)
@@ -98,7 +98,7 @@ for version in "${versions[@]}"
 do
   for python in "${pythons[@]}"
   do
-    packages="python=$python cime-systests=${version}"
+    packages="python=$python cime-env=${version}"
 
     if [[ $python == $default_python ]]; then
       suffix=""
@@ -106,7 +106,7 @@ do
       suffix=_py${python}
     fi
 
-    env_name=cime_systests_${version}${suffix}
+    env_name=cime_env_${version}${suffix}
     if [ ! -d $base_path/envs/$env_name ]; then
       echo creating $env_name
       conda create -n $env_name -y $channels $packages
@@ -130,7 +130,7 @@ do
       fi
       script="${script}"$'\n'"source ${base_path}/etc/profile.d/conda.${ext}"
       script="${script}"$'\n'"conda activate $env_name"
-      file_name=$activ_path/load_latest_cime_systests${suffix}.${ext}
+      file_name=$activ_path/load_latest_cime_env${suffix}.${ext}
       rm -f "$file_name"
       echo "${script}" > "$file_name"
     done
@@ -141,14 +141,14 @@ done
 conda clean -y -p -t
 
 echo "changing permissions on activation scripts"
-chown -R $USER:$group $activ_path/load_latest_cime_systests*
+chown -R $USER:$group $activ_path/load_latest_cime_env*
 if [ $world_read == "True" ]; then
-  chmod -R go+r $activ_path/load_latest_cime_systests*
-  chmod -R go-w $activ_path/load_latest_cime_systests*
+  chmod -R go+r $activ_path/load_latest_cime_env*
+  chmod -R go-w $activ_path/load_latest_cime_env*
 else
-  chmod -R g+r $activ_path/load_latest_cime_systests*
-  chmod -R g-w $activ_path/load_latest_cime_systests*
-  chmod -R o-rwx $activ_path/load_latest_cime_systests*
+  chmod -R g+r $activ_path/load_latest_cime_env*
+  chmod -R g-w $activ_path/load_latest_cime_env*
+  chmod -R o-rwx $activ_path/load_latest_cime_env*
 fi
 
 echo "changing permissions on environments"

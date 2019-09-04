@@ -11,6 +11,6 @@ if [ $upload == "True" ]
 then
    for python in "${pythons[@]}"
    do
-      anaconda upload -u e3sm ${HOME}/miniconda3/conda-bld/linux-64/cime-systests-${version}-py${python}_${build}.tar.bz2
+      anaconda upload -u e3sm ${HOME}/miniconda3/conda-bld/linux-64/cime-env-${version}-py${python}_${build}.tar.bz2
    done
 fi

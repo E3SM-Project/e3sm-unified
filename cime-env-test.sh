@@ -41,8 +41,8 @@ echo "Loading conda profile"
 . /opt/conda/etc/profile.d/conda.sh
 
 echo "Activating e3sm conda environment"
-conda activate cime-systests
-check_last_rc "Could not source cime-systests conda environment\n"
+conda activate cime-env
+check_last_rc "Could not source cime-env conda environment\n"
 
 # Try to run some simple help commands
 for cmd in "evv"
