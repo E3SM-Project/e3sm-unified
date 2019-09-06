@@ -1,10 +1,10 @@
 #!/bin/bash
 
-conda build -c conda-forge -c defaults -c e3sm -c cdat/label/v81 meta.yaml
+conda build --override-channels -c e3sm -c conda-forge -c defaults -c cdat/label/v82 meta.yaml
 
 upload=False
-version=1.2.6
-pythons=(27 36 37)
+version=1.3.0
+pythons=(36 37)
 build=0
 
 if [ $upload == "True" ]

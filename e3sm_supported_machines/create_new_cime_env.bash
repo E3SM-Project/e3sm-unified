@@ -113,6 +113,8 @@ do
     check_env
     conda deactivate
 
+    mkdir -p "$activ_path"
+
     # make activation scripts
     for ext in sh csh
     do
