@@ -5,7 +5,7 @@ conda build -c conda-forge -c defaults meta.yaml
 upload=False
 version=1.0.0
 pythons=(27 36 37)
-build=0
+build=1
 
 if [ $upload == "True" ]
 then
