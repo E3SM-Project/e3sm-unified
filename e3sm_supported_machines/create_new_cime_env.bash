@@ -69,11 +69,6 @@ elif [[ $HOSTNAME = "eleven"* ]]; then
   activ_path="/home/xylar/Desktop"
   group="xylar"
   channels="$channels --use-local"
-elif [[ $HOSTNAME = "lap101101" ]] || [[ $HOSTNAME = "pc0101123" ]]; then
-  base_path="/home/fjk/miniconda3"
-  activ_path="/home/fjk/Documents/Code/E3SM/"
-  group="users"
-  channels="$channels --use-local"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
   exit 1
