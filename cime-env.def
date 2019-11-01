@@ -11,7 +11,7 @@ From: continuumio/miniconda
 
 %post -c /bin/bash
     . /opt/conda/etc/profile.d/conda.sh
-    conda create -n cime-env -c conda-forge -c e3sm cime-env=1.0.0
+    conda create -y -n cime-env -c conda-forge -c e3sm cime-env=1.0.0
     conda clean --all
 
 %labels

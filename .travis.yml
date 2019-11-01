@@ -6,7 +6,7 @@ go:
     - "1.11"
 
 python:
-    - "2.7"
+    - "3.7"
 
 addons:
   apt:
@@ -33,5 +33,5 @@ before_install:
     - "/bin/bash .travis/setup.sh"
 
 script:
-    - bash .travis/build.sh e3sm-unified.def
-    - bash .travis/build.sh cime-env.def
+    - travis_wait 30 bash .travis/build.sh e3sm-unified.def
+    - travis_wait 30 bash .travis/build.sh cime-env.def
