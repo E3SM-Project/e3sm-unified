@@ -6,7 +6,7 @@ imagefile="${definition}.simg"
 testfile="${definition}-test.sh"
 
 echo "Creating $imagefile using $definitionfile..."
-sudo singularity build $imagefile ${definitionfile}
+sudo singularity --verbose build $imagefile ${definitionfile}
 
 echo "Running test"
-sudo singularity exec $imagefile /.${testfile}
+sudo singularity --verbose exec $imagefile /.${testfile}
