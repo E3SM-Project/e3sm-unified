@@ -304,6 +304,9 @@ done
 # delete the tarballs and any unused packages
 conda clean -y -p -t
 
+# continue if errors happen from here on
+set +e
+
 echo "changing permissions on activation scripts"
 chown -R "$USER":$group $activ_path/load_latest_e3sm_unified*
 if [ $world_read == "True" ]; then
