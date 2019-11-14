@@ -134,7 +134,7 @@ mpi4py_ver=3.0.2
 # immediately
 set -e
 
-world_read="False"
+world_read="True"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
@@ -164,12 +164,10 @@ elif [[ $HOSTNAME = "rhea"* ]]; then
   base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
   activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
   group="cli900"
-  world_read="True"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
   activ_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
   group="ccsm"
-  world_read="True"
   mpicc="$(which mpicc)"
 elif [[ $HOSTNAME = "compy"* ]]; then
   base_path="/compyfs/software/e3sm-unified/base"
