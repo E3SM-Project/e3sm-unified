@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   host:
@@ -49,6 +49,7 @@ requirements:
     - cibots 0.3
     - xarray 0.14.0
     - dask 2.6.0
+    - distributed 2.6.0
     - lxml
     - sympy
     - pyproj >=1.9.6,<2.0.0
