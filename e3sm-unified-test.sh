@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# line to trigger test on PR
 # always start unset
 unset abort_message
 
