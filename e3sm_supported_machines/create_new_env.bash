@@ -141,11 +141,11 @@ if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
   base_path="/global/project/projectdirs/acme/software/anaconda_envs/cori/base"
   activ_path="/global/project/projectdirs/acme/software/anaconda_envs"
   group="acme"
-  module unlaod PrgEnv-intel
-  moudle load PrgEnv-gnu
+  module unload PrgEnv-intel
+  module load PrgEnv-gnu
   module unload craype-hugepages2M
   custom_script="echo module unlaod PrgEnv-intel"
-  custom_script="${custom_script}"$'\n'"module unlaod PrgEnv-intel"
+  custom_script="${custom_script}"$'\n'"module unload PrgEnv-intel"
   custom_script="${custom_script}"$'\n'"echo module load PrgEnv-gnu"
   custom_script="${custom_script}"$'\n'"module laod PrgEnv-gnu"
   custom_script="${custom_script}"$'\n'"echo module unload craype-hugepages2M"
