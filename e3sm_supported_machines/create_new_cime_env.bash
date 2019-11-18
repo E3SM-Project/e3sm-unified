@@ -30,7 +30,7 @@ default_python=3.7
 # immediately
 set -e
 
-world_read="False"
+world_read="True"
 channels="-c conda-forge -c defaults -c e3sm"
 
 # The rest of the script should not need to be modified
@@ -50,12 +50,10 @@ elif [[ $HOSTNAME = "rhea"* ]]; then
   base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
   activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
   group="cli900"
-  world_read="True"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
   activ_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
   group="ccsm"
-  world_read="True"
 elif [[ $HOSTNAME = "compy"* ]]; then
   base_path="/compyfs/software/e3sm-unified/base"
   activ_path="/compyfs/software/e3sm-unified"
