@@ -35,8 +35,8 @@ channels="-c conda-forge -c defaults -c e3sm"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
-  base_path="/global/project/projectdirs/acme/software/anaconda_envs/cori/base"
-  activ_path="/global/project/projectdirs/acme/software/anaconda_envs"
+  base_path="/global/cfs/cdirs/acme/software/anaconda_envs/base"
+  activ_path="/global/cfs/cdirs/acme/software/anaconda_envs"
   group="acme"
 elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
