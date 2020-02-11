@@ -4,32 +4,30 @@ check_env () {
   echo "Checking the environment $env_name"
   export CDAT_ANONYMOUS_LOG=no
 
-  if [ "$env_type" != "sysmpi" ]; then
-    if python -c "import vcs"; then
-      echo "  vcs passed"
-    else
-      echo "  vcs failed"
-      exit 1
-    fi
-   if python -c "import ILAMB"; then
-      echo "  ILAMB passed"
-    else
-      echo "  ILAMB failed"
-      exit 1
-    fi
-    if python -c "import acme_diags"; then
-      echo "  import acme_diags passed"
-    else
-      echo "  import acme_diags failed"
-      exit 1
-    fi
+  if python -c "import vcs"; then
+    echo "  vcs passed"
+  else
+    echo "  vcs failed"
+    exit 1
+  fi
+ if python -c "import ILAMB"; then
+    echo "  ILAMB passed"
+  else
+    echo "  ILAMB failed"
+    exit 1
+  fi
+  if python -c "import acme_diags"; then
+    echo "  import acme_diags passed"
+  else
+    echo "  import acme_diags failed"
+    exit 1
+  fi
 
-    if e3sm_diags --help; then
-      echo "  e3sm_diags passed"
-    else
-      echo "  e3sm_diags failed"
-      exit 1
-    fi
+  if e3sm_diags --help; then
+    echo "  e3sm_diags passed"
+  else
+    echo "  e3sm_diags failed"
+    exit 1
   fi
 
   if python -c "import mpas_analysis"; then
@@ -119,16 +117,14 @@ check_env () {
 
 
 # Modify the following to choose which e3sm-unified version(s) the python version(s) are installed and whether to make
-# an environment with x-windows support under cdat (cdatx), without (nox), and/or with system MPI (sysmpi).  Typically,
-# all three environments should be created.
-versions=(1.3.0)
+# an environment with x-windows support under cdat (cdatx) and/or without (nox).  Typically, both environments should
+# be created.
+versions=(1.3.1)
 pythons=(3.7)
-env_types=(nox cdatx sysmpi)
+env_types=(nox cdatx)
 
 default_python=3.7
 default_env_type=nox
-
-mpi4py_ver=3.0.2
 
 # Any subsequent commands which fail will cause the shell script to exit
 # immediately
@@ -151,50 +147,42 @@ if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
   custom_script="${custom_script}"$'\n'"echo module unload craype-hugepages2M"
   custom_script="${custom_script}"$'\n'"module unload craype-hugepages2M"
   mpicc="$(which cc) -shared"
+  mpi="nompi"
 elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
   activ_path="/usr/local/e3sm_unified/envs"
   group="climate"
+  mpi="mpich"
 elif [[ $HOSTNAME = "blueslogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="climate"
-  mpicc="$(which mpicc)"
+  mpi="mpich"
 elif [[ $HOSTNAME = "rhea"* ]]; then
   base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
   activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
   group="cli900"
+  mpi="nompi"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
   activ_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
   group="ccsm"
-  mpicc="$(which mpicc)"
+  mpi="nompi"
 elif [[ $HOSTNAME = "compy"* ]]; then
   base_path="/compyfs/software/e3sm-unified/base"
   activ_path="/compyfs/software/e3sm-unified"
   group="users"
-  module load gcc/4.8.5
-  module load mvapich2/2.3.1
-  custom_script="echo module load gcc/4.8.5"
-  custom_script="${custom_script}"$'\n'"module load gcc/4.8.5"
-  custom_script="${custom_script}"$'\n'"echo module load mvapich2/2.3.1"
-  custom_script="${custom_script}"$'\n'"module load mvapich2/2.3.1"
-  mpicc="$(which mpicc)"
+  mpi="mpich"
 elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
   base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
   activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
   group="climate"
-  module load intel
-  module load openmpi
-  custom_script="echo module load intel"
-  custom_script="${custom_script}"$'\n'"module load intel"
-  custom_script="${custom_script}"$'\n'"echo module load openmpi"
-  custom_script="${custom_script}"$'\n'"module load openmpi"
-  mpicc="$(which mpicc)"
+  mpi="mpich"
 elif [[ $HOSTNAME = "burnham"* ]]; then
   base_path="/home/xylar/Desktop/test_e3sm_unified/base"
   activ_path="/home/xylar/Desktop/test_e3sm_unified"
   group="xylar"
+  mpi="mpich"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
   exit 1
@@ -208,20 +196,12 @@ if [ ! -d $base_path ]; then
 fi
 
 # activate the new environment
-source $base_path/etc/profile.d/conda.sh
+source ${base_path}/etc/profile.d/conda.sh
 conda activate
 
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda update -y --all
-
-if [[ -n $mpicc ]]; then
-  if [ ! -f "mpi4py-${mpi4py_ver}.tar.gz" ]; then
-    wget "https://bitbucket.org/mpi4py/mpi4py/downloads/mpi4py-${mpi4py_ver}.tar.gz"
-  fi
-  rm -rf "mpi4py-${mpi4py_ver}"
-  tar zxvf "mpi4py-${mpi4py_ver}.tar.gz"
-fi
 
 for version in "${versions[@]}"
 do
@@ -229,20 +209,12 @@ do
   do
     for env_type in "${env_types[@]}"
     do
-      if [ "$env_type" == "sysmpi" ]; then
-        channels="--override-channels -c e3sm -c conda-forge -c defaults -c cdat/label/v82"
-        if [[ -n $mpicc ]]; then
-          packages="python=$python e3sm-unified-hpc=${version} mesalib"
-        else
-          # no system MPI defined, so don't build this version
-          continue
-        fi
-      elif [ "$env_type" == "nox" ]; then
+      if [ "$env_type" == "nox" ]; then
         channels="--override-channels -c conda-forge -c defaults -c e3sm -c cdat/label/v82"
-        packages="python=$python e3sm-unified=${version} mesalib"
+        packages="python=$python e3sm-unified=${version}=mpi_${mpi}* mesalib"
       else
         channels="--override-channels -c conda-forge -c defaults -c e3sm -c cdat/label/v82"
-        packages="python=$python e3sm-unified=${version}"
+        packages="python=$python e3sm-unified=${version}=mpi_${mpi}*"
       fi
 
       if [[ "$python" == "$default_python" && "$env_type" == "$default_env_type" ]]; then
@@ -258,13 +230,6 @@ do
         echo creating "$env_name"
         conda create -n "$env_name" -y $channels $packages
         conda activate "$env_name"
-        if [ "$env_type" == "sysmpi" ]; then
-          cd "mpi4py-${mpi4py_ver}"
-          python setup.py build --mpicc="$mpicc"
-          python setup.py install
-          cd ..
-          conda install -y -c conda-forge -c defaults --no-deps ilamb=2.5
-        fi
         conda deactivate
       else
         echo "$env_name" already exists
@@ -279,11 +244,7 @@ do
       # make activation scripts
       for ext in sh csh
       do
-        if [[ -n $custom_script && "$env_type" == "sysmpi" ]]; then
-          script=$custom_script
-        else
-          script=""
-        fi
+        script=""
         if [[ $ext = "sh" ]]; then
           script="${script}"$'\n'"if [ -x \"\$(command -v module)\" ] ; then"
           script="${script}"$'\n'"  module unload python"
