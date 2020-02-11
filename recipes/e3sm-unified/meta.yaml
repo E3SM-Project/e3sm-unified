@@ -1,36 +1,56 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.3.0" %}
+{% set version = "1.3.1" %}
+{% set build = 0 %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
+  number: {{ build }}
+
+  # add build string so packages can depend on
+  # mpi or nompi variants explicitly:
+  # `e3sm-unified * mpi_mpich_*` for mpich
+  # `e3sm-unified * mpi_*` for any mpi
+  # `e3sm-unified * nompi_*` for no mpi
+
+  {% if mpi != 'nompi' %}
+  {% set mpi_prefix = "mpi_" + mpi %}
+  {% else %}
+  {% set mpi_prefix = "nompi" %}
+  {% endif %}
+  string: "{{ mpi_prefix }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ build }}"
 
 requirements:
   host:
-    - python {{ python }}
+    - python
   run:
     ### main packages ###
-    - python {{ python }}
+    - python
     # channel: conda-forge
-    - nco 4.8.1
+    # bump me!
+    - nco 4.9.1 {{ mpi_prefix }}_*
     - jupyter
     - ipython
     - globus-cli
-    - mpas-analysis 1.2.6
+    # bump me!
+    #- mpas-analysis 1.2.6
     - ilamb 2.5
-    - livvkit 2.1.6
+    - livvkit 3.0.0
+    # bump me!
     - geometric_features 0.1.4
-    - mpas_tools 0.0.4
-    - tempest-remap
+    - mpas_tools 0.0.6
+    # bump me!
+    - tempest-remap 2.0.2 {{ mpi_prefix }}_*
+    # bump me!
+    - moab 5.1.0 {{ mpi_prefix }}_tempest*
     - ncl >=6.6.2
     # channel: cdat/label/v82
-    - cdat 8.2
+    #- cdat 8.2
     # channel: e3sm
     - e3sm_diags 2.0.0
-    - processflow 2.2.3 # [linux]
+    # - processflow 2.2.3 # [linux]
     - zstash 0.3.0 # [linux]
     ### dependencies ###
     # channel: cdat/lable/v82
@@ -40,6 +60,7 @@ requirements:
     - vcs 8.2
     - wk 8.2
     # channel: conda-forge
+    - {{ mpi }}  # [mpi != 'nompi']
     - cdat_info 8.2
     - cdms2 3.1.4
     - cdtime 3.1.2
@@ -47,55 +68,56 @@ requirements:
     - genutil 8.2
     - output_viewer 1.3.1
     - cibots 0.3
-    - xarray 0.14.0
-    - dask 2.6.0
-    - distributed 2.6.0
+    - xarray 0.15.0
+    - dask 2.10.1
     - lxml
     - sympy
-    - pyproj >=1.9.6,<2.0.0
-    - proj4 >=5.2.0,<6.0.0
+    - pyproj 2.4.2
+    - proj 6.3.0
     - pytest
     - shapely
     - cartopy
     - progressbar2
     - pillow
-    - numpy >1.13,<1.18
+    - numpy >1.13
     - scipy
     - matplotlib
-    - basemap
     - blas
     - nb_conda
     - nb_conda_kernels
     - plotly
     - bottleneck
-    - hdf5 1.10.5
-    - netcdf4 1.5.1.2
+    - hdf5 1.10.5 {{ mpi_prefix }}_*
+    - netcdf4 1.5.3 {{ mpi_prefix }}_*
     - pyevtk 1.1.2
     - f90nml
     - globus-sdk
     - tabulate
     - cmocean
     - gsw
-    - libnetcdf 4.6.2
+    - libnetcdf 4.7.3 {{ mpi_prefix }}_*
     - pyflann
     - scikit-image
     - shapely
     - eofs 1.3.1
     - pywavelets
-    - jigsaw
+    - jigsaw 0.9.12
+    #- jigsawwpy 0.2.0
     - metis
     - pyflann
     - pyamg
     - ffmpeg
-    - mpi4py
+    - mpi4py  # [mpi != 'nompi']
     - pyremap
-    - esmf 7.1.0
+    - esmf 8.0.0 {{ mpi_prefix }}_*
+    - openssh  # [mpi == 'openmpi']
+
 
 test:
   requires:
     - pytest
   imports:
-    - mpas_analysis
+    #- mpas_analysis
     - acme_diags
     - ILAMB
     - zstash # [linux]
@@ -103,10 +125,10 @@ test:
     - globus_cli
     - livvkit
   commands:
-    - mpas_analysis --version
+    #- mpas_analysis --version
     - livv --version
     - export CDAT_ANONYMOUS_LOG=no; python -c "import vcs"
-    - processflow -v # [linux]
+    # - processflow -v # [linux]
     - e3sm_diags --help
     - zstash --help # [linux]
     - ilamb-fetch -h
@@ -120,6 +142,8 @@ test:
     - ipython3 -h
     - globus --help
     - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g
+    - ESMF_RegridWeightGen --help
+    - mbtempest --help  # [mpi != 'nompi']
 about:
   home: https://github.com/E3SM-Project/e3sm-unified
   summary: |
