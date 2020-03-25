@@ -15,12 +15,12 @@ within CDAT packages (if you do not plan to use CDAT or e3sm_diags, either versi
 fine).  To create an E3SM-Unified environment with x-windows support under CDAT, use:
 ```
 conda create -n e3sm-unified-x -c conda-forge -c defaults -c e3sm -c cdat/label/v82 \
-    e3sm-unified
+    e3sm-unified python=3.7
 ```
 To create and environment without x-windows under CDAT, use:
 ```
 conda create -n e3sm-unified-nox -c conda-forge -c defaults -c e3sm -c cdat/label/v82 \
-    e3sm-unified mesalib
+    e3sm-unified mesalib python=3.7
 ```
 
  The following packages are only available for linux and not OSX:
