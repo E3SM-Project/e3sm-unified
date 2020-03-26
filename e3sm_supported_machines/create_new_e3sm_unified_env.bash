@@ -138,9 +138,9 @@ world_read="True"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
-  base_path="/global/cfs/cdirs/acme/software/anaconda_envs/base"
-  activ_path="/global/cfs/cdirs/acme/software/anaconda_envs"
-  group="acme"
+  base_path="/global/cfs/cdirs/e3sm/software/anaconda_envs/base"
+  activ_path="/global/cfs/cdirs/e3sm/software/anaconda_envs"
+  group="e3sm"
   module unload PrgEnv-intel
   module load PrgEnv-gnu
   module unload craype-hugepages2M
