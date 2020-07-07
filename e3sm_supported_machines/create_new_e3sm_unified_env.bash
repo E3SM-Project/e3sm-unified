@@ -169,8 +169,8 @@ elif [[ $HOSTNAME = "cooley"* ]]; then
   group="ccsm"
   mpi="nompi"
 elif [[ $HOSTNAME = "compy"* ]]; then
-  base_path="/compyfs/software/e3sm-unified/base"
-  activ_path="/compyfs/software/e3sm-unified"
+  base_path="/share/apps/E3SM/conda_envs/base"
+  activ_path="/share/apps/E3SM/conda_envs"
   group="users"
   mpi="mpich"
 elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
