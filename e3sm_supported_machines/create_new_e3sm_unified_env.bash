@@ -129,9 +129,6 @@ default_env_type=nox
 # Any subsequent commands which fail will cause the shell script to exit
 # immediately
 set -e
-
-world_read="True"
-
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
   base_path="/global/cfs/cdirs/e3sm/software/anaconda_envs/base"
@@ -267,32 +264,16 @@ conda clean -y -p -t
 set +e
 
 echo "changing permissions on activation scripts"
-chown -R "$USER":$group $activ_path/load_latest_e3sm_unified*
-if [ $world_read == "True" ]; then
-  chmod -R go+r $activ_path/load_latest_e3sm_unified*
-  chmod -R go-w $activ_path/load_latest_e3sm_unified*
-else
-  chmod -R g+r $activ_path/load_latest_e3sm_unified*
-  chmod -R g-w $activ_path/load_latest_e3sm_unified*
-  chmod -R o-rwx $activ_path/load_latest_e3sm_unified*
-fi
+chown "$USER":$group $activ_path/load_latest_e3sm_unified*
+chmod go+r,go-w $activ_path/load_latest_e3sm_unified*
 
 echo "changing permissions on environments"
 cd $base_path
-echo "  changing owner"
-chown -R "$USER:$group" .
-if [ $world_read == "True" ]; then
-  echo "  adding group/world read"
-  chmod -R go+rX .
-  echo "  removing group/world write"
-  chmod -R go-w .
-else
-  echo "  adding group read"
-  chmod -R g+rX .
-  echo "  removing group write"
-  chmod -R g-w .
-  echo "  removing world read/write"
-  chmod -R o-rwx .
-fi
+echo "  changing directory permissions"
+find $base_path -user $USER -type d -exec chgrp $group "{}" \; \
+    -exec chmod u=rwx,go=rx "{}" \;
+echo "  changing file permissions"
+find $base_path -user $USER -type f -exec chgrp $group "{}" \; \
+    -exec chmod u+rw,go+r,go-w "{}" \;
 echo "  done."
 
