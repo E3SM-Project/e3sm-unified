@@ -23,6 +23,8 @@ build:
   string: "{{ mpi_prefix }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ build }}"
 
 requirements:
+  host:
+    - python
   run:
     ### main packages ###
     - python
