@@ -38,8 +38,7 @@ requirements:
     - mpas_tools 0.0.10
     # - ncl >=6.6.2
     # channel: e3sm
-    # bump me!
-    - e3sm_diags 2.0.0
+    - e3sm_diags 2.1.0
     - processflow 2.2.4  # [linux]
     - compass 0.1.7 {{ mpi_prefix }}_*
     - zstash 0.4.1  # [linux]
