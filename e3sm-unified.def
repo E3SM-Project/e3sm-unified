@@ -11,7 +11,7 @@ From: continuumio/miniconda3
 
 %post -c /bin/bash
     . /opt/conda/etc/profile.d/conda.sh
-    conda create -y -n e3sm-unified-nox -c conda-forge -c e3sm -c cdat/label/v82 python=3.7 e3sm-unified=1.3.0 mesalib
+    conda create -y -n e3sm-unified-nox -c conda-forge -c e3sm -c cdat/label/v82 python=3.7 "e3sm-unified=1.3.1=nompi_*" mesalib
     conda clean --all
 
 %labels
