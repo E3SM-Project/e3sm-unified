@@ -36,14 +36,14 @@ requirements:
     - mpas-analysis 1.2.7
     - ilamb 2.5
     - livvkit 3.0.0
-    - geometric_features 0.1.9
+    - geometric_features 0.1.10
     - mpas_tools 0.0.10
     # does not support hdf5 1.10.6
     # - ncl >=6.6.2
     # channel: e3sm
     - e3sm_diags 2.1.0
     - processflow 2.2.4  # [linux]
-    - compass 0.1.7 {{ mpi_prefix }}_*
+    - compass 0.1.8 {{ mpi_prefix }}_*
     - zstash 0.4.1  # [linux]
     ### dependencies ###
     # channel: cdat/lable/v82
