@@ -103,24 +103,16 @@ def get_host_info():
 
 def main():
     # Modify the following list of dictionaries to choose which e3sm-unified
-    # version, python version, whether to make an environment with
-    # x-windows support under cdat (cdatx) and/or without (nox), and which mpi
-    # variant (nompi, mpich or openmpi) to use.
+    # version, python version, and which mpi variant (nompi, mpich or openmpi)
+    # to use.
 
     envs = [{'suffix': '',
              'version': '1.3.1',
              'python': '3.7',
-             'env_type': 'nox',
-             'mpi': 'nompi'},
-            {'suffix': '_cdatx',
-             'version': '1.3.1',
-             'python': '3.7',
-             'env_type': 'cdatx',
              'mpi': 'nompi'},
             {'suffix': '_mpich',
              'version': '1.3.1',
              'python': '3.7',
-             'env_type': 'nox',
              'mpi': 'mpich'}]
 
     base_path, activ_path, group = get_host_info()
@@ -151,7 +143,6 @@ def main():
         version = env['version']
         suffix = env['suffix']
         python = env['python']
-        env_type = env['env_type']
         mpi = env['mpi']
         if mpi == 'nompi':
             mpi_prefix = 'nompi'
@@ -160,10 +151,8 @@ def main():
 
         channels = '--override-channels -c conda-forge -c defaults ' \
                    '-c e3sm -c cdat/label/v82'
-        packages = 'python={} "e3sm-unified={}={}_*"'.format(
+        packages = 'python={} "e3sm-unified={}={}_*" mesalib'.format(
             python, version, mpi_prefix)
-        if env_type == 'nox':
-            packages = '{} mesalib'.format(packages)
 
         env_name = 'e3sm_unified_{}{}'.format(version, suffix)
         if not os.path.exists('{}/envs/{}'.format(base_path, env_name)):
