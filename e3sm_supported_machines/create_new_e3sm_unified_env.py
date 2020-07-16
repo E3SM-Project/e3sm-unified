@@ -4,60 +4,22 @@ import os
 import socket
 import glob
 import stat
-import pwd
 import grp
 import requests
 import progressbar
 
 
-def check_env(base_path, env_name):
-    print("Checking the environment {}".format(env_name))
-    env = os.environ
-    env['CDAT_ANONYMOUS_LOG'] = 'no'
+def get_envs():
 
-    activate = 'source {}/etc/profile.d/conda.sh; conda activate {}'.format(
-        base_path, env_name)
-
-    imports = ['vcs', 'ILAMB', 'acme_diags', 'mpas_analysis', 'livvkit',
-               'IPython', 'globus_cli', 'zstash']
-    for import_name in imports:
-        command = '{}; python -c "import {}"'.format(activate, import_name)
-        try:
-            subprocess.check_call(command, env=env, executable='/bin/bash',
-                                  shell=True)
-        except subprocess.CalledProcessError as e:
-            print('  {} failed'.format(import_name))
-            raise e
-        print('  {} passes'.format(import_name))
-
-    commands = [['e3sm_diags', '--help'],
-                ['mpas_analysis', '-h'],
-                ['livv', '--version'],
-                ['globus', '--help'],
-                ['zstash', '--help'],
-                ['processflow', '-v']]
-
-    for command in commands:
-        exec = command[0]
-        command = '{}; {}'.format(activate, ' '.join(command))
-        try:
-            subprocess.check_call(command, env=env, executable='/bin/bash',
-                                  shell=True, stdout=subprocess.DEVNULL)
-        except subprocess.CalledProcessError as e:
-            print('  {} failed'.format(exec))
-            raise e
-        print('  {} passes'.format(exec))
-
-    package = 'tempest-remap'
-    command = '{}; GenerateCSMesh --res 64 --alt --file ' \
-              'gravitySam.000000.3d.cubedSphere.g'.format(activate)
-    try:
-        subprocess.check_call(command, env=env, executable='/bin/bash',
-                              shell=True, stdout=subprocess.DEVNULL)
-    except subprocess.CalledProcessError as e:
-        print('  {} failed'.format(package))
-        raise e
-    print('  {} passes'.format(package))
+    envs = [{'suffix': '',
+             'version': '1.3.1',
+             'python': '3.7',
+             'mpi': 'nompi'},
+            {'suffix': '_mpich',
+             'version': '1.3.1',
+             'python': '3.7',
+             'mpi': 'mpich'}]
+    return envs
 
 
 def get_host_info():
@@ -95,10 +57,52 @@ def get_host_info():
         activ_path = "/home/xylar/Desktop/test_e3sm_unified"
         group = "xylar"
     else:
-        raise ValueError("Unknown host name {}.  Add env_path and group for "
-                         "this machine to the script.".format(hostname))
+        raise ValueError(
+            "Unknown host name {}.  Add env_path and group for "
+            "this machine to the script.".format(hostname))
 
     return base_path, activ_path, group
+
+
+def check_env(base_path, env_name):
+    print("Checking the environment {}".format(env_name))
+    env = os.environ
+    env['CDAT_ANONYMOUS_LOG'] = 'no'
+
+    activate = 'source {}/etc/profile.d/conda.sh; conda activate {}'.format(
+        base_path, env_name)
+
+    imports = ['vcs', 'ILAMB', 'acme_diags', 'mpas_analysis', 'livvkit',
+               'IPython', 'globus_cli', 'zstash']
+    for import_name in imports:
+        command = '{}; python -c "import {}"'.format(activate, import_name)
+        test_command(command, env, import_name)
+
+    commands = [['e3sm_diags', '--help'],
+                ['mpas_analysis', '-h'],
+                ['livv', '--version'],
+                ['globus', '--help'],
+                ['zstash', '--help'],
+                ['processflow', '-v']]
+
+    for command in commands:
+        command = '{}; {}'.format(activate, ' '.join(command))
+        test_command(command, env, command[0])
+
+    command = '{}; GenerateCSMesh --res 64 --alt --file ' \
+              'gravitySam.000000.3d.cubedSphere.g'.format(activate)
+
+    test_command(command, env, package='tempest-remap')
+
+
+def test_command(command, env, package):
+    try:
+        subprocess.check_call(command, env=env, executable='/bin/bash',
+                              shell=True)
+    except subprocess.CalledProcessError as e:
+        print('  {} failed'.format(package))
+        raise e
+    print('  {} passes'.format(package))
 
 
 def main():
@@ -106,14 +110,7 @@ def main():
     # version, python version, and which mpi variant (nompi, mpich or openmpi)
     # to use.
 
-    envs = [{'suffix': '',
-             'version': '1.3.1',
-             'python': '3.7',
-             'mpi': 'nompi'},
-            {'suffix': '_mpich',
-             'version': '1.3.1',
-             'python': '3.7',
-             'mpi': 'mpich'}]
+    envs = get_envs()
 
     base_path, activ_path, group = get_host_info()
 
@@ -228,7 +225,6 @@ def main():
                 os.chmod(directory, exec_perm)
             except OSError:
                 continue
-
 
         for file_name in files:
             progress += 1
