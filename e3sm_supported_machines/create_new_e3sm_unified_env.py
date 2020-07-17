@@ -19,7 +19,10 @@ def get_envs():
              'version': '1.3.1',
              'python': '3.7',
              'mpi': 'mpich'}]
-    return envs
+
+    force_recreate = False
+
+    return envs, force_recreate
 
 
 def get_host_info():
@@ -110,7 +113,7 @@ def main():
     # version, python version, and which mpi variant (nompi, mpich or openmpi)
     # to use.
 
-    envs = get_envs()
+    envs, force_recreate = get_envs()
 
     base_path, activ_path, group = get_host_info()
 
@@ -152,7 +155,8 @@ def main():
             python, version, mpi_prefix)
 
         env_name = 'e3sm_unified_{}{}'.format(version, suffix)
-        if not os.path.exists('{}/envs/{}'.format(base_path, env_name)):
+        if not os.path.exists('{}/envs/{}'.format(base_path, env_name)) \
+                or force_recreate:
             print('creating {}'.format(env_name))
             commands = '{}; conda create -y -n {} {} {}'.format(
                 activate, env_name, channels, packages)
