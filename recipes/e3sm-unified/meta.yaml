@@ -1,6 +1,6 @@
 {% set name = "E3SM-Unified" %}
 {% set version = "1.3.1" %}
-{% set build = 2 %}
+{% set build = 3 %}
 
 package:
   name: {{ name|lower }}
@@ -55,8 +55,8 @@ requirements:
     # channel: conda-forge
     - {{ mpi }}  # [mpi != 'nompi']
     - cdat_info 8.2
-    # a patch for the cdscan script was added in build 11
-    - cdms2 3.1.4 *_11
+    # build 10 has correct pins of libnetcdf, incorrect in earlier builds
+    - cdms2 3.1.4 *_10
     - cdtime 3.1.3
     - cdutil 8.2
     - genutil 8.2
