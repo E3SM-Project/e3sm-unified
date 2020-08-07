@@ -12,11 +12,11 @@ import progressbar
 def get_envs():
 
     envs = [{'suffix': '',
-             'version': '1.3.1',
+             'version': '1.3.1.1',
              'python': '3.7',
              'mpi': 'nompi'},
             {'suffix': '_mpich',
-             'version': '1.3.1',
+             'version': '1.3.1.1',
              'python': '3.7',
              'mpi': 'mpich'}]
 
