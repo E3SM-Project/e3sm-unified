@@ -44,7 +44,7 @@ requirements:
     - e3sm_diags 2.1.1
     - processflow 2.2.4  # [linux]
     - compass 0.1.8 {{ mpi_prefix }}_*
-    - zstash 0.4.1  # [linux]
+    - zstash 0.4.2  # [linux]
     ### dependencies ###
     # channel: cdat/lable/v82
     - vcs 8.2
