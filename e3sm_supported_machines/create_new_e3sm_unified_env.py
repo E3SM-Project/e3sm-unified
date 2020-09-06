@@ -13,12 +13,12 @@ def get_envs():
 
     envs = [{'suffix': '',
              'version': '1.3.1.2',
-             'python': '3.7',
-             'mpi': 'nompi'},
-            {'suffix': '_mpich',
+             'python': '3.8',
+             'mpi': 'mpich'},
+            {'suffix': '_nompi',
              'version': '1.3.1.2',
-             'python': '3.7',
-             'mpi': 'mpich'}]
+             'python': '3.8',
+             'mpi': 'nompi'}]
 
     force_recreate = False
 
@@ -75,7 +75,7 @@ def check_env(base_path, env_name):
     activate = 'source {}/etc/profile.d/conda.sh; conda activate {}'.format(
         base_path, env_name)
 
-    imports = ['vcs', 'ILAMB', 'acme_diags', 'mpas_analysis', 'livvkit',
+    imports = ['ILAMB', 'acme_diags', 'mpas_analysis', 'livvkit',
                'IPython', 'globus_cli', 'zstash']
     for import_name in imports:
         command = '{}; python -c "import {}"'.format(activate, import_name)
@@ -150,7 +150,7 @@ def main():
             mpi_prefix = 'mpi_{}'.format(mpi)
 
         channels = '--override-channels -c conda-forge -c defaults ' \
-                   '-c e3sm -c cdat/label/v82'
+                   '-c e3sm'
         packages = 'python={} "e3sm-unified={}={}_*" mesalib'.format(
             python, version, mpi_prefix)
 
@@ -192,7 +192,7 @@ def main():
     subprocess.check_call(commands, executable='/bin/bash', shell=True)
 
     print('changing permissions on activation scripts')
-    activation_files = glob.glob('{}/load_latest_e3sm_unified*'.format(
+    activation_files = glob.glob('{}/load_*_e3sm_unified*'.format(
         activ_path))
 
     read_perm = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH
