@@ -20,7 +20,7 @@ def get_envs():
              'python': '3.8',
              'mpi': 'nompi'}]
 
-    force_recreate = False
+    force_recreate = True
 
     return envs, force_recreate
 
@@ -150,7 +150,7 @@ def main():
             mpi_prefix = 'mpi_{}'.format(mpi)
 
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
-        packages = 'python={} "e3sm-unified={}={}_*" mesalib'.format(
+        packages = 'python={} "e3sm-unified={}={}_*"'.format(
             python, version, mpi_prefix)
 
         env_name = 'test_e3sm_unified_{}{}'.format(version, suffix)

@@ -149,9 +149,8 @@ def main():
         else:
             mpi_prefix = 'mpi_{}'.format(mpi)
 
-        channels = '--override-channels -c conda-forge -c defaults ' \
-                   '-c e3sm'
-        packages = 'python={} "e3sm-unified={}={}_*" mesalib'.format(
+        channels = '--override-channels -c conda-forge -c defaults -c e3sm'
+        packages = 'python={} "e3sm-unified={}={}_*"'.format(
             python, version, mpi_prefix)
 
         env_name = 'e3sm_unified_{}{}'.format(version, suffix)
