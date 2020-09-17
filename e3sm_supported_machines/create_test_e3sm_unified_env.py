@@ -13,12 +13,12 @@ def get_envs():
 
     envs = [{'suffix': '',
              'version': '1.3.1.2',
-             'python': '3.8',
-             'mpi': 'mpich'},
-            {'suffix': '_nompi',
+             'python': '3.7',
+             'mpi': 'nompi'},
+            {'suffix': '_mpich',
              'version': '1.3.1.2',
-             'python': '3.8',
-             'mpi': 'nompi'}]
+             'python': '3.7',
+             'mpi': 'mpich'}]
 
     force_recreate = True
 
@@ -67,19 +67,19 @@ def get_host_info():
     return base_path, activ_path, group
 
 
-def check_env(base_path, env_name):
+def check_env(base_path, env_name, env):
     print("Checking the environment {}".format(env_name))
-    env = os.environ
-    env['CDAT_ANONYMOUS_LOG'] = 'no'
 
     activate = 'source {}/etc/profile.d/conda.sh; conda activate {}'.format(
         base_path, env_name)
 
-    imports = ['ILAMB', 'acme_diags', 'mpas_analysis', 'livvkit',
+    imports = ['acme_diags', 'mpas_analysis', 'livvkit',
                'IPython', 'globus_cli', 'zstash']
+    if env['mpi'] != 'nompi':
+        imports.append('ILAMB')
     for import_name in imports:
         command = '{}; python -c "import {}"'.format(activate, import_name)
-        test_command(command, env, import_name)
+        test_command(command, os.environ, import_name)
 
     commands = [['e3sm_diags', '--help'],
                 ['mpas_analysis', '-h'],
@@ -90,12 +90,12 @@ def check_env(base_path, env_name):
 
     for command in commands:
         command = '{}; {}'.format(activate, ' '.join(command))
-        test_command(command, env, command[0])
+        test_command(command, os.environ, command[0])
 
     command = '{}; GenerateCSMesh --res 64 --alt --file ' \
               'gravitySam.000000.3d.cubedSphere.g'.format(activate)
 
-    test_command(command, env, package='tempest-remap')
+    test_command(command, os.environ, package='tempest-remap')
 
 
 def test_command(command, env, package):
@@ -153,7 +153,7 @@ def main():
         packages = 'python={} "e3sm-unified={}={}_*"'.format(
             python, version, mpi_prefix)
 
-        env_name = 'test_e3sm_unified_{}{}'.format(version, suffix)
+        env_name = 'test2_e3sm_unified_{}{}'.format(version, suffix)
         if not os.path.exists('{}/envs/{}'.format(base_path, env_name)) \
                 or force_recreate:
             print('creating {}'.format(env_name))
@@ -163,7 +163,7 @@ def main():
         else:
             print('{} already exists'.format(env_name))
 
-        check_env(base_path, env_name)
+        check_env(base_path, env_name, env)
 
         try:
             os.makedirs(activ_path)
