@@ -41,7 +41,7 @@ echo "Loading conda profile"
 . /opt/conda/etc/profile.d/conda.sh
 
 echo "Activating e3sm conda environment"
-conda activate e3sm-unified-nox
+conda activate e3sm-unified
 check_last_rc "Could not source e3sm-unified conda environment\n"
 
 # Try to run some simple help commands
