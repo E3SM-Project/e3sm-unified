@@ -29,7 +29,7 @@ requirements:
     ### main packages ###
     - python
     # channel: conda-forge
-    - nco 4.9.4
+    - nco 4.9.5
     - jupyter
     - ipython
     - globus-cli
