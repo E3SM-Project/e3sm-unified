@@ -20,7 +20,7 @@ def get_envs():
              'python': '3.7',
              'mpi': 'mpich'}]
 
-    force_recreate = False
+    force_recreate = True
 
     return envs, force_recreate
 
@@ -153,7 +153,7 @@ def main():
         packages = 'python={} "e3sm-unified={}={}_*"'.format(
             python, version, mpi_prefix)
 
-        env_name = 'e3sm_unified_{}{}'.format(version, suffix)
+        env_name = 'test2_e3sm_unified_{}{}'.format(version, suffix)
         if not os.path.exists('{}/envs/{}'.format(base_path, env_name)) \
                 or force_recreate:
             print('creating {}'.format(env_name))
@@ -180,7 +180,7 @@ def main():
                 base_path, ext))
             script.append('conda activate {}\n'.format(env_name))
 
-            file_name = '{}/load_latest_e3sm_unified{}.{}'.format(
+            file_name = '{}/load_test_e3sm_unified{}.{}'.format(
                 activ_path, suffix, ext)
             if os.path.exists(file_name):
                 os.remove(file_name)

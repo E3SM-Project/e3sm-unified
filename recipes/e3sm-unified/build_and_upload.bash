@@ -1,6 +1,6 @@
 #!/bin/bash
 
-conda build --override-channels -c conda-forge -c defaults -c e3sm -c cdat/label/v82 .
+conda build --override-channels -c conda-forge -c defaults -c e3sm .
 
 upload=False
 
