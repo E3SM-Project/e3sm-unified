@@ -90,7 +90,7 @@ def check_env(base_path, env_name, env):
 
     for command in commands:
         command = '{}; {}'.format(activate, ' '.join(command))
-        test_command(command, os.environ, command[0])
+        test_command(command, os.environ, commands[0])
 
     command = '{}; GenerateCSMesh --res 64 --alt --file ' \
               'gravitySam.000000.3d.cubedSphere.g'.format(activate)
