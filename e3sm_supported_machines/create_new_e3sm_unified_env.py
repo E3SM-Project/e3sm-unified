@@ -89,8 +89,9 @@ def check_env(base_path, env_name, env):
                 ['processflow', '-v']]
 
     for command in commands:
+        package = command[0]
         command = '{}; {}'.format(activate, ' '.join(command))
-        test_command(command, os.environ, command[0])
+        test_command(command, os.environ, package)
 
     command = '{}; GenerateCSMesh --res 64 --alt --file ' \
               'gravitySam.000000.3d.cubedSphere.g'.format(activate)
@@ -204,8 +205,8 @@ def main():
 
     print('changing permissions on environments')
 
-    uid = os.getuid()
-    gid = grp.getgrnam(group).gr_gid
+    new_uid = os.getuid()
+    new_gid = grp.getgrnam(group).gr_gid
 
     files_and_dirs = []
     for root, dirs, files in os.walk(base_path):
@@ -223,8 +224,18 @@ def main():
             bar.update(progress)
 
             directory = os.path.join(root, directory)
+
             try:
-                os.chown(directory, uid, gid)
+                dir_stat = os.stat(directory)
+            except OSError:
+                continue
+
+            if dir_stat.st_mode == exec_perm and dir_stat.uid == new_uid and \
+                    dir_stat.gid == new_gid:
+                continue
+
+            try:
+                os.chown(directory, new_uid, new_gid)
                 os.chmod(directory, exec_perm)
             except OSError:
                 continue
@@ -234,18 +245,24 @@ def main():
             bar.update(progress)
             file_name = os.path.join(root, file_name)
             try:
-                perm = os.stat(file_name).st_mode
+                file_stat = os.stat(file_name)
             except OSError:
                 continue
+                
+            perm = file_stat.st_mode
 
             if perm & stat.S_IXUSR:
                 # executable, so make sure others can execute it
-                perm = exec_perm
+                new_perm = exec_perm
             else:
-                perm = read_perm
+                new_perm = read_perm
+                
+            if perm == new_perm and file_stat.uid == new_uid and \
+                    file_stat.gid == new_gid:
+                continue
 
             try:
-                os.chown(file_name, uid, gid)
+                os.chown(file_name, new_uid, new_gid)
                 os.chmod(file_name, perm)
             except OSError:
                 continue
