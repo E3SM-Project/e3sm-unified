@@ -262,7 +262,7 @@ def main():
                 continue
 
             try:
-                os.chown(file_name, uid, gid)
+                os.chown(file_name, new_uid, new_gid)
                 os.chmod(file_name, perm)
             except OSError:
                 continue
