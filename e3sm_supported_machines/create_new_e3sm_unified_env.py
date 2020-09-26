@@ -199,6 +199,8 @@ def main():
     exec_perm = (stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |
                  stat.S_IRGRP | stat.S_IXGRP |
                  stat.S_IROTH | stat.S_IXOTH)
+    
+    mask = stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO
 
     for file_name in activation_files:
         os.chmod(file_name, read_perm)
@@ -230,8 +232,10 @@ def main():
             except OSError:
                 continue
 
-            if dir_stat.st_mode == exec_perm and dir_stat.uid == new_uid and \
-                    dir_stat.gid == new_gid:
+            perm = dir_stat.st_mode & mask
+
+            if perm == exec_perm and dir_stat.st_uid == new_uid and \
+                    dir_stat.st_gid == new_gid:
                 continue
 
             try:
@@ -249,7 +253,7 @@ def main():
             except OSError:
                 continue
                 
-            perm = file_stat.st_mode
+            perm = file_stat.st_mode & mask
 
             if perm & stat.S_IXUSR:
                 # executable, so make sure others can execute it
@@ -257,8 +261,8 @@ def main():
             else:
                 new_perm = read_perm
                 
-            if perm == new_perm and file_stat.uid == new_uid and \
-                    file_stat.gid == new_gid:
+            if perm == new_perm and file_stat.st_uid == new_uid and \
+                    file_stat.st_gid == new_gid:
                 continue
 
             try:
