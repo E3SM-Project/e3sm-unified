@@ -234,8 +234,8 @@ def main():
 
             perm = dir_stat.st_mode & mask
 
-            if perm == exec_perm and dir_stat.uid == new_uid and \
-                    dir_stat.gid == new_gid:
+            if perm == exec_perm and dir_stat.st_uid == new_uid and \
+                    dir_stat.st_gid == new_gid:
                 continue
 
             try:
@@ -261,8 +261,8 @@ def main():
             else:
                 new_perm = read_perm
                 
-            if perm == new_perm and file_stat.uid == new_uid and \
-                    file_stat.gid == new_gid:
+            if perm == new_perm and file_stat.st_uid == new_uid and \
+                    file_stat.st_gid == new_gid:
                 continue
 
             try:
