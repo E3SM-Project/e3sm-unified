@@ -198,14 +198,16 @@ def main():
     exec_perm = (stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |
                  stat.S_IRGRP | stat.S_IXGRP |
                  stat.S_IROTH | stat.S_IXOTH)
+    
+    mask = stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO
 
     for file_name in activation_files:
         os.chmod(file_name, read_perm)
 
     print('changing permissions on environments')
 
-    uid = os.getuid()
-    gid = grp.getgrnam(group).gr_gid
+    new_uid = os.getuid()
+    new_gid = grp.getgrnam(group).gr_gid
 
     files_and_dirs = []
     for root, dirs, files in os.walk(base_path):
@@ -223,8 +225,20 @@ def main():
             bar.update(progress)
 
             directory = os.path.join(root, directory)
+
             try:
-                os.chown(directory, uid, gid)
+                dir_stat = os.stat(directory)
+            except OSError:
+                continue
+
+            perm = dir_stat.st_mode & mask
+
+            if perm == exec_perm and dir_stat.st_uid == new_uid and \
+                    dir_stat.st_gid == new_gid:
+                continue
+
+            try:
+                os.chown(directory, new_uid, new_gid)
                 os.chmod(directory, exec_perm)
             except OSError:
                 continue
@@ -234,18 +248,24 @@ def main():
             bar.update(progress)
             file_name = os.path.join(root, file_name)
             try:
-                perm = os.stat(file_name).st_mode
+                file_stat = os.stat(file_name)
             except OSError:
                 continue
+                
+            perm = file_stat.st_mode & mask
 
             if perm & stat.S_IXUSR:
                 # executable, so make sure others can execute it
-                perm = exec_perm
+                new_perm = exec_perm
             else:
-                perm = read_perm
+                new_perm = read_perm
+                
+            if perm == new_perm and file_stat.st_uid == new_uid and \
+                    file_stat.st_gid == new_gid:
+                continue
 
             try:
-                os.chown(file_name, uid, gid)
+                os.chown(file_name, new_uid, new_gid)
                 os.chmod(file_name, perm)
             except OSError:
                 continue
