@@ -232,7 +232,7 @@ def main():
             except OSError:
                 continue
 
-            perm = file_stat.st_mode & mask
+            perm = dir_stat.st_mode & mask
 
             if perm == exec_perm and dir_stat.uid == new_uid and \
                     dir_stat.gid == new_gid:
