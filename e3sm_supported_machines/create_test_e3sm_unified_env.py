@@ -38,7 +38,7 @@ def get_host_info():
     elif hostname.startswith('blueslogin'):
         base_path = "/lcrc/soft/climate/e3sm-unified/base"
         activ_path = "/lcrc/soft/climate/e3sm-unified"
-        group = "climate"
+        group = "cels"
     elif hostname.startswith('rhea'):
         base_path = "/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
         activ_path = "/ccs/proj/cli900/sw/rhea/e3sm-unified"
