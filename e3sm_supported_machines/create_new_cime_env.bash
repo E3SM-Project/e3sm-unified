@@ -45,7 +45,7 @@ elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
 elif [[ $HOSTNAME = "blueslogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
   activ_path="/lcrc/soft/climate/e3sm-unified"
-  group="climate"
+  group="cels"
 elif [[ $HOSTNAME = "rhea"* ]]; then
   base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
   activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
