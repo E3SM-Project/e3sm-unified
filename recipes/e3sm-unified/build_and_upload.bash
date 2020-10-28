@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf ~/miniconda3/conda-bld
+
 conda build --override-channels -c conda-forge -c defaults -c e3sm .
 
 upload=False
