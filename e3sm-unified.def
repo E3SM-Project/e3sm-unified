@@ -7,7 +7,7 @@ From: continuumio/miniconda3
 %runscript
     #!/bin/bash
     . /opt/conda/etc/profile.d/conda.sh
-    conda activate e3sm-unified-nox
+    conda activate e3sm-unified
 
 %post -c /bin/bash
     . /opt/conda/etc/profile.d/conda.sh
