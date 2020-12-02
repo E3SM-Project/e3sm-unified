@@ -15,18 +15,18 @@ def get_envs():
     # to use.
     envs = [{'suffix': '',
              'version': '1.4.0',
-             'python': '3.8',
+             'python': '3.7',
              'mpi': 'nompi'},
             {'suffix': '_mpich',
              'version': '1.4.0',
-             'python': '3.8',
+             'python': '3.7',
              'mpi': 'mpich'}]
 
     # whether to delete and rebuild each environment if it already exists
-    force_recreate = False
+    force_recreate = True
 
     # whether these are to be test environments
-    is_test = False
+    is_test = True
 
     return envs, force_recreate, is_test
 
