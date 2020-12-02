@@ -1,14 +1,20 @@
+python:
+  # - 3.6
+  - 3.7
+  # - 3.8
+  # - 3.9
+
 mpi:
   - nompi
   - mpich
-  - openmpi
+  # - openmpi
 
 pin_run_as_build:
   mpich:
     min_pin: x.x
     max_pin: x.x
 
-  openmpi:
-    min_pin: x.x
-    max_pin: x.x
+  #openmpi:
+  #  min_pin: x.x
+  #  max_pin: x.x
 

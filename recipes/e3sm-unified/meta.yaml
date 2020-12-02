@@ -8,7 +8,6 @@ package:
 
 build:
   number: {{ build }}
-  noarch: python
 
   # add build string so packages can depend on
   # mpi or nompi variants explicitly:
@@ -25,10 +24,10 @@ build:
 
 requirements:
   host:
-    - python >=3.6
+    - python
   run:
     ### main packages ###
-    - python >=3.6
+    - python
     # channel: conda-forge
     - nco 4.9.6
     - jupyter
