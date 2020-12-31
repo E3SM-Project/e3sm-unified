@@ -26,7 +26,7 @@ def get_envs():
     force_recreate = True
 
     # whether these are to be test environments
-    is_test = True
+    is_test = False
 
     return envs, force_recreate, is_test
 
