@@ -20,7 +20,7 @@ build:
   {% else %}
   {% set mpi_prefix = "nompi" %}
   {% endif %}
-  string: "{{ mpi_prefix }}_py_h{{ PKG_HASH }}_{{ build }}"
+  string: "{{ mpi_prefix }}_py{{ CONDA_PY }}_h{{ PKG_HASH }}_{{ build }}"
 
 requirements:
   host:
