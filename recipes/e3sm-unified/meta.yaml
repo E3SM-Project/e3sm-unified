@@ -38,7 +38,7 @@ requirements:
     - livvkit 3.0.0
     - geometric_features 0.1.13
     - mpas_tools 0.0.15
-    - ncl >=6.6.2
+    - ncl >=6.6.2  # [linux]
     - moab 5.2.1
     - e3sm_diags 2.3.0
     # channel: e3sm
