@@ -28,3 +28,4 @@ conda create -n e3sm-unified-nompi -c conda-forge -c defaults -c e3sm \
  The following packages are only available for linux and not OSX:
  - processflow
  - zstash
+ - ncl
