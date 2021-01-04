@@ -45,7 +45,7 @@ def get_host_info():
         base_path = "/lcrc/soft/climate/e3sm-unified/base"
         activ_path = "/lcrc/soft/climate/e3sm-unified"
         group = "cels"
-    elif hostname.startswith('rhea'):
+    elif hostname.startswith('andes'):
         base_path = "/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
         activ_path = "/ccs/proj/cli900/sw/rhea/e3sm-unified"
         group = "cli900"
