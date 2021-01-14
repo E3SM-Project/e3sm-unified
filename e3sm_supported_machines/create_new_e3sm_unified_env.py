@@ -10,19 +10,25 @@ import progressbar
 
 
 def get_envs():
-
+    # Modify the following list of dictionaries to choose which e3sm-unified
+    # version, python version, and which mpi variant (nompi, mpich or openmpi)
+    # to use.
     envs = [{'suffix': '',
-             'version': '1.3.1.2',
+             'version': '1.4.0',
              'python': '3.7',
              'mpi': 'nompi'},
             {'suffix': '_mpich',
-             'version': '1.3.1.2',
+             'version': '1.4.0',
              'python': '3.7',
              'mpi': 'mpich'}]
 
-    force_recreate = False
+    # whether to delete and rebuild each environment if it already exists
+    force_recreate = True
 
-    return envs, force_recreate
+    # whether these are to be test environments
+    is_test = False
+
+    return envs, force_recreate, is_test
 
 
 def get_host_info():
@@ -39,7 +45,7 @@ def get_host_info():
         base_path = "/lcrc/soft/climate/e3sm-unified/base"
         activ_path = "/lcrc/soft/climate/e3sm-unified"
         group = "cels"
-    elif hostname.startswith('rhea'):
+    elif hostname.startswith('andes'):
         base_path = "/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
         activ_path = "/ccs/proj/cli900/sw/rhea/e3sm-unified"
         group = "cli900"
@@ -110,11 +116,7 @@ def test_command(command, env, package):
 
 
 def main():
-    # Modify the following list of dictionaries to choose which e3sm-unified
-    # version, python version, and which mpi variant (nompi, mpich or openmpi)
-    # to use.
-
-    envs, force_recreate = get_envs()
+    envs, force_recreate, is_test = get_envs()
 
     base_path, activ_path, group = get_host_info()
 
@@ -154,7 +156,10 @@ def main():
         packages = 'python={} "e3sm-unified={}={}_*"'.format(
             python, version, mpi_prefix)
 
-        env_name = 'e3sm_unified_{}{}'.format(version, suffix)
+        if is_test:
+            env_name = 'test_e3sm_unified_{}{}'.format(version, suffix)
+        else:
+            env_name = 'e3sm_unified_{}{}'.format(version, suffix)
         if not os.path.exists('{}/envs/{}'.format(base_path, env_name)) \
                 or force_recreate:
             print('creating {}'.format(env_name))
@@ -181,8 +186,12 @@ def main():
                 base_path, ext))
             script.append('conda activate {}\n'.format(env_name))
 
-            file_name = '{}/load_latest_e3sm_unified{}.{}'.format(
-                activ_path, suffix, ext)
+            if is_test:
+                file_name = '{}/load_test_e3sm_unified{}.{}'.format(
+                    activ_path, suffix, ext)
+            else:
+                file_name = '{}/load_latest_e3sm_unified{}.{}'.format(
+                    activ_path, suffix, ext)
             if os.path.exists(file_name):
                 os.remove(file_name)
             with open(file_name, 'w') as f:
@@ -199,7 +208,7 @@ def main():
     exec_perm = (stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |
                  stat.S_IRGRP | stat.S_IXGRP |
                  stat.S_IROTH | stat.S_IXOTH)
-    
+
     mask = stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO
 
     for file_name in activation_files:
@@ -252,7 +261,7 @@ def main():
                 file_stat = os.stat(file_name)
             except OSError:
                 continue
-                
+
             perm = file_stat.st_mode & mask
 
             if perm & stat.S_IXUSR:
@@ -260,7 +269,7 @@ def main():
                 new_perm = exec_perm
             else:
                 new_perm = read_perm
-                
+
             if perm == new_perm and file_stat.st_uid == new_uid and \
                     file_stat.st_gid == new_gid:
                 continue
