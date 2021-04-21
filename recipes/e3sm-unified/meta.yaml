@@ -43,7 +43,7 @@ requirements:
     - nco 4.9.8
     - processflow 2.2.4  # [linux]
     - tempest-remap 2.0.5
-    - tempest-extremes 2.1
+    - tempest-extremes 2.1 {{ mpi_prefix }}_*
     - zstash 1.0.1  # [linux]
     ### dependencies ###
     # channel: conda-forge
