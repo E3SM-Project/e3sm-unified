@@ -1,6 +1,6 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.4.0" %}
-{% set build = 1 %}
+{% set version = "1.5.0rc1" %}
+{% set build = 0 %}
 
 package:
   name: {{ name|lower }}
@@ -29,84 +29,87 @@ requirements:
     ### main packages ###
     - python
     # channel: conda-forge
-    - nco 4.9.7
-    - jupyter
-    - ipython
+    #- compass 0.1.12 {{ mpi_prefix }}_*
+    #- e3sm_diags 2.4.0
+    - geometric_features 0.4.0
     - globus-cli
-    - mpas-analysis 1.3.0
-    - ilamb 2.5  # [mpi != 'nompi']
+    - ilamb 2.6  # [mpi != 'nompi']
+    - ipython
+    - jupyter
     - livvkit 3.0.0
-    - geometric_features 0.1.13
-    - mpas_tools 0.0.15
-    - ncl >=6.6.2  # [linux]
     - moab 5.2.1
-    - e3sm_diags 2.3.0
-    # channel: e3sm
-    - processflow 2.2.4  # [linux]
-    - compass 0.1.12 {{ mpi_prefix }}_*
-    - zstash 1.0.0  # [linux]
+    #- mpas-analysis 1.3.0
+    - mpas_tools 0.6.0
+    - nco 4.9.9
+    #- processflow 2.2.4  # [linux]
+    - tempest-remap 2.0.5
+    - tempest-extremes 2.1 {{ mpi_prefix }}_*
+    - zstash 1.0.1  # [linux]
     ### dependencies ###
     # channel: conda-forge
     - {{ mpi }}  # [mpi != 'nompi']
+    - blas
+    - bottleneck
+    - cartopy
     - cdat_info 8.2.1
     - cdms2 3.1.5
     - cdtime 3.1.4
     - cdutil 8.2.1
+    - cmocean
+    - dask 2021.5.0
+    - eofs
+    - esmf 8.1.1 {{ mpi_prefix }}_*
+    - f90nml
     - genutil 8.2.1
-    - output_viewer 1.3.1
-    - xarray 0.16.1
-    - dask 2.30.0
+    - globus-sdk
+    - gsw
+    - hdf5 1.10.6 {{ mpi_prefix }}_*
+    - ipygany
+    - libnetcdf 4.8.0 {{ mpi_prefix }}_*
     - lxml
-    - sympy
-    - pyproj 2.6.1.post1
-    - proj 7.1.1
-    - pytest
-    - shapely
-    - cartopy
-    - progressbar2
-    - pillow
-    - numpy >1.13
-    - scipy
     - matplotlib
-    - blas
+    - mpi4py  # [mpi != 'nompi']
     - nb_conda
     - nb_conda_kernels
-    - plotly
-    - bottleneck
-    - hdf5 1.10.6 {{ mpi_prefix }}_*
-    - libnetcdf 4.7.4 {{ mpi_prefix }}_*
-    - netcdf4 1.5.4 nompi_*
-    - pyevtk
-    - f90nml
-    - globus-sdk
-    - tabulate
-    - cmocean
-    - gsw
-    - pyflann
-    - scikit-image
-    - eofs
-    - pywavelets
-    - mpi4py  # [mpi != 'nompi']
-    - pyremap
-    - esmf 8.0.1 {{ mpi_prefix }}_*
+    - ncview 2.1.8
+    - netcdf4 1.5.6 nompi_*
+    - numpy >1.13
     - openssh  # [mpi == 'openmpi']
+    - output_viewer 1.3.1
+    - pillow
+    - plotly
+    - progressbar2
+    - proj 7.2.0
+    - pyevtk
+    - pyflann
+    - pyproj 3.0.1
+    - pyremap
+    - pytest
+    - pywavelets
+    - scikit-image
+    - scipy
+    - shapely
+    - sympy
+    - tabulate
+    - xarray 0.18.2
+    - xesmf
 
 test:
   requires:
     - pytest
   imports:
-    - mpas_analysis
-    - acme_diags
+    #- mpas_analysis
+    #- acme_diags
     - ILAMB  # [mpi != 'nompi']
     - zstash  # [linux]
     - IPython
     - globus_cli
     - livvkit
   commands:
-    - mpas_analysis --version
+    #- mpas_analysis --version
     - livv --version
-    - processflow -v  # [linux]
-    - e3sm_diags --help
+    #- processflow -v  # [linux]
+    #- e3sm_diags --help
     - zstash --help  # [linux]
     - ilamb-fetch -h  # [mpi != 'nompi']
     - ilamb-run -h  # [mpi != 'nompi']
@@ -120,6 +123,7 @@ test:
     - globus --help
     - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g
     - ESMF_RegridWeightGen --help
+    - test -f ${PREFIX}/bin/Climatology
 
 about:
   home: https://github.com/E3SM-Project/e3sm-unified
