@@ -67,7 +67,9 @@ requirements:
     - ipygany
     - libnetcdf 4.7.4 {{ mpi_prefix }}_*
     - lxml
-    - matplotlib
+    - matplotlib  # [mpi == 'nompi']
+    # constraint required for ilamb 2.5
+    - matplotlib <3.4.0  # [mpi != 'nompi']
     - mpi4py  # [mpi != 'nompi']
     - nb_conda
     - nb_conda_kernels
