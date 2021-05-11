@@ -42,7 +42,7 @@ elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
   activ_path="/usr/local/e3sm_unified/envs"
   group="climate"
-elif [[ $HOSTNAME = "blueslogin"* ]] || [[ $HOSTNAME = "chryslogin"* ]]; then
+elif [[ $HOSTNAME = "blueslogin"* ]] || [[ $HOSTNAME = "chrlogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="cels"
