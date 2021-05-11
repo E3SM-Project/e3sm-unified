@@ -21,17 +21,17 @@ check_env () {
 
 # Modify the following to choose which cime-env version(s)
 # the python version(s) are installed
-versions=(1.0.0)
-pythons=(3.7 2.7)
+versions=(1.1.0)
+pythons=(3.8)
 
-default_python=3.7
+default_python=3.8
 
 # Any subsequent commands which fail will cause the shell script to exit
 # immediately
 set -e
 
 world_read="True"
-channels="-c conda-forge -c defaults -c e3sm"
+channels="-c conda-forge -c defaults"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
@@ -42,7 +42,7 @@ elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
   activ_path="/usr/local/e3sm_unified/envs"
   group="climate"
-elif [[ $HOSTNAME = "blueslogin"* ]]; then
+elif [[ $HOSTNAME = "blueslogin"* ]] || [[ $HOSTNAME = "chryslogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="cels"
@@ -62,11 +62,6 @@ elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
   base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
   activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
   group="climate"
-elif [[ $HOSTNAME = "eleven"* ]]; then
-  base_path="/home/xylar/miniconda3"
-  activ_path="/home/xylar/Desktop"
-  group="xylar"
-  channels="$channels --use-local"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
   exit 1
