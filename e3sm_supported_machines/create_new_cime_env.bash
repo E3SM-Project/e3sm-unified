@@ -31,7 +31,7 @@ default_python=3.8
 set -e
 
 world_read="True"
-channels="-c conda-forge -c defaults"
+channels="-c conda-forge -c defaults -c e3sm"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
