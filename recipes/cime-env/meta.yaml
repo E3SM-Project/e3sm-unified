@@ -1,41 +1,28 @@
-# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
-
-# Jinja variables help maintain the recipe as you'll update the version only here.
-# Using the name variable with the URL in line 13 is convenient
-# when copying and pasting from another recipe, but not really needed.
 {% set name = "CIME-env" %}
-{% set version = "1.0.0" %}
+{% set version = "1.1.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
   noarch: python
 
 requirements:
   host:
-    - python
+    - python >=3.7
   run:
     ### main packages ###
-    - python
+    - python >=3.7
     # channel: conda-forge
-    - evv4esm 0.2.1
+    - evv4esm 0.2.3
     ### dependencies ###
     # channel: conda-forge
-    - six
     - numpy >1.13
     - scipy
     - pandas
     - matplotlib
-    - jinja2
-    - json_tricks 3.11.0
-    - pybtex >=0.21
-    - livvkit 2.1.6
-    - hdf5 1.10.5
-    - netcdf4 1.5.1.2
-    - libnetcdf 4.6.2
 test:
   requires:
     - pytest
