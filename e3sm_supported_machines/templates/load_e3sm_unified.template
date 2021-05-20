@@ -1,0 +1,6 @@
+source {{ conda_base }}/etc/profile.d/conda.{{ ext }}
+conda activate {{ env_name }}
+
+{{ modules }}
+
+{{ env_vars }}
