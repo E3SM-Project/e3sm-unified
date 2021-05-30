@@ -29,8 +29,7 @@ requirements:
     ### main packages ###
     - python
     # channel: conda-forge
-    #- compass 0.1.12 {{ mpi_prefix }}_*
-    #- e3sm_diags 2.4.0
+    - e3sm_diags 2.5.0rc1
     - geometric_features 0.4.0
     - globus-cli
     - ilamb 2.6  # [mpi != 'nompi']
@@ -38,13 +37,14 @@ requirements:
     - jupyter
     - livvkit 3.0.0
     - moab 5.2.1
-    #- mpas-analysis 1.3.0
+    - mpas-analysis 1.4.0rc1
     - mpas_tools 0.6.0
-    - nco 4.9.9
-    #- processflow 2.2.4  # [linux]
+    - nco 5.0.0alpha3
+    - processflow 2.2.4  # [linux]
     - tempest-remap 2.0.5
-    - tempest-extremes 2.1 {{ mpi_prefix }}_*
-    - zstash 1.0.1  # [linux]
+    - tempest-extremes 2.2 {{ mpi_prefix }}_*
+    - zstash 1.1.0rc1  # [linux]
+    - zppy 1.0.0rc1
     ### dependencies ###
     # channel: conda-forge
     - {{ mpi }}  # [mpi != 'nompi']
@@ -98,18 +98,19 @@ test:
   requires:
     - pytest
   imports:
-    #- mpas_analysis
-    #- acme_diags
+    - mpas_analysis
+    - acme_diags
     - ILAMB  # [mpi != 'nompi']
     - zstash  # [linux]
     - IPython
     - globus_cli
     - livvkit
+    - zppy
   commands:
-    #- mpas_analysis --version
+    - mpas_analysis --version
     - livv --version
-    #- processflow -v  # [linux]
-    #- e3sm_diags --help
+    - processflow -v  # [linux]
+    - e3sm_diags --help
     - zstash --help  # [linux]
     - ilamb-fetch -h  # [mpi != 'nompi']
     - ilamb-run -h  # [mpi != 'nompi']
@@ -124,6 +125,7 @@ test:
     - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g
     - ESMF_RegridWeightGen --help
     - test -f ${PREFIX}/bin/Climatology
+    - zppy --help
 
 about:
   home: https://github.com/E3SM-Project/e3sm-unified
