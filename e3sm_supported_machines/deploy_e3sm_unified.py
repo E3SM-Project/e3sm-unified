@@ -336,6 +336,8 @@ def get_sys_info(machine, compiler, mpilib, mpicc, mpicxx, mpifc,
         esmf_compilers = '    export ESMF_F90={}\n' \
                          '    export ESMF_CXX={}'.format(mpifc, mpicxx)
 
+
+
     if mpilib == 'mvapich':
         esmf_comm = 'mvapich2'
         env_vars.extend(['export MV2_ENABLE_AFFINITY=0',
@@ -346,6 +348,15 @@ def get_sys_info(machine, compiler, mpilib, mpicc, mpicxx, mpifc,
         esmf_comm = 'intelmpi'
     else:
         esmf_comm = mpilib
+
+    if 'cori' in machine:
+        esmf_comm = 'user'
+        esmf_compilers = \
+            '{}\n' \
+            '    export ESMF_CXXLINKLIBS="-L${{NETCDF_DIR}}/lib ' \
+            '-lnetcdff -lnetcdf -mkl -lpthread"\n' \
+            '    export ESMF_F90LINKLIBS="-L${{NETCDF_DIR}}/lib ' \
+            '-lnetcdff -lnetcdf -mkl -lpthread"'.format(esmf_compilers)
 
     if machine == 'grizzly' or machine == 'badger':
         esmf_netcdf = \
