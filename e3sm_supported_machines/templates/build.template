@@ -19,7 +19,7 @@ if [ "{{ build_tempest_extremes }}" == "True" ]; then
     CXX={{ sys_info.mpicxx }}
     MPICXX={{ sys_info.mpicxx }}
 
-    make CXX=$CXX MPICXX=$MPICXX -j 8
+    make CXX=$CXX MPICXX=$MPICXX
 
     mkdir -p "{{ tempest_extremes_path }}/bin"
     cp bin/* "{{ tempest_extremes_path }}/bin"
