@@ -715,7 +715,7 @@ def update_permissions(config, is_test, activ_path, conda_base, system_libs):
 def main():
     parser = argparse.ArgumentParser(
         description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.5.0rc1",
+    parser.add_argument("--version", dest="version", default="1.5.0rc2",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("-m", "--machine", dest="machine",
                         help="The name of the machine for loading machine-"
