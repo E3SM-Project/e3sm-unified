@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.5.0rc2" %}
+{% set version = "1.5.0rc3" %}
 {% set build = 0 %}
 
 package:
@@ -37,7 +37,7 @@ requirements:
     - jupyter
     - livvkit 3.0.0
     - moab 5.2.1
-    - mpas-analysis 1.4.0rc2
+    - mpas-analysis 1.4.0rc3
     - mpas_tools 0.6.0
     - nco 5.0.0alpha3
     - processflow 2.2.4  # [linux]
