@@ -1,5 +1,5 @@
 {% set name = "CIME-env" %}
-{% set version = "1.1.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -16,7 +16,7 @@ requirements:
     ### main packages ###
     - python >=3.7
     # channel: conda-forge
-    - evv4esm 0.2.3
+    - evv4esm 0.2.4
     ### dependencies ###
     # channel: conda-forge
     - numpy >1.13
