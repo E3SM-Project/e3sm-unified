@@ -8,8 +8,8 @@ dev=True
 
 if [ $dev == "True" ]
 then
-  channels="-c conda-forge/label/e3sm_dev -c conda-forge/label/nco_dev \
-  -c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm"
+  channels="-c e3sm/label/e3sm_dev -c conda-forge/label/e3sm_dev \
+  -c conda-forge/label/nco_dev -c conda-forge -c defaults -c e3sm"
 else
   channels="-c conda-forge -c defaults -c e3sm"
 fi
