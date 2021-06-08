@@ -6,6 +6,19 @@ build_dir=$(pwd)
 
 set -e
 
+
+if [ "{{ build_mpi4py }}" == "True" ]; then
+    MPICC="{{ sys_info.mpicc }} -shared" python -m pip install --no-binary=mpi4py "mpi4py=={{ mpi4py_version }}"
+fi
+
+
+
+if [ "{{ build_ilamb }}" == "True" ]; then
+    conda install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
+fi
+
+
+
 {{ sys_info.netcdf_paths }}
 
 if [ "{{ build_tempest_extremes }}" == "True" ]; then

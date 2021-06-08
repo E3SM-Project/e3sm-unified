@@ -210,7 +210,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         print('{} already exists'.format(env_name))
 
-    return env_path, env_name, activate_env
+    return env_path, env_name, activate_env, channels
 
 
 def get_e3sm_compiler_and_mpi(machine, compiler, mpilib, template_path):
@@ -385,8 +385,12 @@ def get_sys_info(machine, compiler, mpilib, mpicc, mpicxx, mpifc,
 
 
 def build_system_libraries(config, machine, compiler, mpi, version,
-                           template_path, env_path, activate_env):
+                           template_path, env_path, activate_env, channels):
 
+    mpi4py_version = config.get('deploy', 'mpi4py')
+    ilamb_version = config.get('deploy', 'ilamb')
+    build_mpi4py = str(compiler is not None and mpi4py_version != 'None')
+    build_ilamb = str(compiler is not None and ilamb_version != 'None')
     if compiler is not None:
         esmf = config.get('deploy', 'esmf')
         tempest_extremes = config.get('deploy', 'tempest_extremes')
@@ -454,13 +458,15 @@ def build_system_libraries(config, machine, compiler, mpi, version,
 
     modules = '\n'.join(sys_info['modules'])
 
-    if machine is None:
-        # need to activate the conda environment because that's where the
-        # libraries are
-        modules = '{}\n{}'.format(activate_env.replace('; ', '\n'), modules)
+    # need to activate the conda environment to install mpi4py and ilamb, and
+    # possibly for compilers and MPI library (if not on a supported machine)
+    modules = '{}\n{}'.format(activate_env.replace('; ', '\n'), modules)
 
     script = template.render(
         sys_info=sys_info, modules=modules, template_path=template_path,
+        mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
+        ilamb_version=ilamb_version, build_ilamb=build_ilamb,
+        ilamb_channels=channels,
         esmf_path=esmf_path, esmf_branch=esmf_branch, build_esmf=build_esmf,
         tempest_extremes_path=tempest_extremes_path,
         tempest_extremes_branch=tempest_extremes_branch,
@@ -527,22 +533,26 @@ def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
     return script_filename
 
 
-def check_env(script_filename, env_name, conda_mpi):
+def check_env(script_filename, env_name, conda_mpi, machine):
     print("Checking the environment {}".format(env_name))
 
     activate = 'source {}'.format(script_filename)
 
-    imports = ['acme_diags', 'mpas_analysis', 'livvkit',
+    imports = ['mpas_analysis', 'livvkit',
                'IPython', 'globus_cli', 'zstash']
     if conda_mpi != 'nompi':
         imports.append('ILAMB')
 
-    commands = [['e3sm_diags', '--help'],
-                ['mpas_analysis', '-h'],
+    commands = [['mpas_analysis', '-h'],
                 ['livv', '--version'],
                 ['globus', '--help'],
                 ['zstash', '--help'],
                 ['processflow', '-v']]
+
+    if machine is None:
+        # on HPC machines, these only work on compute nodes because of mpi4py
+        commands.append(['e3sm_diags', '--help'])
+        imports.append('acme_diags')
 
     for import_name in imports:
         command = '{}; python -c "import {}"'.format(activate, import_name)
@@ -726,7 +736,7 @@ def update_permissions(config, is_test, activ_path, conda_base, system_libs):
 def main():
     parser = argparse.ArgumentParser(
         description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.5.0rc3",
+    parser.add_argument("--version", dest="version", default="1.5.0rc4",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("-m", "--machine", dest="machine",
                         help="The name of the machine for loading machine-"
@@ -787,7 +797,7 @@ def main():
         else:
             compiler = 'gnu'
 
-    env_path, env_name, activate_env = build_env(
+    env_path, env_name, activate_env, channels = build_env(
         is_test, recreate, compiler, mpi, conda_mpi, version,
         python, conda_base, activ_suffix, env_suffix, activate_base)
 
@@ -799,7 +809,7 @@ def main():
     if compiler is not None:
         sys_info, system_libs = build_system_libraries(
             config, machine, compiler, mpi, version, template_path, env_path,
-            env_name)
+            activate_env, channels)
     else:
         sys_info = dict(modules=[], env_vars=[], mpas_netcdf_paths='')
         system_libs = None
@@ -819,7 +829,7 @@ def main():
                                 'load_latest_e3sm_unified.{}'.format(ext))
             check_call('ln -sfn {} {}'.format(script_filename, link))
 
-    check_env(test_script_filename, env_name, conda_mpi)
+    check_env(test_script_filename, env_name, conda_mpi, machine)
 
     commands = '{}; conda clean -y -p -t'.format(activate_base)
     check_call(commands)
