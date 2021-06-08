@@ -819,16 +819,6 @@ def main():
                                 'load_latest_e3sm_unified.{}'.format(ext))
             check_call('ln -sfn {} {}'.format(script_filename, link))
 
-    if machine is not None and compiler is not None:
-        sys_info['env_vars'] = []
-        sys_info['modules'] = []
-        activ_suffix = '_nompi'
-        for ext in ['sh', 'csh']:
-            # write a version without the system libraries
-            write_load_e3sm_unified(
-                template_path, activ_path, conda_base, is_test, version,
-                activ_suffix, env_name, sys_info, ext)
-
     check_env(test_script_filename, env_name, conda_mpi)
 
     commands = '{}; conda clean -y -p -t'.format(activate_base)
