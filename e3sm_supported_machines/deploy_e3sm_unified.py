@@ -186,9 +186,10 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         mpi_prefix = 'mpi_{}'.format(mpi)
 
     if is_test:
-        channels = '--override-channels -c conda-forge/label/e3sm_dev ' \
-                   '-c conda-forge/label/nco_dev -c conda-forge -c defaults ' \
-                   '-c e3sm/label/e3sm_dev -c e3sm'
+        channels = '--override-channels -c e3sm/label/e3sm_dev ' \
+                   '-c conda-forge/label/e3sm_dev ' \
+                   '-c conda-forge/label/nco_dev ' \
+                   '-c conda-forge -c defaults -c e3sm'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
