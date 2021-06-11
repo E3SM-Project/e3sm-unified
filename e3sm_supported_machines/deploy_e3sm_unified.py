@@ -677,7 +677,8 @@ def update_permissions(config, is_test, activ_path, conda_base, system_libs):
     widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
                ' ', progressbar.ETA()]
     bar = progressbar.ProgressBar(widgets=widgets,
-                                  maxval=len(files_and_dirs)).start()
+                                  maxval=len(files_and_dirs),
+                                  maxerror=False).start()
     progress = 0
     for base in directories:
         for root, dirs, files in os.walk(base):
