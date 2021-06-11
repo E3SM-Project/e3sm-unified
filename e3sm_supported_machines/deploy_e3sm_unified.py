@@ -125,6 +125,8 @@ def get_env_setup(args, config, machine):
 
     if args.compiler is not None:
         compiler = args.compiler
+        if compiler == 'None':
+            compiler = None
     elif config.has_option('deploy', 'compiler'):
         compiler = config.get('deploy', 'compiler')
     else:
@@ -144,7 +146,7 @@ def get_env_setup(args, config, machine):
 
     if machine is not None and compiler is not None:
         activ_suffix = '_{}'.format(machine)
-    elif conda_mpi != 'nompi':
+    elif machine is not None or conda_mpi != 'nompi':
         activ_suffix = '_{}'.format(mpi)
     else:
         activ_suffix = ''
