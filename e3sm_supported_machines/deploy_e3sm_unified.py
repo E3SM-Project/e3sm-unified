@@ -187,10 +187,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         mpi_prefix = 'mpi_{}'.format(mpi)
 
     if is_test:
-        channels = '--override-channels -c e3sm/label/e3sm_dev ' \
-                   '-c conda-forge/label/e3sm_dev ' \
-                   '-c conda-forge/label/nco_dev ' \
-                   '-c conda-forge -c defaults -c e3sm'
+        channels = '--override-channels -c conda-forge/label/e3sm_dev ' \
+                   '-c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
@@ -337,8 +335,6 @@ def get_sys_info(machine, compiler, mpilib, mpicc, mpicxx, mpifc,
     else:
         esmf_compilers = '    export ESMF_F90={}\n' \
                          '    export ESMF_CXX={}'.format(mpifc, mpicxx)
-
-
 
     if mpilib == 'mvapich':
         esmf_comm = 'mvapich2'
@@ -739,7 +735,7 @@ def update_permissions(config, is_test, activ_path, conda_base, system_libs):
 def main():
     parser = argparse.ArgumentParser(
         description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.5.0rc4",
+    parser.add_argument("--version", dest="version", default="1.5.0rc5",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("-m", "--machine", dest="machine",
                         help="The name of the machine for loading machine-"
