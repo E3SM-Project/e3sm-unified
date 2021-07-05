@@ -1,0 +1,20 @@
+source {{ conda_base }}/etc/profile.d/conda.sh
+
+if [ -z "${SLURM_JOB_ID}" ] && [ -z "${COBALT_JOBID}" ]
+then
+  # we seem to be on a login node, so load the no-MPI environment
+
+  export E3SMU_MPI="NOMPI"
+  conda activate {{ env_nompi }}
+
+else
+  # we seem to be on a compute node, so load the MPI environment
+
+  export E3SMU_MPI="SYSTEM"
+  conda activate {{ env_name }}
+
+  {{ modules }}
+
+  {{ env_vars }}
+
+fi

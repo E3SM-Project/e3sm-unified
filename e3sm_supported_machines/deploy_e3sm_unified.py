@@ -480,7 +480,8 @@ def build_system_libraries(config, machine, compiler, mpi, version,
 
 
 def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
-                            version, activ_suffix, env_name, sys_info, ext):
+                            version, activ_suffix, env_name, env_nompi,
+                            sys_info, ext):
 
     try:
         os.makedirs(activ_path)
@@ -495,21 +496,23 @@ def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
     script_filename = os.path.join(activ_path,
                                    '{}{}.{}'.format(prefix, activ_suffix, ext))
 
-    filename = os.path.join(template_path, 'load_e3sm_unified.template')
+    filename = os.path.join(template_path,
+                            'load_e3sm_unified.{}.template'.format(ext))
     with open(filename, 'r') as f:
         template = Template(f.read())
     if ext == 'sh':
-        env_vars = '\n'.join(sys_info['env_vars'])
+        env_vars = '\n  '.join(sys_info['env_vars'])
     elif ext == 'csh':
         env_vars = [var.replace('export', 'setenv').replace('=', ' ') for var
                     in sys_info['env_vars']]
-        env_vars = '\n'.join(env_vars)
+        env_vars = '\n  '.join(env_vars)
     else:
         raise ValueError('Unexpected extension {}'.format(ext))
 
     script = template.render(conda_base=conda_base, env_name=env_name,
-                             modules='\n'.join(sys_info['modules']),
-                             env_vars=env_vars, ext=ext)
+                             env_nompi=env_nompi,
+                             modules='\n  '.join(sys_info['modules']),
+                             env_vars=env_vars)
 
     # strip out redundant blank lines
     lines = list()
@@ -735,7 +738,7 @@ def update_permissions(config, is_test, activ_path, conda_base, system_libs):
 def main():
     parser = argparse.ArgumentParser(
         description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.5.0rc5",
+    parser.add_argument("--version", dest="version", default="1.5.0rc6",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("-m", "--machine", dest="machine",
                         help="The name of the machine for loading machine-"
@@ -789,12 +792,14 @@ def main():
         activ_path = get_env_setup(args, config, machine)
 
     if machine is None:
-        if platform.system() == 'Linux':
-            compiler = 'gnu'
-        elif platform.system() == 'Darwin':
-            compiler = 'clang'
-        else:
-            compiler = 'gnu'
+        compiler = None
+
+    nompi_compiler = None
+    nompi_suffix = '_nompi'
+    # first, make nompi environment
+    _, env_nompi, _, _ = build_env(
+        is_test, recreate, nompi_compiler, mpi, conda_mpi, version,
+        python, conda_base, nompi_suffix, nompi_suffix, activate_base)
 
     env_path, env_name, activate_env, channels = build_env(
         is_test, recreate, compiler, mpi, conda_mpi, version,
@@ -819,7 +824,7 @@ def main():
     for ext in ['sh', 'csh']:
         script_filename = write_load_e3sm_unified(
             template_path, activ_path, conda_base, is_test, version,
-            activ_suffix, env_name, sys_info, ext)
+            activ_suffix, env_name, env_nompi, sys_info, ext)
         if ext == 'sh':
             test_script_filename = script_filename
         if not is_test:
