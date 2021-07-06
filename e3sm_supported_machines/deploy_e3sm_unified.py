@@ -192,7 +192,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
-    packages = 'python={}'.format(python)
+    packages = 'python={} pip'.format(python)
 
     base_activation_script = os.path.abspath(
         '{}/etc/profile.d/conda.sh'.format(conda_base))
@@ -615,7 +615,7 @@ def install_miniconda(conda_base, activate_base):
     commands = '{}; ' \
                'conda config --add channels conda-forge; ' \
                'conda config --set channel_priority strict; ' \
-               'conda install -y requests lxml progressbar2 jinja2; ' \
+               'conda install -y requests lxml progressbar2 jinja2 pip; ' \
                'conda update -y --all'.format(activate_base)
 
     check_call(commands)
