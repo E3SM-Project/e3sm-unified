@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.5.0rc7" %}
+{% set version = "1.5.0rc8" %}
 {% set build = 0 %}
 
 package:
@@ -28,7 +28,7 @@ requirements:
   run:
     ### main packages ###
     - python
-    - e3sm_diags 2.5.0rc4
+    - e3sm_diags 2.5.0
     - e3sm_to_cmip 1.7.1
     - geometric_features 0.5.0
     - globus-cli
@@ -36,15 +36,15 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.0.0
-    - moab 5.2.1
-    - mpas-analysis 1.4.0rc3
+    - moab 5.3.0
+    - mpas-analysis 1.4.0
     - mpas_tools 0.7.0
-    - nco 5.0.1alpha02
+    - nco 5.0.1
     - processflow 2.2.5  # [linux]
-    - tempest-remap 2.0.5
+    - tempest-remap 2.1.0
     - tempest-extremes 2.2 {{ mpi_prefix }}_*
-    - zstash 1.1.0rc2  # [linux]
-    - zppy 1.0.0rc4
+    - zstash 1.1.0  # [linux]
+    - zppy 1.0.0rc5
     ### dependencies ###
     - {{ mpi }}  # [mpi != 'nompi']
     - blas
