@@ -1,5 +1,7 @@
 source {{ conda_base }}/etc/profile.d/conda.csh
 
+setenv E3SMU_SCRIPT "{{ script_filename }}"
+
 if ( ! $?SLURM_JOB_ID && ! $?COBALT_JOBID ) then
   # we seem to be on a login node, so load the no-MPI environment
 

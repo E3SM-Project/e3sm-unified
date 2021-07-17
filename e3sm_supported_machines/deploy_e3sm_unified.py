@@ -511,6 +511,7 @@ def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
         raise ValueError('Unexpected extension {}'.format(ext))
 
     script = template.render(conda_base=conda_base, env_name=env_name,
+                             script_filename=script_filename,
                              env_nompi=env_nompi,
                              modules='\n  '.join(sys_info['modules']),
                              env_vars=env_vars)
