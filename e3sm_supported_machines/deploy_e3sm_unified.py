@@ -799,18 +799,18 @@ def main():
     nompi_compiler = None
     nompi_suffix = '_nompi'
     # first, make nompi environment
-    _, env_nompi, _, _ = build_env(
+    env_path, env_nompi, _, _ = build_env(
         is_test, recreate, nompi_compiler, mpi, conda_mpi, version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base)
-
-    env_path, env_name, activate_env, channels = build_env(
-        is_test, recreate, compiler, mpi, conda_mpi, version,
-        python, conda_base, activ_suffix, env_suffix, activate_base)
 
     if not is_test:
         # make a symlink to the environment
         link = os.path.join(conda_base, 'envs', 'latest_e3sm_unified')
         check_call('ln -sfn {} {}'.format(env_path, link))
+
+    env_path, env_name, activate_env, channels = build_env(
+        is_test, recreate, compiler, mpi, conda_mpi, version,
+        python, conda_base, activ_suffix, env_suffix, activate_base)
 
     if compiler is not None:
         sys_info, system_libs = build_system_libraries(
