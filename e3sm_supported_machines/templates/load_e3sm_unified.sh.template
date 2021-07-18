@@ -12,7 +12,7 @@ then
 else
   # we seem to be on a compute node, so load the MPI environment
 
-  export E3SMU_MPI="SYSTEM"
+  export E3SMU_MPI="{{ env_type }}"
   conda activate {{ env_name }}
 
   {{ modules }}

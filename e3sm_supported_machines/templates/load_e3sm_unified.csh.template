@@ -11,7 +11,7 @@ if ( ! $?SLURM_JOB_ID && ! $?COBALT_JOBID ) then
 else
   # we seem to be on a compute node, so load the MPI environment
 
-  setenv E3SMU_MPI "SYSTEM"
+  setenv E3SMU_MPI "{{ env_type }}"
   conda activate {{ env_name }}
 
   {{ modules }}

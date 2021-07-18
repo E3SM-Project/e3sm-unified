@@ -513,7 +513,14 @@ def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
     else:
         raise ValueError('Unexpected extension {}'.format(ext))
 
+    # the type of environment on compute nodes
+    if env_name == env_nompi:
+        env_type = 'NOMPI'
+    else:
+        env_type = 'SYSTEM'
+
     script = template.render(conda_base=conda_base, env_name=env_name,
+                             env_type=env_type,
                              script_filename=script_filename,
                              env_nompi=env_nompi,
                              modules='\n  '.join(sys_info['modules']),
