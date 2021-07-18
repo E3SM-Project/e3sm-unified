@@ -145,13 +145,16 @@ def get_env_setup(args, config, machine):
         conda_mpi = mpi
 
     if machine is not None and compiler is not None:
-        activ_suffix = '_{}'.format(machine)
+        env_suffix = '_{}'.format(machine)
     elif machine is not None or conda_mpi != 'nompi':
-        activ_suffix = '_{}'.format(mpi)
+        env_suffix = '_{}'.format(mpi)
     else:
-        activ_suffix = ''
+        env_suffix = ''
 
-    env_suffix = activ_suffix
+    if machine is not None:
+        activ_suffix = '_{}'.format(machine)
+    else:
+        activ_suffix = env_suffix
 
     activ_path = config.get('deploy', 'base_path')
 
