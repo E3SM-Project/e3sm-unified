@@ -831,8 +831,8 @@ def main():
             test_script_filename = script_filename
         if not is_test:
             # make a symlink to the activation script
-            link = os.path.join(activ_path,
-                                'load_latest_e3sm_unified.{}'.format(ext))
+            link = 'load_latest_e3sm_unified_{}.{}'.format(machine, ext)
+            link = os.path.join(activ_path, link)
             check_call('ln -sfn {} {}'.format(script_filename, link))
 
     check_env(test_script_filename, env_name, conda_mpi, machine)
