@@ -805,7 +805,7 @@ def main():
 
     if not is_test:
         # make a symlink to the environment
-        link = os.path.join(conda_base, 'envs', 'latest_e3sm_unified')
+        link = os.path.join(conda_base, 'envs', 'e3sm_unified_latest')
         check_call('ln -sfn {} {}'.format(env_path, link))
 
     env_path, env_name, activate_env, channels = build_env(
