@@ -1,0 +1,73 @@
+#!/bin/bash
+
+build_dir=$(pwd)
+
+{{ modules }}
+
+set -e
+
+
+if [ "{{ build_mpi4py }}" == "True" ]; then
+    MPICC="{{ sys_info.mpicc }} -shared" python -m pip install --no-binary=mpi4py "mpi4py=={{ mpi4py_version }}"
+fi
+
+
+
+if [ "{{ build_ilamb }}" == "True" ]; then
+    conda install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
+fi
+
+
+
+{{ sys_info.netcdf_paths }}
+
+if [ "{{ build_tempest_extremes }}" == "True" ]; then
+    rm -rf tempestextremes*
+    git clone git@github.com:ClimateGlobalChange/tempestextremes.git
+    cd tempestextremes
+    git checkout "{{ tempest_extremes_branch }}"
+
+    cp {{ template_path }}/tempest_extremes.make mk/system/default.make
+
+    CXX={{ sys_info.mpicxx }}
+    MPICXX={{ sys_info.mpicxx }}
+
+    make CXX=$CXX MPICXX=$MPICXX
+
+    mkdir -p "{{ tempest_extremes_path }}/bin"
+    cp bin/* "{{ tempest_extremes_path }}/bin"
+
+    cd $build_dir
+fi
+
+
+
+export ESMF_PATH="{{ esmf_path }}"
+export ESMF_BRANCH="{{ esmf_branch }}"
+
+if [ "{{ build_esmf }}" == "True" ]; then
+    rm -rf esmf*
+    git clone git@github.com:esmf-org/esmf.git
+    cd esmf
+    git checkout "${ESMF_BRANCH}"
+
+    export ESMF_DIR=$(pwd)
+
+    export ESMF_INSTALL_PREFIX=${ESMF_PATH}
+    export ESMF_INSTALL_BINDIR=${ESMF_PATH}/bin
+    export ESMF_INSTALL_DOCDIR=${ESMF_PATH}/doc
+    export ESMF_INSTALL_HEADERDIR=${ESMF_PATH}/include
+    export ESMF_INSTALL_LIBDIR=${ESMF_PATH}/lib
+    export ESMF_INSTALL_MODDIR=${ESMF_PATH}/mod
+
+{{ sys_info.esmf_netcdf }}
+    export ESMF_PNETCDF="pnetcdf-config"
+
+{{ sys_info.esmf_compilers }}
+    export ESMF_COMM={{ sys_info.esmf_comm }}
+
+    make -j 8
+    make install
+
+    cd $build_dir
+fi
