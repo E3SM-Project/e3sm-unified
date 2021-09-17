@@ -68,6 +68,7 @@ requirements:
     - libnetcdf 4.8.0 {{ mpi_prefix }}_*
     - lxml
     - matplotlib
+    - metpy
     - mpi4py  # [mpi != 'nompi']
     - nb_conda
     - nb_conda_kernels
