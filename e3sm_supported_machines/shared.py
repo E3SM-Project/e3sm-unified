@@ -41,7 +41,7 @@ def get_config(config_file, machine=None):
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.6.0",
+    parser.add_argument("--version", dest="version", default="1.5.1",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("--conda", dest="conda_base",
                         help="Path for the  conda base")
