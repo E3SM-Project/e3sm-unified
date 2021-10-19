@@ -6,7 +6,30 @@ import os
 import warnings
 import sys
 
-from shared import parse_args, check_call, install_miniconda, get_config
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from six.moves import configparser
+    import six
+
+    if six.PY2:
+        ConfigParser = configparser.SafeConfigParser
+    else:
+        ConfigParser = configparser.ConfigParser
+
+from shared import parse_args, check_call, install_miniconda
+
+
+def get_config(config_file):
+    here = os.path.abspath(os.path.dirname(__file__))
+    default_config = os.path.join(here, 'default.cfg')
+    config = ConfigParser()
+    config.read(default_config)
+
+    if config_file is not None:
+        config.read(config_file)
+
+    return config
 
 
 def get_conda_base(conda_base, config):

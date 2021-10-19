@@ -8,9 +8,27 @@ import grp
 import shutil
 import progressbar
 from jinja2 import Template
+from importlib.resources import path
+from configparser import ConfigParser
 
 from mache import discover_machine, MachineInfo
-from shared import parse_args, check_call, install_miniconda, get_config
+from shared import parse_args, check_call, install_miniconda
+
+
+def get_config(config_file, machine):
+    here = os.path.abspath(os.path.dirname(__file__))
+    default_config = os.path.join(here, 'default.cfg')
+    config = ConfigParser()
+    config.read(default_config)
+
+    if machine is not None:
+        with path('mache.machines', '{}.cfg'.format(machine)) as machine_config:
+            config.read(str(machine_config))
+
+    if config_file is not None:
+        config.read(config_file)
+
+    return config
 
 
 def get_env_setup(args, config, machine):
