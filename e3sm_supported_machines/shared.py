@@ -29,7 +29,7 @@ def get_config(config_file, machine=None):
     config.read(default_config)
 
     if machine is not None:
-        with path('mache.machines', f'{machine}.cfg') as machine_config:
+        with path('mache.machines', '{}.cfg'.format(machine)) as machine_config:
             config.read(str(machine_config))
 
     if config_file is not None:
