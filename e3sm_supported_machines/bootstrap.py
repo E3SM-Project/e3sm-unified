@@ -135,12 +135,15 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
 
 def get_sys_info(machine, compiler, mpilib, mpicc, mpicxx, mpifc,
-                 mod_commands):
+                 mod_commands, env_vars):
 
     if machine is None:
         machine = 'None'
 
-    env_vars = []
+    env_list = list()
+    for var in env_vars:
+        env_list.append(f'export {var}={env_vars[var]}')
+    env_vars = env_list
 
     if 'intel' in compiler:
         esmf_compilers = '    export ESMF_COMPILER=intel'
@@ -215,7 +218,7 @@ def build_system_libraries(config, machine, machine_info, compiler, mpi, version
 
     force_build = False
     if machine is not None:
-        mpicc, mpicxx, mpifc, mod_commands = \
+        mpicc, mpicxx, mpifc, mod_commands, env_vars = \
             machine_info.get_modules_and_mpi_compilers(compiler, mpi)
         system_libs = os.path.join(config.get('e3sm_unified', 'base_path'),
                                    'system', machine)
@@ -230,13 +233,14 @@ def build_system_libraries(config, machine, machine_info, compiler, mpi, version
         mpicxx = 'mpicxx'
         mpifc = 'mpifort'
         mod_commands = []
+        env_vars = {}
         system_libs = None
         esmf_path = env_path
         tempest_extremes_path = env_path
         force_build = True
 
     sys_info = get_sys_info(machine, compiler, mpi, mpicc, mpicxx,
-                            mpifc, mod_commands)
+                            mpifc, mod_commands, env_vars)
 
     if esmf != 'None':
         bin_dir = os.path.join(esmf_path, 'bin')
