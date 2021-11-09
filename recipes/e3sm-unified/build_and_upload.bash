@@ -4,7 +4,7 @@ set -e
 
 rm -rf ~/miniconda3/conda-bld
 upload=False
-dev=True
+dev=False
 
 if [ $dev == "True" ]
 then
@@ -16,7 +16,7 @@ fi
 
 for file in configs/mpi_*_python*.yaml
 do
-  conda build -m $file --override-channels $channels .
+  conda mambabuild -m $file --override-channels $channels .
 done
 
 if [ $upload == "True" ]

@@ -1,6 +1,7 @@
 source {{ conda_base }}/etc/profile.d/conda.sh
 
 export E3SMU_SCRIPT="{{ script_filename }}"
+export E3SMU_MACHINE="{{ machine }}"
 
 if [ -z "${SLURM_JOB_ID}" ] && [ -z "${COBALT_JOBID}" ]
 then
