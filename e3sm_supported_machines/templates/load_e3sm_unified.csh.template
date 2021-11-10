@@ -9,6 +9,8 @@ if ( ! $?SLURM_JOB_ID && ! $?COBALT_JOBID ) then
   setenv E3SMU_MPI "NOMPI"
   conda activate {{ env_nompi }}
 
+  setenv HDF5_USE_FILE_LOCKING FALSE
+
 else
   # we seem to be on a compute node, so load the MPI environment
 
