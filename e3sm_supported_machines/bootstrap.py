@@ -12,7 +12,9 @@ from importlib.resources import path
 from configparser import ConfigParser
 
 from mache import discover_machine, MachineInfo
-from shared import parse_args, check_call, install_miniconda
+from mache.spack import make_spack_env, get_spack_script
+from mache.version import __version__ as mache_version
+from shared import parse_args, check_call, install_miniconda, get_conda_base
 
 
 def get_config(config_file, machine):
@@ -60,14 +62,14 @@ def get_env_setup(args, config, machine):
         mpi = 'nompi'
 
     if machine is not None:
-        conda_mpi = 'nompi'
+        conda_mpi = 'hpc'
     else:
         conda_mpi = mpi
 
     if machine is not None and compiler is not None:
         env_suffix = f'_{machine}'
-    elif machine is not None or conda_mpi != 'nompi':
-        env_suffix = f'_{mpi}'
+    elif conda_mpi not in['nompi', 'hpc']:
+        env_suffix = f'_{conda_mpi}'
     else:
         env_suffix = ''
 
@@ -83,7 +85,8 @@ def get_env_setup(args, config, machine):
 
 
 def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
-              python, conda_base, activ_suffix, env_suffix, activate_base):
+              python, conda_base, activ_suffix, env_suffix, activate_base,
+              local_conda_build):
 
     if compiler is not None:
         build_dir = f'build{activ_suffix}'
@@ -100,17 +103,26 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         os.chdir(build_dir)
 
     env_name = f'e3sm_unified_{version}{env_suffix}'
+
+    # add the compiler and MPI library to the spack env name
+    spack_env = '{}_{}_{}'.format(env_name, compiler, mpi)
+    # spack doesn't like dots
+    spack_env = spack_env.replace('.', '_')
+
     env_path = os.path.join(conda_base, 'envs', env_name)
 
-    if conda_mpi == 'nompi':
-        mpi_prefix = 'nompi'
+    if conda_mpi in ['nompi', 'hpc']:
+        mpi_prefix = conda_mpi
     else:
-        mpi_prefix = f'mpi_{mpi}'
+        mpi_prefix = f'mpi_{conda_mpi}'
 
     if is_test:
-        channels = '--override-channels -c conda-forge/label/e3sm_dev ' \
-                   '-c conda-forge -c defaults ' \
-                   '-c e3sm/label/e3sm_dev -c e3sm'
+        channels = '--override-channels'
+        if local_conda_build is not None:
+            channels = f'{channels} -c {local_conda_build}'
+        channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
+                   f'-c conda-forge -c defaults ' \
+                   f'-c e3sm/label/e3sm_dev -c e3sm'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
@@ -131,151 +143,26 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         print(f'{env_name} already exists')
 
-    return env_path, env_name, activate_env, channels
+    return env_path, env_name, activate_env, channels, spack_env
 
 
-def get_sys_info(machine, compiler, mpilib, mpicc, mpicxx, mpifc,
-                 mod_commands, env_vars):
-
-    if machine is None:
-        machine = 'None'
-
-    env_list = list()
-    for var in env_vars:
-        env_list.append(f'export {var}={env_vars[var]}')
-    env_vars = env_list
-
-    if 'intel' in compiler:
-        esmf_compilers = '    export ESMF_COMPILER=intel'
-    elif compiler == 'pgi':
-        esmf_compilers = f'    export ESMF_COMPILER=pgi\n' \
-                         f'    export ESMF_F90={mpifc}\n' \
-                         f'    export ESMF_CXX={mpicxx}'
-    else:
-        esmf_compilers = f'    export ESMF_F90={mpifc}\n' \
-                         f'    export ESMF_CXX={mpicxx}'
-
-    if mpilib == 'mvapich':
-        esmf_comm = 'mvapich2'
-        env_vars.extend(['export MV2_ENABLE_AFFINITY=0',
-                         'export MV2_SHOW_CPU_BINDING=1'])
-    elif mpilib == 'mpich':
-        esmf_comm = 'mpich3'
-    elif mpilib == 'impi':
-        esmf_comm = 'intelmpi'
-    else:
-        esmf_comm = mpilib
-
-    if 'cori' in machine:
-        esmf_comm = 'user'
-        esmf_compilers = \
-            f'{esmf_compilers}\n' \
-            f'    export ESMF_CXXLINKLIBS="-L${{NETCDF_DIR}}/lib ' \
-            f'-lnetcdff -lnetcdf -mkl -lpthread"\n' \
-            f'    export ESMF_F90LINKLIBS="-L${{NETCDF_DIR}}/lib ' \
-            f'-lnetcdff -lnetcdf -mkl -lpthread"'
-
-    if machine == 'grizzly' or machine == 'badger':
-        esmf_netcdf = \
-            '    export ESMF_NETCDF="split"\n' \
-            '    export ESMF_NETCDF_INCLUDE=$NETCDF_C_PATH/include\n' \
-            '    export ESMF_NETCDF_LIBPATH=$NETCDF_C_PATH/lib64'
-    else:
-        esmf_netcdf = '    export ESMF_NETCDF="nc-config"'
-
-    if 'cori' in machine:
-        netcdf_paths = 'export NETCDF_C_PATH=$NETCDF_DIR\n' \
-                       'export NETCDF_FORTRAN_PATH=$NETCDF_DIR\n' \
-                       'export PNETCDF_PATH=$PNETCDF_DIR'
-    else:
-        netcdf_paths = \
-            'export NETCDF_C_PATH=$(dirname $(dirname $(which nc-config)))\n' \
-            'export NETCDF_FORTRAN_PATH=$(dirname $(dirname $(which nf-config)))\n' \
-            'export PNETCDF_PATH=$(dirname $(dirname $(which pnetcdf-config)))'
-
-    sys_info = dict(modules=mod_commands, mpicc=mpicc, mpicxx=mpicxx,
-                    mpifc=mpifc, esmf_comm=esmf_comm, esmf_netcdf=esmf_netcdf,
-                    esmf_compilers=esmf_compilers, netcdf_paths=netcdf_paths,
-                    env_vars=env_vars)
-
-    return sys_info
-
-
-def build_system_libraries(config, machine, machine_info, compiler, mpi, version,
-                           template_path, env_path, activate_env, channels):
+def build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
+                    activate_env, channels):
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
     ilamb_version = config.get('e3sm_unified', 'ilamb')
-    build_mpi4py = str(compiler is not None and mpi4py_version != 'None')
-    build_ilamb = str(compiler is not None and ilamb_version != 'None')
-    if compiler is not None:
-        esmf = config.get('e3sm_unified', 'esmf')
-        tempest_extremes = config.get('e3sm_unified', 'tempest_extremes')
-    else:
-        # stick with the conda-forge ESMF and TempestExtremes
-        esmf = 'None'
-        tempest_extremes = 'None'
+    build_mpi4py = str(mpi4py_version != 'None')
+    build_ilamb = str(ilamb_version != 'None')
 
-    force_build = False
-    if machine is not None:
-        mpicc, mpicxx, mpifc, mod_commands, env_vars = \
-            machine_info.get_modules_and_mpi_compilers(compiler, mpi)
-        system_libs = os.path.join(config.get('e3sm_unified', 'base_path'),
-                                   'system', machine)
-        compiler_path = os.path.join(
-            system_libs, f'e3sm_unified_{version}', compiler, mpi)
-        esmf_path = os.path.join(compiler_path, f'esmf_{esmf}')
-        tempest_extremes_path = os.path.join(
-            compiler_path, f'tempest_extremes_{tempest_extremes}')
-    else:
-        # using conda-forge compilers
-        mpicc = 'mpicc'
-        mpicxx = 'mpicxx'
-        mpifc = 'mpifort'
-        mod_commands = []
-        env_vars = {}
-        system_libs = None
-        esmf_path = env_path
-        tempest_extremes_path = env_path
-        force_build = True
-
-    sys_info = get_sys_info(machine, compiler, mpi, mpicc, mpicxx,
-                            mpifc, mod_commands, env_vars)
-
-    if esmf != 'None':
-        bin_dir = os.path.join(esmf_path, 'bin')
-        sys_info['env_vars'].append(f'export PATH="{bin_dir}:$PATH"')
-        lib_dir = os.path.join(esmf_path, 'lib')
-        sys_info['env_vars'].append(
-            f'export LD_LIBRARY_PATH={lib_dir}:$LD_LIBRARY_PATH')
-
-    if tempest_extremes != 'None':
-        bin_dir = os.path.join(tempest_extremes_path, 'bin')
-        sys_info['env_vars'].append(f'export PATH="{bin_dir}:$PATH"')
-
-    build_esmf = 'False'
-    if esmf == 'None':
-        esmf_branch = 'None'
-    else:
-        esmf_str = esmf.replace('.', '_')
-        esmf_branch = f'ESMF_{esmf_str}'
-        if not os.path.exists(esmf_path) or force_build:
-            build_esmf = 'True'
-
-    build_tempest_extremes = 'False'
-    if tempest_extremes == 'None':
-        tempest_extremes_branch = 'None'
-    else:
-        tempest_extremes_branch = tempest_extremes
-        if not os.path.exists(tempest_extremes_path) or force_build:
-            build_tempest_extremes = 'True'
+    mpicc, _, _, mod_commands, _ = \
+        machine_info.get_modules_and_mpi_compilers(compiler, mpi)
 
     script_filename = 'build.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
 
-    modules = '\n'.join(sys_info['modules'])
+    modules = '\n'.join(mod_commands)
 
     # need to activate the conda environment to install mpi4py and ilamb, and
     # possibly for compilers and MPI library (if not on a supported machine)
@@ -283,14 +170,10 @@ def build_system_libraries(config, machine, machine_info, compiler, mpi, version
     modules = f'{activate_env_lines}\n{modules}'
 
     script = template.render(
-        sys_info=sys_info, modules=modules, template_path=template_path,
+        mpicc=mpicc, modules=modules, template_path=template_path,
         mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
         ilamb_version=ilamb_version, build_ilamb=build_ilamb,
-        ilamb_channels=channels,
-        esmf_path=esmf_path, esmf_branch=esmf_branch, build_esmf=build_esmf,
-        tempest_extremes_path=tempest_extremes_path,
-        tempest_extremes_branch=tempest_extremes_branch,
-        build_tempest_extremes=build_tempest_extremes)
+        ilamb_channels=channels)
     print(f'Writing {script_filename}')
     with open(script_filename, 'w') as handle:
         handle.write(script)
@@ -298,12 +181,29 @@ def build_system_libraries(config, machine, machine_info, compiler, mpi, version
     command = '/bin/bash build.bash'
     check_call(command)
 
-    return sys_info, system_libs
+
+def build_spack_env(config, machine, compiler, mpi, spack_env):
+
+    base_path = config.get('e3sm_unified', 'base_path')
+    spack_base = f'{base_path}/spack/spack_for_mache_{mache_version}'
+
+    specs = list()
+    section = config['spack_specs']
+    for option in section:
+        value = section[option]
+        if value != '':
+            specs.append(value)
+
+    make_spack_env(spack_path=spack_base, env_name=spack_env,
+                   spack_specs=specs, compiler=compiler, mpi=mpi,
+                   machine=machine)
+
+    return spack_base
 
 
 def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
                             version, activ_suffix, env_name, env_nompi,
-                            sys_info, ext, machine):
+                            sys_info, ext, machine, spack_script):
 
     try:
         os.makedirs(activ_path)
@@ -341,6 +241,7 @@ def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
                              env_type=env_type,
                              script_filename=script_filename,
                              env_nompi=env_nompi,
+                             spack='\n  '.join(spack_script.split('\n')),
                              modules='\n  '.join(sys_info['modules']),
                              env_vars=env_vars,
                              machine=machine)
@@ -372,7 +273,7 @@ def check_env(script_filename, env_name, conda_mpi, machine):
 
     imports = ['mpas_analysis', 'livvkit',
                'IPython', 'globus_cli', 'zstash']
-    if conda_mpi != 'nompi':
+    if conda_mpi not in ['nompi', 'hpc']:
         imports.append('ILAMB')
 
     commands = [['mpas_analysis', '-h'],
@@ -406,7 +307,7 @@ def test_command(command, env, package):
     print(f'  {package} passes')
 
 
-def update_permissions(config, activ_path, conda_base, system_libs):
+def update_permissions(config, activ_path, conda_base, spack_base):
     group = config.get('e3sm_unified', 'group')
 
     new_uid = os.getuid()
@@ -431,8 +332,8 @@ def update_permissions(config, activ_path, conda_base, system_libs):
     # first the base directories that don't seem to be included in
     # os.walk()
     directories = [conda_base]
-    if system_libs is not None:
-        directories.append(system_libs)
+    if spack_base is not None:
+        directories.append(spack_base)
     for directory in directories:
         try:
             dir_stat = os.stat(directory)
@@ -520,7 +421,7 @@ def update_permissions(config, activ_path, conda_base, system_libs):
 
 
 def main():
-    args = parse_args()
+    args = parse_args(bootstrap=True)
 
     source_path = os.getcwd()
     template_path = f'{source_path}/templates'
@@ -545,9 +446,7 @@ def main():
     else:
         is_test = not config.getboolean('e3sm_unified', 'release')
 
-    conda_base = os.path.abspath(os.path.join(
-        config.get('e3sm_unified', 'base_path'), 'base'))
-
+    conda_base = get_conda_base(args.conda_base, config, shared=True)
     base_activation_script = os.path.abspath(
         f'{conda_base}/etc/profile.d/conda.sh')
 
@@ -565,34 +464,44 @@ def main():
     nompi_compiler = None
     nompi_suffix = '_nompi'
     # first, make nompi environment
-    env_path, env_nompi, _, _ = build_env(
-        is_test, recreate, nompi_compiler, mpi, conda_mpi, version,
-        python, conda_base, nompi_suffix, nompi_suffix, activate_base)
+    env_path, env_nompi, _, _, _ = build_env(
+        is_test, recreate, nompi_compiler, mpi, 'nompi', version,
+        python, conda_base, nompi_suffix, nompi_suffix, activate_base,
+        args.local_conda_build)
 
     if not is_test:
         # make a symlink to the environment
         link = os.path.join(conda_base, 'envs', 'e3sm_unified_latest')
         check_call(f'ln -sfn {env_path} {link}')
 
-    env_path, env_name, activate_env, channels = build_env(
+    env_path, env_name, activate_env, channels, spack_env = build_env(
         is_test, recreate, compiler, mpi, conda_mpi, version,
-        python, conda_base, activ_suffix, env_suffix, activate_base)
+        python, conda_base, activ_suffix, env_suffix, activate_base,
+        args.local_conda_build)
+
+    sys_info = dict(modules=[],
+                    env_vars=['export HDF5_USE_FILE_LOCKING=FALSE'])
 
     if compiler is not None:
-        sys_info, system_libs = build_system_libraries(
-            config, machine, machine_info, compiler, mpi, version,
-            template_path, env_path, activate_env, channels)
+        spack_base = build_spack_env(config, machine, compiler, mpi, spack_env)
+        build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
+                        activate_env, channels)
     else:
-        sys_info = dict(modules=[], env_vars=[], mpas_netcdf_paths='')
-        system_libs = None
-
-    sys_info['env_vars'].append('export HDF5_USE_FILE_LOCKING=FALSE')
+        spack_base = None
 
     test_script_filename = None
     for ext in ['sh', 'csh']:
+        if compiler is not None:
+            spack_script = get_spack_script(
+                spack_path=spack_base, env_name=spack_env, compiler=compiler,
+                mpi=mpi, shell=ext, machine=machine)
+        else:
+            spack_script = ''
+
         script_filename = write_load_e3sm_unified(
             template_path, activ_path, conda_base, is_test, version,
-            activ_suffix, env_name, env_nompi, sys_info, ext, machine)
+            activ_suffix, env_name, env_nompi, sys_info, ext, machine,
+            spack_script)
         if ext == 'sh':
             test_script_filename = script_filename
         if not is_test:
@@ -606,7 +515,7 @@ def main():
     commands = f'{activate_base}; conda clean -y -p -t'
     check_call(commands)
 
-    update_permissions(config, activ_path, conda_base, system_libs)
+    update_permissions(config, activ_path, conda_base, spack_base)
 
 
 if __name__ == '__main__':

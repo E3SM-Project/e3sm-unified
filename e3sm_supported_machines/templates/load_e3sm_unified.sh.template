@@ -18,6 +18,8 @@ else
   export E3SMU_MPI="{{ env_type }}"
   conda activate {{ env_name }}
 
+  {{ spack }}
+
   {{ modules }}
 
   {{ env_vars }}
