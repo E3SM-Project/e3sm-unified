@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.5.1" %}
+{% set version = "1.6.0rc1" %}
 {% set build = 0 %}
 
 package:
@@ -15,12 +15,14 @@ build:
   # `e3sm-unified * mpi_*` for any mpi
   # `e3sm-unified * nompi_*` for no mpi
 
-  {% if mpi != 'nompi' %}
-  {% set mpi_prefix = "mpi_" + mpi %}
-  {% else %}
+  {% if mpi == 'nompi' or mpi == 'hpc' %}
   {% set mpi_prefix = "nompi" %}
+  {% set build_prefix = mpi %}
+  {% else %}
+  {% set mpi_prefix = "mpi_" + mpi %}
+  {% set build_prefix = mpi_prefix %}
   {% endif %}
-  string: "{{ mpi_prefix }}_py{{ CONDA_PY }}_h{{ PKG_HASH }}_{{ build }}"
+  string: "{{ build_prefix }}_py{{ CONDA_PY }}_h{{ PKG_HASH }}_{{ build }}"
 
 requirements:
   host:
@@ -32,22 +34,22 @@ requirements:
     - e3sm_to_cmip 1.8.0
     - geometric_features 0.5.0
     - globus-cli
-    - ilamb 2.6  # [mpi != 'nompi']
+    - ilamb 2.6  # [mpi != 'nompi' and mpi != 'hpc']
     - ipython
     - jupyter
     - livvkit 3.0.0
-    - mache 1.1.2
-    - moab 5.3.0 {{ mpi_prefix }}_tempest_*
+    - mache 1.2.0
+    - moab 5.3.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mpas-analysis 1.5.0
-    - mpas_tools 0.11.0
-    - nco 5.0.3
+    - mpas_tools 0.12.0
+    - nco 5.0.4  # [mpi != 'hpc']
     - processflow 2.2.5  # [linux]
-    - tempest-remap 2.1.0
-    - tempest-extremes 2.2 {{ mpi_prefix }}_*
+    - tempest-remap 2.1.1  # [mpi != 'hpc']
+    - tempest-extremes 2.2 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - zstash 1.1.0  # [linux]
     - zppy 1.1.0
     ### dependencies ###
-    - {{ mpi }}  # [mpi != 'nompi']
+    - {{ mpi }}  # [mpi != 'nompi' and mpi != 'hpc']
     - blas
     - bottleneck
     - cartopy >=0.17.0
@@ -58,7 +60,7 @@ requirements:
     - cmocean
     - dask 2021.5.0
     - eofs
-    - esmf 8.1.1 {{ mpi_prefix }}_*
+    - esmf 8.1.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - f90nml
     - genutil 8.2.1
     - globus-sdk
@@ -69,7 +71,7 @@ requirements:
     - lxml
     - matplotlib
     - metpy
-    - mpi4py  # [mpi != 'nompi']
+    - mpi4py  # [mpi != 'nompi' and mpi != 'hpc']
     - nb_conda
     - nb_conda_kernels
     - ncview 2.1.8
@@ -105,11 +107,12 @@ test:
     - pytest
   imports:
     - mpas_analysis
-    - ILAMB  # [mpi != 'nompi']
+    - ILAMB  # [mpi != 'nompi' and mpi != 'hpc']
     - zstash  # [linux]
     - IPython
     - globus_cli
     - livvkit
+    - mache
     - zppy
   commands:
     - mpas_analysis --version
@@ -117,19 +120,19 @@ test:
     - processflow -v  # [linux]
     - e3sm_diags --help
     - zstash --help  # [linux]
-    - ilamb-fetch -h  # [mpi != 'nompi']
-    - ilamb-run -h  # [mpi != 'nompi']
-    - ilamb-table -h  # [mpi != 'nompi']
-    - ncks --help
-    - ncap2 --help
+    - ilamb-fetch -h  # [mpi != 'nompi' and mpi != 'hpc']
+    - ilamb-run -h  # [mpi != 'nompi' and mpi != 'hpc']
+    - ilamb-table -h  # [mpi != 'nompi' and mpi != 'hpc']
+    - ncks --help  # [mpi != 'hpc']
+    - ncap2 --help  # [mpi != 'hpc']
     - jupyter --help
     - jupyter nbextension list
     - ipython -h
     - ipython3 -h
     - globus --help
-    - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g
-    - ESMF_RegridWeightGen --help
-    - test -f ${PREFIX}/bin/Climatology
+    - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g  # [mpi != 'hpc']
+    - ESMF_RegridWeightGen --help  # [mpi != 'hpc']
+    - test -f ${PREFIX}/bin/Climatology  # [mpi != 'hpc']
     - zppy --help
 
 about:
