@@ -121,8 +121,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         if local_conda_build is not None:
             channels = f'{channels} -c {local_conda_build}'
         channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
-                   f'-c conda-forge -c defaults ' \
-                   f'-c e3sm/label/e3sm_dev -c e3sm'
+                   f'-c conda-forge/label/nco_dev -c conda-forge ' \
+                   f'-c defaults -c e3sm/label/e3sm_dev -c e3sm'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
