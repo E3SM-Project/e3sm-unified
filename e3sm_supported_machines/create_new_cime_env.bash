@@ -21,10 +21,10 @@ check_env () {
 
 # Modify the following to choose which cime-env version(s)
 # the python version(s) are installed
-versions=(1.3.0)
-pythons=(3.8)
+versions=(1.4.0)
+pythons=(3.9)
 
-default_python=3.8
+default_python=3.9
 
 # Any subsequent commands which fail will cause the shell script to exit
 # immediately
@@ -35,8 +35,8 @@ channels="-c conda-forge -c defaults -c e3sm"
 
 # The rest of the script should not need to be modified
 if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
-  base_path="/global/cfs/cdirs/e3sm/software/anaconda_envs/base"
-  activ_path="/global/cfs/cdirs/e3sm/software/anaconda_envs"
+  base_path="/global/common/software/e3sm/anaconda_envs/base"
+  activ_path="/global/common/software/e3sm/anaconda_envs"
   group="e3sm"
 elif [[ $HOSTNAME = "acme1"* ]] || [[ $HOSTNAME = "aims4"* ]]; then
   base_path="/usr/local/e3sm_unified/envs/base"
@@ -46,10 +46,10 @@ elif [[ $HOSTNAME = "blueslogin"* ]] || [[ $HOSTNAME = "chrlogin"* ]]; then
   base_path="/lcrc/soft/climate/e3sm-unified/base"
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="cels"
-elif [[ $HOSTNAME = "rhea"* ]]; then
-  base_path="/ccs/proj/cli900/sw/rhea/e3sm-unified/base"
-  activ_path="/ccs/proj/cli900/sw/rhea/e3sm-unified"
-  group="cli900"
+elif [[ $HOSTNAME = "andes"* ]]; then
+  base_path="/gpfs/alpine/proj-shared/cli115/e3sm-unified/base"
+  activ_path="/gpfs/alpine/proj-shared/cli115/e3sm-unified"
+  group="cli115"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
   activ_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified"
@@ -58,7 +58,7 @@ elif [[ $HOSTNAME = "compy"* ]]; then
   base_path="/share/apps/E3SM/conda_envs/base"
   activ_path="/share/apps/E3SM/conda_envs"
   group="users"
-elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "wf-fe"* ]]; then
+elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "ba-fe"* ]]; then
   base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
   activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
   group="climate"
