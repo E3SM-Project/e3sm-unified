@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.6.0rc4" %}
+{% set version = "1.6.0rc5" %}
 {% set build = 0 %}
 
 package:
@@ -38,11 +38,11 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.0.0
-    - mache 1.2.0rc2
+    - mache 1.2.0rc3
     - moab 5.3.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mpas-analysis 1.6.0rc1
+    - mpas-analysis 1.6.0rc2
     - mpas_tools 0.12.0
-    - nco 5.0.5beta03  # [mpi != 'hpc']
+    - nco 5.0.5  # [mpi != 'hpc']
     - processflow 2.2.5  # [linux]
     - tempest-remap 2.1.1  # [mpi != 'hpc']
     - tempest-extremes 2.2 {{ mpi_prefix }}_*  # [mpi != 'hpc']
