@@ -140,6 +140,14 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         commands = f'{activate_base}; ' \
                    f'mamba create -y -n {env_name} {channels} {packages}'
         check_call(commands)
+
+        if conda_mpi == 'hpc':
+            remove_packages = 'esmf nco tempest-remap'
+            # remove conda-forge versions so we're sure to use Spack versions
+            commands = f'{activate_base}; conda remove -y --force ' \
+                       f'-n {env_name} {remove_packages}'
+            check_call(commands)
+
     else:
         print(f'{env_name} already exists')
 
