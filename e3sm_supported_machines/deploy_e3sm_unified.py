@@ -48,10 +48,12 @@ def bootstrap(activate_install_env, source_path, local_conda_build):
 def setup_install_env(activate_base, config, use_local):
     print('Setting up a conda environment for installing E3SM-Unified')
     mache_version = config.get('e3sm_unified', 'mache')
+    channels = []
     if use_local:
-        channels = '--use-local'
-    else:
-        channels = ''
+        channels.append('--use-local')
+    if 'rc' in mache_version:
+        channels.append('-c conda-forge/label/e3sm_dev')
+    channels = ' '.join(channels)
     commands = '{}; ' \
                'mamba create -y -n temp_e3sm_unified_install ' \
                '{} progressbar2 jinja2 mache={}'.format(activate_base,
