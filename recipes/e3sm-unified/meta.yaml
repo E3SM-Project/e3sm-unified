@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.6.0rc6" %}
+{% set version = "1.6.0rc7" %}
 {% set build = 0 %}
 
 package:
@@ -42,7 +42,7 @@ requirements:
     - moab 5.3.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mpas-analysis 1.6.0rc2
     - mpas_tools 0.12.0
-    - nco 5.0.6alpha02  # [mpi != 'hpc']
+    - nco 5.0.6  # [mpi != 'hpc']
     - processflow 2.2.5  # [linux]
     - tempest-remap 2.1.1  # [mpi != 'hpc']
     - tempest-extremes 2.2 {{ mpi_prefix }}_*  # [mpi != 'hpc']
@@ -58,7 +58,7 @@ requirements:
     - cdtime 3.1.4
     - cdutil 8.2.1
     - cmocean
-    - dask 2021.5.0
+    - dask 2022.01.1
     - eofs
     - esmf 8.1.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - f90nml
@@ -93,7 +93,7 @@ requirements:
     - shapely
     - sympy >=0.7.6
     - tabulate
-    - xarray 0.20.2
+    - xarray 0.21.1
     - xesmf
 
     # addition ilamb 2.6 dependencies, for system MPI builds
