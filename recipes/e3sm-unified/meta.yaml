@@ -107,6 +107,8 @@ test:
   requires:
     - pytest
   imports:
+    - e3sm_diags
+    - e3sm_to_cmip
     - mpas_analysis
     - ILAMB  # [mpi != 'nompi' and mpi != 'hpc']
     - zstash  # [linux]
