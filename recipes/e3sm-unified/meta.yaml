@@ -62,6 +62,7 @@ requirements:
     - eofs
     - esmf 8.1.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - f90nml
+    - ffmpeg
     - genutil 8.2.1
     - globus-sdk
     - gsw
