@@ -3,6 +3,7 @@ import argparse
 import subprocess
 import os
 import platform
+import warnings
 
 try:
     from urllib.request import urlopen, Request
@@ -10,10 +11,10 @@ except ImportError:
     from urllib2 import urlopen, Request
 
 
-def parse_args():
+def parse_args(bootstrap):
     parser = argparse.ArgumentParser(
         description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.5.1",
+    parser.add_argument("--version", dest="version", default="1.6.0",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("--conda", dest="conda_base",
                         help="Path for the  conda base")
@@ -35,6 +36,12 @@ def parse_args():
     parser.add_argument("--release", dest="release", action='store_true',
                         help="Indicates that this is a release, not a test, "
                              "build")
+    parser.add_argument("--use_local", dest="use_local", action='store_true',
+                        help="Use locally built conda packages (for testing).")
+    if bootstrap:
+        parser.add_argument("--local_conda_build", dest="local_conda_build",
+                            type=str,
+                            help="A path for conda packages (for testing).")
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -81,3 +88,28 @@ def install_miniconda(conda_base, activate_base):
                'conda update -y --all'.format(activate_base)
 
     check_call(commands)
+
+
+def get_conda_base(conda_base, config, shared):
+    if shared:
+        conda_base = os.path.join(
+            config.get('e3sm_unified', 'base_path'), 'base')
+    elif conda_base is None:
+        if config.has_option('e3sm_unified', 'base_path'):
+            conda_base = os.path.abspath(os.path.join(
+                config.get('e3sm_unified', 'base_path'), 'base'))
+        elif 'CONDA_EXE' in os.environ:
+            # if this is a test, assume we're the same base as the
+            # environment currently active
+            conda_exe = os.environ['CONDA_EXE']
+            conda_base = os.path.abspath(
+                os.path.join(conda_exe, '..', '..'))
+            warnings.warn(
+                '--conda path not supplied.  Using conda installed at '
+                '{}'.format(conda_base))
+        else:
+            raise ValueError('No conda base provided with --conda and '
+                             'none could be inferred.')
+    # handle "~" in the path
+    conda_base = os.path.abspath(os.path.expanduser(conda_base))
+    return conda_base
