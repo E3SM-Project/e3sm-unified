@@ -21,7 +21,7 @@ check_env () {
 
 # Modify the following to choose which cime-env version(s)
 # the python version(s) are installed
-versions=(1.4.0)
+versions=(1.5.0)
 pythons=(3.9)
 
 default_python=3.9
