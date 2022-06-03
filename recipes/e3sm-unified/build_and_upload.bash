@@ -4,7 +4,7 @@ set -e
 
 rm -rf ~/miniconda3/conda-bld
 upload=False
-dev=False
+dev=True
 
 if [ $dev == "True" ]
 then
