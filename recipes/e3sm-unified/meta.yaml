@@ -38,7 +38,7 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.0.0
-    - mache 1.2.0
+    - mache 1.4.1
     - moab 5.3.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mpas-analysis 1.6.1
     - mpas_tools 0.12.0
