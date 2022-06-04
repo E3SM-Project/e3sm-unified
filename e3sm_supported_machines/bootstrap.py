@@ -2,11 +2,7 @@
 
 import os
 import subprocess
-import glob
-import stat
-import grp
 import shutil
-import progressbar
 from jinja2 import Template
 from importlib.resources import path
 from configparser import ConfigParser
@@ -14,6 +10,7 @@ from configparser import ConfigParser
 from mache import discover_machine, MachineInfo
 from mache.spack import make_spack_env, get_spack_script
 from mache.version import __version__ as mache_version
+from mache.permissions import update_permissions
 from shared import parse_args, check_call, install_miniconda, get_conda_base
 
 
@@ -313,119 +310,6 @@ def test_command(command, env, package):
     print(f'  {package} passes')
 
 
-def update_permissions(config, activ_path, conda_base, spack_base):
-    group = config.get('e3sm_unified', 'group')
-
-    new_uid = os.getuid()
-    new_gid = grp.getgrnam(group).gr_gid
-
-    print('changing permissions on activation scripts')
-    activation_files = glob.glob(f'{activ_path}/*_e3sm_unified*.*')
-
-    read_perm = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH
-    exec_perm = (stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |
-                 stat.S_IRGRP | stat.S_IXGRP |
-                 stat.S_IROTH | stat.S_IXOTH)
-
-    mask = stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO
-
-    for file_name in activation_files:
-        os.chmod(file_name, read_perm)
-        os.chown(file_name, new_uid, new_gid)
-
-    print('changing permissions on environments')
-
-    # first the base directories that don't seem to be included in
-    # os.walk()
-    directories = [conda_base]
-    if spack_base is not None:
-        directories.append(spack_base)
-    for directory in directories:
-        try:
-            dir_stat = os.stat(directory)
-        except OSError:
-            continue
-
-        perm = dir_stat.st_mode & mask
-
-        if perm == exec_perm and dir_stat.st_uid == new_uid and \
-                dir_stat.st_gid == new_gid:
-            continue
-
-        try:
-            os.chown(directory, new_uid, new_gid)
-            os.chmod(directory, exec_perm)
-        except OSError:
-            continue
-
-    files_and_dirs = []
-    for base in directories:
-        for root, dirs, files in os.walk(base):
-            files_and_dirs.extend(dirs)
-            files_and_dirs.extend(files)
-
-    widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
-               ' ', progressbar.ETA()]
-    bar = progressbar.ProgressBar(widgets=widgets,
-                                  maxval=len(files_and_dirs),
-                                  maxerror=False).start()
-    progress = 0
-    for base in directories:
-        for root, dirs, files in os.walk(base):
-            for directory in dirs:
-                progress += 1
-                bar.update(progress)
-
-                directory = os.path.join(root, directory)
-
-                try:
-                    dir_stat = os.stat(directory)
-                except OSError:
-                    continue
-
-                perm = dir_stat.st_mode & mask
-
-                if perm == exec_perm and dir_stat.st_uid == new_uid and \
-                        dir_stat.st_gid == new_gid:
-                    continue
-
-                try:
-                    os.chown(directory, new_uid, new_gid)
-                    os.chmod(directory, exec_perm)
-                except OSError:
-                    continue
-
-            for file_name in files:
-                progress += 1
-                bar.update(progress)
-                file_name = os.path.join(root, file_name)
-                try:
-                    file_stat = os.stat(file_name)
-                except OSError:
-                    continue
-
-                perm = file_stat.st_mode & mask
-
-                if perm & stat.S_IXUSR:
-                    # executable, so make sure others can execute it
-                    new_perm = exec_perm
-                else:
-                    new_perm = read_perm
-
-                if perm == new_perm and file_stat.st_uid == new_uid and \
-                        file_stat.st_gid == new_gid:
-                    continue
-
-                try:
-                    os.chown(file_name, new_uid, new_gid)
-                    os.chmod(file_name, perm)
-                except OSError:
-                    continue
-
-    bar.finish()
-    print('  done.')
-
-
 def main():
     args = parse_args(bootstrap=True)
 
@@ -524,7 +408,12 @@ def main():
     commands = f'{activate_base}; conda clean -y -p -t'
     check_call(commands)
 
-    update_permissions(config, activ_path, conda_base, spack_base)
+    paths = [activ_path, conda_base]
+    if spack_base is not None:
+        paths.append(spack_base)
+    group = config.get('e3sm_unified', 'group')
+    update_permissions(paths, group, show_progress=True,
+                       group_writable=False, other_readable=True)
 
 
 if __name__ == '__main__':
