@@ -1,6 +1,6 @@
 {% set name = "E3SM-Unified" %}
 {% set version = "1.7.0rc1" %}
-{% set build = 0 %}
+{% set build = 1 %}
 
 package:
   name: {{ name|lower }}
@@ -32,14 +32,14 @@ requirements:
     - python
     - compass 1.1.0rc.2 {{ mpi_prefix }}_*
     - e3sm_diags 2.7.0rc1
-    - e3sm_to_cmip 1.8.2
+    - e3sm_to_cmip 1.8.2rc1
     - geometric_features 0.6.0
     - globus-cli
     - ilamb 2.6  # [mpi != 'nompi' and mpi != 'hpc']
     - ipython
     - jupyter
     - livvkit 3.0.1
-    - mache 1.4.1
+    - mache 1.4.1rc1
     - moab 5.3.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']  # trouble with tempest-remap
     - mpas-analysis 1.7.0rc1
     - mpas_tools 0.14.0
