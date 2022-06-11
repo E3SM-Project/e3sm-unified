@@ -283,8 +283,7 @@ def check_env(script_filename, env_name, conda_mpi, machine):
     commands = [['mpas_analysis', '-h'],
                 ['livv', '--version'],
                 ['globus', '--help'],
-                ['zstash', '--help'],
-                ['processflow', '-v']]
+                ['zstash', '--help']]
 
     if machine is None:
         # on HPC machines, these only work on compute nodes because of mpi4py

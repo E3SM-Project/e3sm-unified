@@ -45,7 +45,7 @@ conda activate e3sm-unified
 check_last_rc "Could not source e3sm-unified conda environment\n"
 
 # Try to run some simple help commands
-for cmd in "e3sm_diags" "processflow" "mpas_analysis"
+for cmd in "e3sm_diags" "mpas_analysis"
 do
     $cmd --help
     check_last_rc "$cmd help failed\n"

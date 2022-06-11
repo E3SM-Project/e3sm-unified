@@ -23,6 +23,5 @@ conda create -n e3sm-unified-nompi -c conda-forge -c defaults -c e3sm \
     python=3.9 "e3sm-unified=*=nompi_*"
 ```
 
- The following packages are only available for linux and not OSX:
- - processflow
+ The following package is only available for linux and not OSX:
  - zstash
