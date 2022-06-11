@@ -7,8 +7,9 @@ from jinja2 import Template
 from importlib.resources import path
 from configparser import ConfigParser
 
-from mache import discover_machine, MachineInfo
-from mache.spack import make_spack_env, get_spack_script
+from mache import discover_machine
+from mache.spack import make_spack_env, get_spack_script, \
+    get_modules_env_vars_and_mpi_compilers
 from mache.version import __version__ as mache_version
 from mache.permissions import update_permissions
 from shared import parse_args, check_call, install_miniconda, get_conda_base
@@ -150,7 +151,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     return env_path, env_name, activate_env, channels, spack_env
 
 
-def build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
+def build_sys_ilamb(config, machine, compiler, mpi, template_path,
                     activate_env, channels):
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
@@ -158,15 +159,14 @@ def build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
     build_mpi4py = str(mpi4py_version != 'None')
     build_ilamb = str(ilamb_version != 'None')
 
-    mpicc, _, _, mod_commands, _ = \
-        machine_info.get_modules_and_mpi_compilers(compiler, mpi)
+    mpicc, _, _, modules = \
+        get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
+                                               shell='sh')
 
     script_filename = 'build.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
-
-    modules = '\n'.join(mod_commands)
 
     # need to activate the conda environment to install mpi4py and ilamb, and
     # possibly for compilers and MPI library (if not on a supported machine)
@@ -325,11 +325,6 @@ def main():
         machine = discover_machine()
         print(f'discovered: {machine}')
 
-    if machine is not None:
-        machine_info = MachineInfo(machine=machine)
-    else:
-        machine_info = None
-
     config = get_config(args.config_file, machine)
 
     if args.release:
@@ -378,7 +373,7 @@ def main():
 
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env)
-        build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
+        build_sys_ilamb(config, machine, compiler, mpi, template_path,
                         activate_env, channels)
     else:
         spack_base = None
