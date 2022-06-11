@@ -200,7 +200,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
-                   machine=machine, tmpdir=tmpdir)
+                   machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True)
 
     return spack_base
 
@@ -372,7 +372,7 @@ def main():
 
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
-                                     args.tmpdir)
+                                     args.tmpdir, )
         build_sys_ilamb(config, machine, compiler, mpi, template_path,
                         activate_env, channels)
     else:
