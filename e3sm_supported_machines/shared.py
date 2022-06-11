@@ -38,6 +38,9 @@ def parse_args(bootstrap):
                              "build")
     parser.add_argument("--use_local", dest="use_local", action='store_true',
                         help="Use locally built conda packages (for testing).")
+    parser.add_argument("--tmpdir", dest="tmpdir",
+                        help="A temporary directory for building spack "
+                             "packages")
     if bootstrap:
         parser.add_argument("--local_conda_build", dest="local_conda_build",
                             type=str,

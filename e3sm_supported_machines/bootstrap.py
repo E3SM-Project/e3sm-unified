@@ -186,7 +186,7 @@ def build_sys_ilamb(config, machine, compiler, mpi, template_path,
     check_call(command)
 
 
-def build_spack_env(config, machine, compiler, mpi, spack_env):
+def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/spack_for_mache_{mache_version}'
@@ -200,7 +200,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env):
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
-                   machine=machine)
+                   machine=machine, tmpdir=tmpdir)
 
     return spack_base
 
@@ -372,7 +372,8 @@ def main():
                     env_vars=['export HDF5_USE_FILE_LOCKING=FALSE'])
 
     if compiler is not None:
-        spack_base = build_spack_env(config, machine, compiler, mpi, spack_env)
+        spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
+                                     args.tmpdir)
         build_sys_ilamb(config, machine, compiler, mpi, template_path,
                         activate_env, channels)
     else:
