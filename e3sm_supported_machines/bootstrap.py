@@ -117,11 +117,9 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         if nco_dev:
             channels = f'{channels} -c conda-forge/label/nco_dev'
         channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
-                   f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev ' \
-                   f'-c e3sm/label/compass_dev -c e3sm'
+                   f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm'
     else:
-        channels = '--override-channels -c conda-forge -c defaults ' \
-                   '-c e3sm/label/compass -c e3sm'
+        channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
     packages = f'python={python} pip'
 
