@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.7.0rc3" %}
+{% set version = "1.7.0rc4" %}
 {% set build = 0 %}
 
 package:
@@ -42,9 +42,11 @@ requirements:
     - moab 5.3.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']  # trouble with tempest-remap
     - mpas-analysis 1.7.0rc1
     - mpas_tools 0.14.0
-    - nco 5.0.8beta01  # [mpi != 'hpc']
+    - nco 5.0.8beta03  # [mpi != 'hpc']
+    - pcmdi_metrics 2.3.1
     - tempest-remap 2.1.1  # [mpi != 'hpc']  # 2.1.3; trouble with nco
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
+    - xcdat 0.3.0
     - zstash 1.2.1rc1  # [linux]  # doesn't work with python 3.10 yet
     - zppy 2.1.0rc3
     ### dependencies ###
