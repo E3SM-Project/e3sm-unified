@@ -13,8 +13,8 @@ except ImportError:
 
 def parse_args(bootstrap):
     parser = argparse.ArgumentParser(
-        description='Deploy a compass conda environment')
-    parser.add_argument("--version", dest="version", default="1.6.0",
+        description='Deploy E3SM-Unified')
+    parser.add_argument("--version", dest="version", default="1.7.0",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("--conda", dest="conda_base",
                         help="Path for the  conda base")
@@ -38,6 +38,9 @@ def parse_args(bootstrap):
                              "build")
     parser.add_argument("--use_local", dest="use_local", action='store_true',
                         help="Use locally built conda packages (for testing).")
+    parser.add_argument("--tmpdir", dest="tmpdir",
+                        help="A temporary directory for building spack "
+                             "packages")
     if bootstrap:
         parser.add_argument("--local_conda_build", dest="local_conda_build",
                             type=str,

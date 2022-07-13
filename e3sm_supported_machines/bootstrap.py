@@ -7,8 +7,9 @@ from jinja2 import Template
 from importlib.resources import path
 from configparser import ConfigParser
 
-from mache import discover_machine, MachineInfo
-from mache.spack import make_spack_env, get_spack_script
+from mache import discover_machine
+from mache.spack import make_spack_env, get_spack_script, \
+    get_modules_env_vars_and_mpi_compilers
 from mache.version import __version__ as mache_version
 from mache.permissions import update_permissions
 from shared import parse_args, check_call, install_miniconda, get_conda_base
@@ -116,8 +117,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         if nco_dev:
             channels = f'{channels} -c conda-forge/label/nco_dev'
         channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
-                   f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev ' \
-                   f'-c e3sm'
+                   f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
@@ -149,7 +149,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     return env_path, env_name, activate_env, channels, spack_env
 
 
-def build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
+def build_sys_ilamb(config, machine, compiler, mpi, template_path,
                     activate_env, channels):
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
@@ -157,15 +157,14 @@ def build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
     build_mpi4py = str(mpi4py_version != 'None')
     build_ilamb = str(ilamb_version != 'None')
 
-    mpicc, _, _, mod_commands, _ = \
-        machine_info.get_modules_and_mpi_compilers(compiler, mpi)
+    mpicc, _, _, modules = \
+        get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
+                                               shell='sh')
 
     script_filename = 'build.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
-
-    modules = '\n'.join(mod_commands)
 
     # need to activate the conda environment to install mpi4py and ilamb, and
     # possibly for compilers and MPI library (if not on a supported machine)
@@ -185,7 +184,7 @@ def build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
     check_call(command)
 
 
-def build_spack_env(config, machine, compiler, mpi, spack_env):
+def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/spack_for_mache_{mache_version}'
@@ -199,7 +198,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env):
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
-                   machine=machine)
+                   machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True)
 
     return spack_base
 
@@ -282,8 +281,7 @@ def check_env(script_filename, env_name, conda_mpi, machine):
     commands = [['mpas_analysis', '-h'],
                 ['livv', '--version'],
                 ['globus', '--help'],
-                ['zstash', '--help'],
-                ['processflow', '-v']]
+                ['zstash', '--help']]
 
     if machine is None:
         # on HPC machines, these only work on compute nodes because of mpi4py
@@ -323,11 +321,6 @@ def main():
     if machine is None:
         machine = discover_machine()
         print(f'discovered: {machine}')
-
-    if machine is not None:
-        machine_info = MachineInfo(machine=machine)
-    else:
-        machine_info = None
 
     config = get_config(args.config_file, machine)
 
@@ -376,8 +369,9 @@ def main():
                     env_vars=['export HDF5_USE_FILE_LOCKING=FALSE'])
 
     if compiler is not None:
-        spack_base = build_spack_env(config, machine, compiler, mpi, spack_env)
-        build_sys_ilamb(config, machine_info, compiler, mpi, template_path,
+        spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
+                                     args.tmpdir, )
+        build_sys_ilamb(config, machine, compiler, mpi, template_path,
                         activate_env, channels)
     else:
         spack_base = None
