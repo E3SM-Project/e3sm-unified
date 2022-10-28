@@ -2,7 +2,7 @@
 
 set -e
 
-rm -rf ~/miniconda3/conda-bld
+rm -rf ~/mambaforge/conda-bld
 upload=False
 dev=False
 
