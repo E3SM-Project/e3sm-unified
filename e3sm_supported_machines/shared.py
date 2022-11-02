@@ -69,8 +69,9 @@ def install_miniconda(conda_base, activate_base):
             system = 'MacOSX'
         else:
             system = 'Linux'
-        miniconda = 'Miniconda3-latest-{}-x86_64.sh'.format(system)
-        url = 'https://repo.continuum.io/miniconda/{}'.format(miniconda)
+
+        miniconda = 'Mambaforge-{}-x86_64.sh'.format(system)
+        url = 'https://github.com/conda-forge/miniforge/releases/latest/download/{}'.format(miniconda)
         print(url)
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         f = urlopen(req)
@@ -87,8 +88,11 @@ def install_miniconda(conda_base, activate_base):
     commands = '{}; ' \
                'conda config --add channels conda-forge; ' \
                'conda config --set channel_priority strict; ' \
-               'conda install -y mamba boa; ' \
-               'conda update -y --all'.format(activate_base)
+               'conda install -y boa; ' \
+               'conda update -y --all; ' \
+               'cp ~/.bashrc ~/.bashrc.conda_bak; ' \
+               'mamba init; ' \
+               'mv ~/.bashrc.conda_bak ~/.bashrc'.format(activate_base)
 
     check_call(commands)
 

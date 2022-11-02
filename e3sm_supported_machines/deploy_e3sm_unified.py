@@ -79,16 +79,18 @@ def main():
     config = get_config(args.config_file)
 
     conda_base = get_conda_base(args.conda_base, config, shared=False)
+    conda_base = os.path.abspath(conda_base)
 
-    base_activation_script = os.path.abspath(
-        '{}/etc/profile.d/conda.sh'.format(conda_base))
+    source_activation_scripts = \
+        'source {}/etc/profile.d/conda.sh; ' \
+        'source {}/etc/profile.d/mamba.sh'.format(conda_base, conda_base)
 
-    activate_base = 'source {}; conda activate'.format(base_activation_script)
+    activate_base = '{}; conda activate'.format(source_activation_scripts)
 
     activate_install_env = \
-        'source {}; ' \
+        '{}; ' \
         'conda activate temp_e3sm_unified_install'.format(
-            base_activation_script)
+            source_activation_scripts)
 
     # install miniconda if needed
     install_miniconda(conda_base, activate_base)

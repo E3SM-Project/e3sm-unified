@@ -123,11 +123,11 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
     packages = f'python={python} pip'
 
-    base_activation_script = os.path.abspath(
-        f'{conda_base}/etc/profile.d/conda.sh')
+    source_activation_scripts = \
+        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_env = \
-        'source {}; conda activate {}'.format(base_activation_script, env_name)
+    activate_env = f'{source_activation_scripts}; conda activate {env_name}'
 
     if not os.path.exists(env_path) or recreate:
         print(f'creating {env_name}')
@@ -330,10 +330,13 @@ def main():
         is_test = not config.getboolean('e3sm_unified', 'release')
 
     conda_base = get_conda_base(args.conda_base, config, shared=True)
-    base_activation_script = os.path.abspath(
-        f'{conda_base}/etc/profile.d/conda.sh')
+    conda_base = os.path.abspath(conda_base)
 
-    activate_base = f'source {base_activation_script}; conda activate'
+    source_activation_scripts = \
+        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/mamba.sh'
+
+    activate_base = f'{source_activation_scripts}; conda activate'
 
     # install miniconda if needed
     install_miniconda(conda_base, activate_base)
