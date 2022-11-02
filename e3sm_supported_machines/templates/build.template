@@ -8,11 +8,11 @@ set -e
 
 
 if [ "{{ build_mpi4py }}" == "True" ]; then
-    MPICC="{{ mpicc }} -shared" python -m pip install --no-binary=mpi4py "mpi4py=={{ mpi4py_version }}"
+    MPICC="{{ mpicc }} -shared" python -m pip install --no-cache-dir "mpi4py=={{ mpi4py_version }}"
 fi
 
 
 
 if [ "{{ build_ilamb }}" == "True" ]; then
-    conda install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
+    mamba install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
 fi
