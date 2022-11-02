@@ -52,7 +52,7 @@ def parse_args(bootstrap):
 
 
 def check_call(commands, env=None):
-    print('running: {}'.format(commands))
+    print('\n\nrunning:\n  {}\n\n'.format('\n  '.join(commands.split('; '))))
     proc = subprocess.Popen(commands, env=env, executable='/bin/bash',
                             shell=True)
     proc.wait()
