@@ -79,7 +79,7 @@ def get_env_setup(args, config, machine):
 
 def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
               python, conda_base, activ_suffix, env_suffix, activate_base,
-              local_conda_build, nco_dev):
+              local_conda_build, config):
 
     if compiler is not None:
         build_dir = f'build{activ_suffix}'
@@ -110,12 +110,20 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         mpi_prefix = f'mpi_{conda_mpi}'
 
     if is_test:
+
+        nco_spec = config.get('spack_specs', 'nco')
+        nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
+        moab_spec = config.get('spack_specs', 'moab')
+        moab_dev = ('rc' in moab_spec.lower())
+
         channels = '--override-channels'
         if local_conda_build is not None:
             channels = f'{channels} -c {local_conda_build}'
 
         if nco_dev:
             channels = f'{channels} -c conda-forge/label/nco_dev'
+        if moab_dev:
+            channels = f'{channels} -c conda-forge/label/moab_dev'
         channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
                    f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm'
     else:
@@ -123,11 +131,11 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
     packages = f'python={python} pip'
 
-    base_activation_script = os.path.abspath(
-        f'{conda_base}/etc/profile.d/conda.sh')
+    source_activation_scripts = \
+        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_env = \
-        'source {}; conda activate {}'.format(base_activation_script, env_name)
+    activate_env = f'{source_activation_scripts}; conda activate {env_name}'
 
     if not os.path.exists(env_path) or recreate:
         print(f'creating {env_name}')
@@ -330,10 +338,13 @@ def main():
         is_test = not config.getboolean('e3sm_unified', 'release')
 
     conda_base = get_conda_base(args.conda_base, config, shared=True)
-    base_activation_script = os.path.abspath(
-        f'{conda_base}/etc/profile.d/conda.sh')
+    conda_base = os.path.abspath(conda_base)
 
-    activate_base = f'source {base_activation_script}; conda activate'
+    source_activation_scripts = \
+        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/mamba.sh'
+
+    activate_base = f'{source_activation_scripts}; conda activate'
 
     # install miniconda if needed
     install_miniconda(conda_base, activate_base)
@@ -344,16 +355,13 @@ def main():
     if machine is None:
         compiler = None
 
-    nco_spec = config.get('spack_specs', 'nco')
-    nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
-
     nompi_compiler = None
     nompi_suffix = '_nompi'
     # first, make nompi environment
     env_path, env_nompi, _, _, _ = build_env(
         is_test, recreate, nompi_compiler, mpi, 'nompi', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
-        args.local_conda_build, nco_dev)
+        args.local_conda_build, config)
 
     if not is_test:
         # make a symlink to the environment
@@ -363,7 +371,7 @@ def main():
     env_path, env_name, activate_env, channels, spack_env = build_env(
         is_test, recreate, compiler, mpi, conda_mpi, version,
         python, conda_base, activ_suffix, env_suffix, activate_base,
-        args.local_conda_build, nco_dev)
+        args.local_conda_build, config)
 
     sys_info = dict(modules=[],
                     env_vars=['export HDF5_USE_FILE_LOCKING=FALSE'])
