@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.8.1rc2" %}
+{% set version = "1.8.1rc3" %}
 {% set build = 0 %}
 
 package:
@@ -38,7 +38,7 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.0.1
-    - mache 1.10.0rc1
+    - mache 1.10.0rc2
     - moab 5.4.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mpas-analysis 1.8.0
     - mpas_tools 0.15.0
