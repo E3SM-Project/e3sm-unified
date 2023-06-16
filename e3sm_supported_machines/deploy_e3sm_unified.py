@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 
@@ -52,7 +52,7 @@ def setup_install_env(activate_base, config, use_local):
     if use_local:
         channels.append('--use-local')
     if 'rc' in mache_version:
-        channels.append('-c conda-forge/label/e3sm_dev')
+        channels.append('-c conda-forge/label/mache_dev')
     channels = ' '.join(channels)
     commands = '{}; ' \
                'mamba create -y -n temp_e3sm_unified_install ' \
