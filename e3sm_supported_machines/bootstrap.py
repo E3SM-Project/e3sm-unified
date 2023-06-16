@@ -22,7 +22,7 @@ def get_config(config_file, machine):
     config.read(default_config)
 
     if machine is not None:
-        with path('mache.machines', '{}.cfg'.format(machine)) as machine_config:
+        with path('mache.machines', f'{machine}.cfg') as machine_config:
             config.read(str(machine_config))
 
     if config_file is not None:
@@ -98,7 +98,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     env_name = f'e3sm_unified_{version}{env_suffix}'
 
     # add the compiler and MPI library to the spack env name
-    spack_env = '{}_{}_{}'.format(env_name, compiler, mpi)
+    spack_env = f'{env_name}_{compiler}_{mpi}'
     # spack doesn't like dots
     spack_env = spack_env.replace('.', '_')
 
@@ -195,7 +195,7 @@ def build_sys_ilamb(config, machine, compiler, mpi, template_path,
 def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
-    spack_base = f'{base_path}/spack/spack_for_mache_{mache_version}'
+    spack_base = f'{base_path}/spack/{spack_env}'
 
     specs = list()
     section = config['spack_specs']
@@ -378,7 +378,7 @@ def main():
 
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
-                                     args.tmpdir, )
+                                     args.tmpdir)
         build_sys_ilamb(config, machine, compiler, mpi, template_path,
                         activate_env, channels)
     else:
