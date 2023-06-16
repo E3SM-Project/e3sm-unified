@@ -4,17 +4,21 @@ set -e
 
 rm -rf ~/mambaforge/conda-bld
 upload=False
-dev=False
+dev=True
 
 if [ $dev == "True" ]
 then
-  channels="-c e3sm/label/e3sm_dev -c conda-forge/label/e3sm_dev \
-  -c conda-forge -c defaults -c e3sm"
+  channels="-c conda-forge/label/mache_dev \
+            -c conda-forge/label/mpas_analysis_dev \
+            -c conda-forge/label/zppy_dev \
+            -c conda-forge \
+            -c defaults"
 else
   channels="-c conda-forge -c defaults -c e3sm"
 fi
 
-for file in configs/mpi_*_python*.yaml
+for file in configs/mpi_hpc_python3.9.yaml
+#for file in configs/mpi_*_python*.yaml
 do
   conda mambabuild -m $file --override-channels $channels .
 done

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from jinja2 import Template
 
@@ -8,8 +8,8 @@ with open('template.yaml') as f:
 
 template = Template(tempate_test)
 for python in ['3.8', '3.9', '3.10']:
-    for mpi in ['nompi', 'mpich', 'openmpi', 'hpc']:
+    for mpi in ['mpich', 'openmpi', 'hpc']:
         script = template.render(python=python, mpi=mpi)
-        filename = 'mpi_{}_python{}.yaml'.format(mpi, python)
+        filename = f'mpi_{mpi}_python{python}.yaml'
         with open(filename, 'w') as handle:
             handle.write(script)
