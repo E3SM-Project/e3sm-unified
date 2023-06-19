@@ -33,18 +33,19 @@ requirements:
     - e3sm_diags 2.8.0
     - e3sm_to_cmip 1.9.1
     - geometric_features 1.2.0
-    - globus-cli
+    # issues with cryptography <37 constraint an openssl 3
+    # - globus-cli
     - ilamb 2.6  # [mpi != 'nompi' and mpi != 'hpc']
     - ipython
     - jupyter
     - livvkit 3.0.1
     - mache 1.16.0rc1
-    - moab 5.4.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
+    - moab 5.5.0rc1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mpas-analysis 1.9.0rc1
     - mpas_tools 0.20.0
     - nco 5.1.6  # [mpi != 'hpc']
     - pcmdi_metrics 2.3.1
-    - tempest-remap 2.1.6  # [mpi != 'hpc']
+    - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - xcdat 0.5.0
     - zstash 1.3.0  # [linux]
@@ -79,7 +80,7 @@ requirements:
     - nb_conda_kernels
     - ncview 2.1.8
     - ncvis-climate
-    - netcdf4 1.6.1 nompi_*
+    - netcdf4 1.6.4 nompi_*
     - numpy >1.13
     - openssh  # [mpi == 'openmpi']
     - output_viewer 1.3.3
@@ -94,7 +95,7 @@ requirements:
     - pywavelets
     - scikit-image
     - scipy >=0.9.0
-    - shapely <2.0.0
+    - shapely
     - sympy >=0.7.6
     - tabulate
     - xarray 2023.5.0
@@ -116,7 +117,7 @@ test:
     - ILAMB  # [mpi != 'nompi' and mpi != 'hpc']
     - zstash  # [linux]
     - IPython
-    - globus_cli
+    #- globus_cli
     - livvkit
     - mache
     - zppy
@@ -134,7 +135,7 @@ test:
     - jupyter nbextension list
     - ipython -h
     - ipython3 -h
-    - globus --help
+    #- globus --help
     - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g  # [mpi != 'hpc']
     - ESMF_RegridWeightGen --help  # [mpi != 'hpc']
     - test -f ${PREFIX}/bin/Climatology  # [mpi != 'hpc']
