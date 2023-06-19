@@ -356,10 +356,11 @@ def main():
         compiler = None
 
     nompi_compiler = None
-    nompi_suffix = '_nompi'
-    # first, make nompi environment
+    nompi_suffix = '_login'
+    # first, make environment for login nodes.  We're using mpich from
+    # conda-forge for now because we haven't had any luck with esmf>8.2.0 nompi
     env_path, env_nompi, _, _, _ = build_env(
-        is_test, recreate, nompi_compiler, mpi, 'nompi', version,
+        is_test, recreate, nompi_compiler, mpi, 'mpich', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
         args.local_conda_build, config)
 
