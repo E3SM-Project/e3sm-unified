@@ -48,8 +48,8 @@ requirements:
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - xcdat 0.5.0
-    - zstash 1.3.0  # [linux]
     - zppy 2.3.0rc1
+    - zstash 1.4.0rc1  # [linux]
     ### dependencies ###
     - {{ mpi }}  # [mpi != 'nompi' and mpi != 'hpc']
     - blas

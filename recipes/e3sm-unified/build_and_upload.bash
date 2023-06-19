@@ -12,6 +12,7 @@ then
             -c conda-forge/label/moab_dev \
             -c conda-forge/label/mpas_analysis_dev \
             -c conda-forge/label/zppy_dev \
+            -c conda-forge/label/zstash_dev \
             -c conda-forge \
             -c defaults"
 else
