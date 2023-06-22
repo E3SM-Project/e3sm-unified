@@ -30,11 +30,11 @@ requirements:
   run:
     ### main packages ###
     - python
-    - e3sm_diags 2.8.0
+    - e3sm_diags 2.9.0rc1
     - e3sm_to_cmip 1.9.1
     - geometric_features 1.2.0
-    # issues with cryptography <37 constraint an openssl 3
-    # - globus-cli
+    # fixes an issues with cryptography <37 constraint
+    - globus-cli >=3.15.0
     - ilamb 2.6  # [mpi != 'nompi' and mpi != 'hpc']
     - ipython
     - jupyter
@@ -48,8 +48,8 @@ requirements:
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - xcdat 0.5.0
-    - zppy 2.3.0rc1
-    - zstash 1.4.0rc1  # [linux]
+    - zppy 2.3.0rc2
+    - zstash 1.4.0rc2  # [linux]
     ### dependencies ###
     - {{ mpi }}  # [mpi != 'nompi' and mpi != 'hpc']
     - blas
@@ -117,7 +117,7 @@ test:
     - ILAMB  # [mpi != 'nompi' and mpi != 'hpc']
     - zstash  # [linux]
     - IPython
-    #- globus_cli
+    - globus_cli
     - livvkit
     - mache
     - zppy
@@ -135,7 +135,7 @@ test:
     - jupyter nbextension list
     - ipython -h
     - ipython3 -h
-    #- globus --help
+    - globus --help
     - GenerateCSMesh --res 64 --alt --file gravitySam.000000.3d.cubedSphere.g  # [mpi != 'hpc']
     - ESMF_RegridWeightGen --help  # [mpi != 'hpc']
     - test -f ${PREFIX}/bin/Climatology  # [mpi != 'hpc']
