@@ -113,8 +113,6 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
         nco_spec = config.get('spack_specs', 'nco')
         nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
-        moab_spec = config.get('spack_specs', 'moab')
-        moab_dev = ('rc' in moab_spec.lower())
 
         channels = '--override-channels'
         if local_conda_build is not None:
@@ -122,10 +120,19 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
         if nco_dev:
             channels = f'{channels} -c conda-forge/label/nco_dev'
-        if moab_dev:
-            channels = f'{channels} -c conda-forge/label/moab_dev'
-        channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
-                   f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm'
+        for package in ['moab']:
+            spec = config.get('spack_specs', package)
+            if 'rc' in spec.lower():
+                channels = f'{channels} -c conda-forge/label/{package}_dev'
+
+        # edit if not using a release candidate for a given package
+        dev_labels = ['e3sm_diags', 'mache', 'mpas_analysis', 'zppy', 'zstash']
+        for package in dev_labels:
+            channels = f'{channels} -c conda-forge/label/{package}_dev'
+        channels = f'{channels} ' \
+                   f'-c conda-forge ' \
+                   f'-c defaults ' \
+                   f'-c e3sm/label/e3sm_dev'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
