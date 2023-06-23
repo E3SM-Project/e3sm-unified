@@ -10,7 +10,6 @@ from configparser import ConfigParser
 from mache import discover_machine
 from mache.spack import make_spack_env, get_spack_script, \
     get_modules_env_vars_and_mpi_compilers
-from mache.version import __version__ as mache_version
 from mache.permissions import update_permissions
 from shared import parse_args, check_call, install_miniconda, get_conda_base
 
@@ -204,16 +203,27 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/{spack_env}'
 
+    if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
+        use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
+                                                 'use_e3sm_hdf5_netcdf')
+    else:
+        use_e3sm_hdf5_netcdf = False
+
     specs = list()
     section = config['spack_specs']
     for option in section:
+        # skip redundant specs if using E3SM packages
+        if use_e3sm_hdf5_netcdf and \
+                option in ['hdf5', 'netcdf_c', 'netcdf_fortran']:
+            continue
         value = section[option]
         if value != '':
             specs.append(value)
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
-                   machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True)
+                   machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
+                   include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf)
 
     return spack_base
 
