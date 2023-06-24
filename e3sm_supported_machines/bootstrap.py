@@ -128,6 +128,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         dev_labels = ['e3sm_diags', 'mache', 'mpas_analysis', 'zppy', 'zstash']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
+        channels = f'{channels} -c e3sm/label/chemdyg_dev'
         channels = f'{channels} ' \
                    f'-c conda-forge ' \
                    f'-c defaults ' \
