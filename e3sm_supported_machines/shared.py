@@ -52,7 +52,7 @@ def parse_args(bootstrap):
 
 
 def check_call(commands, env=None):
-    print('\n\nrunning:\n  {}\n\n'.format('\n  '.join(commands.split('; '))))
+    print('\n\nrunning:\n  {}\n\n'.format('\n  '.join(commands.split(' && '))))
     proc = subprocess.Popen(commands, env=env, executable='/bin/bash',
                             shell=True)
     proc.wait()
@@ -85,12 +85,12 @@ def install_miniconda(conda_base, activate_base):
         os.remove(miniconda)
 
     print('Doing initial setup')
-    commands = '{}; ' \
-               'conda config --add channels conda-forge; ' \
-               'conda config --set channel_priority strict; ' \
-               'mamba update -y --all; ' \
-               'cp ~/.bashrc ~/.bashrc.conda_bak; ' \
-               'mamba init; ' \
+    commands = '{} && ' \
+               'conda config --add channels conda-forge && ' \
+               'conda config --set channel_priority strict && ' \
+               'mamba update -y --all && ' \
+               'cp ~/.bashrc ~/.bashrc.conda_bak && ' \
+               'mamba init && ' \
                'mv ~/.bashrc.conda_bak ~/.bashrc'.format(activate_base)
 
     check_call(commands)

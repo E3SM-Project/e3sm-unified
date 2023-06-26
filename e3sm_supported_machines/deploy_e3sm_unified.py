@@ -35,7 +35,7 @@ def bootstrap(activate_install_env, source_path, local_conda_build):
 
     print('Creating the e3sm_unified conda environment')
     bootstrap_command = '{}/bootstrap.py'.format(source_path)
-    command = '{}; ' \
+    command = '{} && ' \
               '{} {}'.format(activate_install_env, bootstrap_command,
                              ' '.join(sys.argv[1:]))
     if local_conda_build is not None:
@@ -54,7 +54,7 @@ def setup_install_env(activate_base, config, use_local):
     if 'rc' in mache_version:
         channels.append('-c conda-forge/label/mache_dev')
     channels = ' '.join(channels)
-    commands = '{}; ' \
+    commands = '{} && ' \
                'mamba create -y -n temp_e3sm_unified_install ' \
                '{} progressbar2 jinja2 mache={}'.format(activate_base,
                                                         channels,
@@ -65,7 +65,7 @@ def setup_install_env(activate_base, config, use_local):
 
 def remove_install_env(activate_base):
     print('Removing conda environment for installing  E3SM-Unified')
-    commands = '{}; ' \
+    commands = '{} && ' \
                'conda remove -y --all -n ' \
                'temp_e3sm_unified_install'.format(activate_base)
 
@@ -82,13 +82,13 @@ def main():
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
-        'source {}/etc/profile.d/conda.sh; ' \
+        'source {}/etc/profile.d/conda.sh && ' \
         'source {}/etc/profile.d/mamba.sh'.format(conda_base, conda_base)
 
-    activate_base = '{}; conda activate'.format(source_activation_scripts)
+    activate_base = '{} && conda activate'.format(source_activation_scripts)
 
     activate_install_env = \
-        '{}; ' \
+        '{} && ' \
         'conda activate temp_e3sm_unified_install'.format(
             source_activation_scripts)
 

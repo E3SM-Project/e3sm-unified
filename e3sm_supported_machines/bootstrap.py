@@ -139,22 +139,22 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     packages = f'python={python} pip'
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/conda.sh && ' \
         f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_env = f'{source_activation_scripts}; conda activate {env_name}'
+    activate_env = f'{source_activation_scripts} && conda activate {env_name}'
 
     if not os.path.exists(env_path) or recreate:
         print(f'creating {env_name}')
         packages = f'{packages} "e3sm-unified={version}={mpi_prefix}_*"'
-        commands = f'{activate_base}; ' \
+        commands = f'{activate_base} && ' \
                    f'mamba create -y -n {env_name} {channels} {packages}'
         check_call(commands)
 
         if conda_mpi == 'hpc':
             remove_packages = 'nco tempest-remap'
             # remove conda-forge versions so we're sure to use Spack versions
-            commands = f'{activate_base}; conda remove -y --force ' \
+            commands = f'{activate_base} && conda remove -y --force ' \
                        f'-n {env_name} {remove_packages}'
             check_call(commands)
 
@@ -183,7 +183,7 @@ def build_sys_ilamb(config, machine, compiler, mpi, template_path,
 
     # need to activate the conda environment to install mpi4py and ilamb, and
     # possibly for compilers and MPI library (if not on a supported machine)
-    activate_env_lines = activate_env.replace('; ', '\n')
+    activate_env_lines = activate_env.replace(' && ', '\n')
     modules = f'{activate_env_lines}\n{modules}'
 
     script = template.render(
@@ -318,13 +318,13 @@ def check_env(script_filename, env_name, conda_mpi, machine):
         imports.append('acme_diags')
 
     for import_name in imports:
-        command = f'{activate}; python -c "import {import_name}"'
+        command = f'{activate} && python -c "import {import_name}"'
         test_command(command, os.environ, import_name)
 
     for command in commands:
         package = command[0]
         command_str = ' '.join(command)
-        command = f'{activate}; {command_str}'
+        command = f'{activate} && {command_str}'
         test_command(command, os.environ, package)
 
 
@@ -362,10 +362,10 @@ def main():
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/conda.sh && ' \
         f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_base = f'{source_activation_scripts}; conda activate'
+    activate_base = f'{source_activation_scripts} && conda activate'
 
     # install miniconda if needed
     install_miniconda(conda_base, activate_base)
@@ -429,7 +429,7 @@ def main():
 
     check_env(test_script_filename, env_name, conda_mpi, machine)
 
-    commands = f'{activate_base}; conda clean -y -p -t'
+    commands = f'{activate_base} && conda clean -y -p -t'
     check_call(commands)
 
     paths = [activ_path, conda_base]
