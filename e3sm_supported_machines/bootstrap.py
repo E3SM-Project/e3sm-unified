@@ -217,7 +217,8 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     for option in section:
         # skip redundant specs if using E3SM packages
         if use_e3sm_hdf5_netcdf and \
-                option in ['hdf5', 'netcdf_c', 'netcdf_fortran']:
+                option in ['hdf5', 'netcdf_c', 'netcdf_fortran',
+                           'parallel_netcdf']:
             continue
         value = section[option]
         if value != '':
