@@ -88,7 +88,6 @@ def install_miniconda(conda_base, activate_base):
     commands = '{}; ' \
                'conda config --add channels conda-forge; ' \
                'conda config --set channel_priority strict; ' \
-               'conda install -y boa; ' \
                'mamba update -y --all; ' \
                'cp ~/.bashrc ~/.bashrc.conda_bak; ' \
                'mamba init; ' \
