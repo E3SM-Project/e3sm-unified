@@ -204,13 +204,11 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/{spack_env}'
 
-    # if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
-    #     use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
-    #                                              'use_e3sm_hdf5_netcdf')
-    # else:
-    #     use_e3sm_hdf5_netcdf = False
-
-    use_e3sm_hdf5_netcdf = False
+    if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
+        use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
+                                                 'use_e3sm_hdf5_netcdf')
+    else:
+        use_e3sm_hdf5_netcdf = False
 
     specs = list()
     section = config['spack_specs']
