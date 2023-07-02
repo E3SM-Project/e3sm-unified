@@ -8,12 +8,12 @@ dev=True
 
 if [ $dev == "True" ]
 then
-  channels="-c conda-forge/label/e3sm_diags_dev \
+  channels="-c conda-forge/label/chemdyg_dev \
+            -c conda-forge/label/e3sm_diags_dev \
             -c conda-forge/label/mache_dev \
             -c conda-forge/label/mpas_analysis_dev \
             -c conda-forge/label/zppy_dev \
             -c conda-forge/label/zstash_dev \
-            -c e3sm/label/chemdyg_dev \
             -c conda-forge \
             -c defaults"
 else

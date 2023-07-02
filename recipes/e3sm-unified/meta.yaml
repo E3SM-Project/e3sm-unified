@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.9.0rc4" %}
+{% set version = "1.9.0rc5" %}
 {% set build = 0 %}
 
 package:
@@ -30,7 +30,7 @@ requirements:
   run:
     ### main packages ###
     - python
-    - chemdyg 0.1.1
+    - chemdyg 0.1.2rc1
     - e3sm_diags 2.9.0rc1
     - e3sm_to_cmip 1.9.1
     - geometric_features 1.2.0
@@ -40,7 +40,7 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.0.1
-    - mache 1.16.0rc3
+    - mache 1.16.0rc4
     - moab 5.5.0 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mpas-analysis 1.9.0rc1
     - mpas_tools 0.20.0
@@ -112,6 +112,7 @@ test:
   requires:
     - pytest
   imports:
+    - chemdyg
     - e3sm_diags
     - e3sm_to_cmip
     - mpas_analysis

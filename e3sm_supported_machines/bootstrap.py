@@ -18,13 +18,22 @@ def get_config(config_file, machine):
     here = os.path.abspath(os.path.dirname(__file__))
     default_config = os.path.join(here, 'default.cfg')
     config = ConfigParser()
+    print('Adding config options from:')
+    print(f'  {default_config}')
     config.read(default_config)
 
     if machine is not None:
         with path('mache.machines', f'{machine}.cfg') as machine_config:
+            print(f'  {str(machine_config)}')
             config.read(str(machine_config))
 
+        local_mache_config = os.path.join(here, f'{machine}.cfg')
+        if os.path.exists(local_mache_config):
+            print(f'  {str(local_mache_config)}')
+            config.read(local_mache_config)
+
     if config_file is not None:
+        print(f'  {config_file}')
         config.read(config_file)
 
     return config
@@ -125,10 +134,10 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
                 channels = f'{channels} -c conda-forge/label/{package}_dev'
 
         # edit if not using a release candidate for a given package
-        dev_labels = ['e3sm_diags', 'mache', 'mpas_analysis', 'zppy', 'zstash']
+        dev_labels = ['chemdyg', 'e3sm_diags', 'mache', 'mpas_analysis',
+                      'zppy', 'zstash']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
-        channels = f'{channels} -c e3sm/label/chemdyg_dev'
         channels = f'{channels} ' \
                    f'-c conda-forge ' \
                    f'-c defaults ' \
@@ -204,28 +213,28 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/{spack_env}'
 
-    if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
-        use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
-                                                 'use_e3sm_hdf5_netcdf')
+    if config.has_option('e3sm_unified', 'use_system_hdf5_netcdf'):
+        use_system_hdf5_netcdf = config.getboolean('e3sm_unified',
+                                                 'use_system_hdf5_netcdf')
     else:
-        use_e3sm_hdf5_netcdf = False
+        use_system_hdf5_netcdf = False
 
     specs = list()
     section = config['spack_specs']
     for option in section:
         # skip redundant specs if using E3SM packages
-        if use_e3sm_hdf5_netcdf and \
+        if use_system_hdf5_netcdf and \
                 option in ['hdf5', 'netcdf_c', 'netcdf_fortran',
                            'parallel_netcdf']:
             continue
         value = section[option]
         if value != '':
-            specs.append(value)
+            specs.append(f'"{value}"')
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
                    machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
-                   include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf)
+                   include_system_hdf5_netcdf=use_system_hdf5_netcdf)
 
     return spack_base
 
