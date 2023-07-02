@@ -5,16 +5,7 @@ from __future__ import print_function
 import os
 import sys
 
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from six.moves import configparser
-    import six
-
-    if six.PY2:
-        ConfigParser = configparser.SafeConfigParser
-    else:
-        ConfigParser = configparser.ConfigParser
+from configparser import ConfigParser
 
 from shared import parse_args, check_call, install_miniconda, get_conda_base
 
@@ -34,13 +25,12 @@ def get_config(config_file):
 def bootstrap(activate_install_env, source_path, local_conda_build):
 
     print('Creating the e3sm_unified conda environment')
-    bootstrap_command = '{}/bootstrap.py'.format(source_path)
-    command = '{} && ' \
-              '{} {}'.format(activate_install_env, bootstrap_command,
-                             ' '.join(sys.argv[1:]))
+    bootstrap_command = f'{source_path}/bootstrap.py'
+    joined_args = ' '.join(sys.argv[1:])
+    command = f'{activate_install_env} && ' \
+              f'{bootstrap_command} {joined_args}'
     if local_conda_build is not None:
-        command = '{} --local_conda_build {}'.format(command,
-                                                     local_conda_build)
+        command = f'{command} --local_conda_build {local_conda_build}'
     check_call(command)
     sys.exit(0)
 
@@ -54,20 +44,18 @@ def setup_install_env(activate_base, config, use_local):
     if 'rc' in mache_version:
         channels.append('-c conda-forge/label/mache_dev')
     channels = ' '.join(channels)
-    commands = '{} && ' \
-               'mamba create -y -n temp_e3sm_unified_install ' \
-               '{} progressbar2 jinja2 mache={}'.format(activate_base,
-                                                        channels,
-                                                        mache_version)
+    commands = f'{activate_base} && ' \
+               f'mamba create -y -n temp_e3sm_unified_install ' \
+               f'{channels} progressbar2 jinja2 mache={mache_version}'
 
     check_call(commands)
 
 
 def remove_install_env(activate_base):
     print('Removing conda environment for installing  E3SM-Unified')
-    commands = '{} && ' \
-               'conda remove -y --all -n ' \
-               'temp_e3sm_unified_install'.format(activate_base)
+    commands = f'{activate_base} && ' \
+               f'conda remove -y --all -n ' \
+               f'temp_e3sm_unified_install'
 
     check_call(commands)
 
@@ -82,15 +70,14 @@ def main():
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
-        'source {}/etc/profile.d/conda.sh && ' \
-        'source {}/etc/profile.d/mamba.sh'.format(conda_base, conda_base)
+        f'source {conda_base}/etc/profile.d/conda.sh && ' \
+        f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_base = '{} && conda activate'.format(source_activation_scripts)
+    activate_base = f'{source_activation_scripts} && conda activate'
 
     activate_install_env = \
-        '{} && ' \
-        'conda activate temp_e3sm_unified_install'.format(
-            source_activation_scripts)
+        f'{source_activation_scripts} && ' \
+        f'conda activate temp_e3sm_unified_install'
 
     # install miniconda if needed
     install_miniconda(conda_base, activate_base)
@@ -103,7 +90,7 @@ def main():
         is_test = not config.getboolean('e3sm_unified', 'release')
 
     if is_test and args.use_local:
-        local_conda_build = os.path.abspath('{}/conda-bld'.format(conda_base))
+        local_conda_build = os.path.abspath(f'{conda_base}/conda-bld')
     else:
         local_conda_build = None
 
