@@ -65,14 +65,14 @@ def get_env_setup(args, config, machine):
     elif config.has_option('e3sm_unified', 'mpi'):
         mpi = config.get('e3sm_unified', 'mpi')
     else:
-        mpi = 'nompi'
+        mpi = 'mpich'
 
     if machine is not None and compiler is not None:
         conda_mpi = 'hpc'
         env_suffix = f'_{machine}'
     else:
         conda_mpi = mpi
-        env_suffix = f'_{conda_mpi}'
+        env_suffix = '_login'
 
     if machine is not None:
         activ_suffix = f'_{machine}'
