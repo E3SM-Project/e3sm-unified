@@ -4,7 +4,7 @@ import os
 import subprocess
 import shutil
 from jinja2 import Template
-from importlib.resources import path
+from importlib import resources
 from configparser import ConfigParser
 
 from mache import discover_machine
@@ -23,9 +23,9 @@ def get_config(config_file, machine):
     config.read(default_config)
 
     if machine is not None:
-        with path('mache.machines', f'{machine}.cfg') as machine_config:
-            print(f'  {str(machine_config)}')
-            config.read(str(machine_config))
+        machine_config = resources.files('mache.machines') / f'{machine}.cfg'
+        print(f'  {str(machine_config)}')
+        config.read(str(machine_config))
 
         local_mache_config = os.path.join(here, f'{machine}.cfg')
         if os.path.exists(local_mache_config):
