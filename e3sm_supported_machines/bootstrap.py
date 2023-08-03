@@ -134,7 +134,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
                 channels = f'{channels} -c conda-forge/label/{package}_dev'
 
         # edit if not using a release candidate for a given package
-        dev_labels = ['cdms2', 'chemdyg', 'e3sm_to_cmip', 'e3sm_diags',
+        dev_labels = ['chemdyg', 'e3sm_to_cmip', 'e3sm_diags',
                       'mache', 'mpas_analysis', 'zppy', 'zstash']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
@@ -327,6 +327,10 @@ def check_env(script_filename, env_name, conda_mpi, machine):
     for import_name in imports:
         command = f'{activate} && python -c "import {import_name}"'
         test_command(command, os.environ, import_name)
+
+    # an extra check because the lack of ESMFRegrid is a problem for e3sm_diags
+    command = f'{activate} && python -c "from regrid2 import ESMFRegrid"'
+    test_command(command, os.environ, 'cdms2')
 
     for command in commands:
         package = command[0]
