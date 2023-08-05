@@ -32,7 +32,7 @@ requirements:
     - python
     - chemdyg 0.1.2rc3
     - e3sm_diags 2.9.0rc2
-    - e3sm_to_cmip 1.10.0rc1
+    - e3sm_to_cmip 1.10.0rc2
     - geometric_features 1.2.0
     # fixes an issues with cryptography <37 constraint
     - globus-cli >=3.15.0
@@ -42,14 +42,14 @@ requirements:
     - livvkit 3.0.1
     - mache 1.17.0rc2
     - moab 5.5.0 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mpas-analysis 1.9.0rc3
+    - mpas-analysis 1.9.0rc4
     - mpas_tools 0.21.0
     - nco 5.1.7  # [mpi != 'hpc']
     - pcmdi_metrics 2.3.1
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - xcdat 0.5.0
-    - zppy 2.3.0rc3
+    - zppy 2.3.0rc5
     - zstash 1.4.0rc3  # [linux]
     ### dependencies ###
     - {{ mpi }}  # [mpi != 'nompi' and mpi != 'hpc']
