@@ -117,9 +117,9 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         mpi_prefix = f'mpi_{conda_mpi}'
 
+    nco_spec = config.get('spack_specs', 'nco')
     if is_test:
 
-        nco_spec = config.get('spack_specs', 'nco')
         nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
 
         channels = '--override-channels'
@@ -161,7 +161,9 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         check_call(commands)
 
         if conda_mpi == 'hpc':
-            remove_packages = 'nco tempest-remap'
+            remove_packages = 'tempest-remap'
+            if nco_spec != '':
+                remove_packages = f'nco {remove_packages}'
             # remove conda-forge versions so we're sure to use Spack versions
             commands = f'{activate_base} && conda remove -y --force ' \
                        f'-n {env_name} {remove_packages}'
