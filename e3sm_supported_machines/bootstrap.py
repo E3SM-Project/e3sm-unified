@@ -161,7 +161,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         check_call(commands)
 
         if conda_mpi == 'hpc':
-            remove_packages = 'tempest-remap'
+            remove_packages = 'tempest-remap esmf esmpy'
             if nco_spec != '':
                 remove_packages = f'nco {remove_packages}'
             # remove conda-forge versions so we're sure to use Spack versions
@@ -175,19 +175,22 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     return env_path, env_name, activate_env, channels, spack_env
 
 
-def build_sys_ilamb(config, machine, compiler, mpi, template_path,
-                    activate_env, channels):
+def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
+                          activate_env, channels, spack_base, spack_env):
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
     ilamb_version = config.get('e3sm_unified', 'ilamb')
     build_mpi4py = str(mpi4py_version != 'None')
     build_ilamb = str(ilamb_version != 'None')
 
+    esmpy_version = config.get('e3sm_unified', 'esmpy')
+    build_esmpy = str(esmpy_version != 'None')
+
     mpicc, _, _, modules = \
         get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
                                                shell='sh')
 
-    script_filename = 'build.bash'
+    script_filename = 'build_ilamb_esmpy.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
@@ -197,16 +200,20 @@ def build_sys_ilamb(config, machine, compiler, mpi, template_path,
     activate_env_lines = activate_env.replace(' && ', '\n')
     modules = f'{activate_env_lines}\n{modules}'
 
+    spack_branch_base = f'{spack_base}/{spack_env}'
+    spack_view = f'{spack_branch_base}/var/spack/environments/' \
+                 f'{spack_env}/.spack-env/view'
     script = template.render(
         mpicc=mpicc, modules=modules, template_path=template_path,
         mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
         ilamb_version=ilamb_version, build_ilamb=build_ilamb,
-        ilamb_channels=channels)
+        ilamb_channels=channels, esmpy_version=esmpy_version,
+        build_esmpy=build_esmpy, spack_view=spack_view)
     print(f'Writing {script_filename}')
     with open(script_filename, 'w') as handle:
         handle.write(script)
 
-    command = '/bin/bash build.bash'
+    command = f'/bin/bash {script_filename}'
     check_call(command)
 
 
@@ -414,8 +421,8 @@ def main():
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
                                      args.tmpdir)
-        build_sys_ilamb(config, machine, compiler, mpi, template_path,
-                        activate_env, channels)
+        build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
+                              activate_env, channels, spack_base, spack_env)
     else:
         spack_base = None
 

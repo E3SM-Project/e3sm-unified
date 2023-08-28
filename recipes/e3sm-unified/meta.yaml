@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.9.0rc12" %}
+{% set version = "1.9.0rc13" %}
 {% set build = 0 %}
 
 package:
@@ -64,7 +64,8 @@ requirements:
     - dask 2023.6.0
     - dogpile.cache
     - eofs
-    - esmf 8.4.2 {{ mpi_prefix }}_*  # [mpi != 'hpc']
+    - esmf 8.4.2 {{ mpi_prefix }}_*
+    - esmpy 8.4.2
     - f90nml
     - ffmpeg
     - genutil 8.2.1
