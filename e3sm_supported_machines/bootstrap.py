@@ -228,6 +228,11 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     else:
         use_system_hdf5_netcdf = False
 
+    if config.has_option('e3sm_unified', 'spack_mirror'):
+        spack_mirror = config.get('e3sm_unified', 'spack_mirror')
+    else:
+        spack_mirror = None
+
     specs = list()
     section = config['spack_specs']
     for option in section:
@@ -243,7 +248,8 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
                    machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
-                   include_system_hdf5_netcdf=use_system_hdf5_netcdf)
+                   include_system_hdf5_netcdf=use_system_hdf5_netcdf,
+                   spack_mirror=spack_mirror)
 
     return spack_base
 
