@@ -13,7 +13,6 @@ then
             -c conda-forge/label/mache_dev \
             -c conda-forge/label/mpas_analysis_dev \
             -c conda-forge/label/zppy_dev \
-            -c conda-forge/label/zstash_dev \
             -c conda-forge \
             -c defaults"
 else
@@ -23,7 +22,7 @@ fi
 for file in configs/mpi_hpc_python3.10.yaml configs/mpi_mpich_python3.10.yaml
 #for file in configs/mpi_*_python*.yaml
 do
-  conda mambabuild -m $file --override-channels $channels .
+  conda mambabuild -m $file --override-channels --use-local $channels .
 done
 
 if [ $upload == "True" ]
