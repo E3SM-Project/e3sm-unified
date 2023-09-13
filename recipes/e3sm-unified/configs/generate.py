@@ -7,7 +7,7 @@ with open('template.yaml') as f:
     tempate_test = f.read()
 
 template = Template(tempate_test)
-for python in ['3.8', '3.9', '3.10']:
+for python in ['3.9', '3.10']:
     for mpi in ['nompi', 'mpich', 'openmpi', 'hpc']:
         script = template.render(python=python, mpi=mpi)
         filename = f'mpi_{mpi}_python{python}.yaml'
