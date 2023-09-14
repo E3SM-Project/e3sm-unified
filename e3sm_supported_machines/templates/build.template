@@ -16,3 +16,19 @@ fi
 if [ "{{ build_ilamb }}" == "True" ]; then
     mamba install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
 fi
+
+if [ "{{ build_esmpy }}" == "True" ]; then
+
+    git clone git@github.com:esmf-org/esmf.git -b v{{ esmpy_version }} esmf-{{ esmpy_version }}
+
+    export ESMFMKFILE={{ spack_view }}/lib/esmf.mk
+
+    cd esmf-{{ esmpy_version }}/src/addon/esmpy
+
+    # this is an unused dumping grounds and causes disconcerting warnings
+    rm -rf src/esmpy/fragments
+
+    python -m pip install .
+
+    cd ${build_dir}
+fi

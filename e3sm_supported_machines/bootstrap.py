@@ -1,16 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import subprocess
 import shutil
 from jinja2 import Template
-from importlib.resources import path
+from importlib import resources
 from configparser import ConfigParser
 
 from mache import discover_machine
 from mache.spack import make_spack_env, get_spack_script, \
     get_modules_env_vars_and_mpi_compilers
-from mache.version import __version__ as mache_version
 from mache.permissions import update_permissions
 from shared import parse_args, check_call, install_miniconda, get_conda_base
 
@@ -19,13 +18,22 @@ def get_config(config_file, machine):
     here = os.path.abspath(os.path.dirname(__file__))
     default_config = os.path.join(here, 'default.cfg')
     config = ConfigParser()
+    print('Adding config options from:')
+    print(f'  {default_config}')
     config.read(default_config)
 
     if machine is not None:
-        with path('mache.machines', '{}.cfg'.format(machine)) as machine_config:
-            config.read(str(machine_config))
+        machine_config = resources.files('mache.machines') / f'{machine}.cfg'
+        print(f'  {str(machine_config)}')
+        config.read(str(machine_config))
+
+        local_mache_config = os.path.join(here, f'{machine}.cfg')
+        if os.path.exists(local_mache_config):
+            print(f'  {str(local_mache_config)}')
+            config.read(local_mache_config)
 
     if config_file is not None:
+        print(f'  {config_file}')
         config.read(config_file)
 
     return config
@@ -57,14 +65,14 @@ def get_env_setup(args, config, machine):
     elif config.has_option('e3sm_unified', 'mpi'):
         mpi = config.get('e3sm_unified', 'mpi')
     else:
-        mpi = 'nompi'
+        mpi = 'mpich'
 
     if machine is not None and compiler is not None:
         conda_mpi = 'hpc'
         env_suffix = f'_{machine}'
     else:
         conda_mpi = mpi
-        env_suffix = f'_{conda_mpi}'
+        env_suffix = '_login'
 
     if machine is not None:
         activ_suffix = f'_{machine}'
@@ -98,7 +106,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     env_name = f'e3sm_unified_{version}{env_suffix}'
 
     # add the compiler and MPI library to the spack env name
-    spack_env = '{}_{}_{}'.format(env_name, compiler, mpi)
+    spack_env = f'{env_name}_{compiler}_{mpi}'
     # spack doesn't like dots
     spack_env = spack_env.replace('.', '_')
 
@@ -109,12 +117,10 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         mpi_prefix = f'mpi_{conda_mpi}'
 
+    nco_spec = config.get('spack_specs', 'nco')
     if is_test:
 
-        nco_spec = config.get('spack_specs', 'nco')
         nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
-        moab_spec = config.get('spack_specs', 'moab')
-        moab_dev = ('rc' in moab_spec.lower())
 
         channels = '--override-channels'
         if local_conda_build is not None:
@@ -122,32 +128,44 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
         if nco_dev:
             channels = f'{channels} -c conda-forge/label/nco_dev'
-        if moab_dev:
-            channels = f'{channels} -c conda-forge/label/moab_dev'
-        channels = f'{channels} -c conda-forge/label/e3sm_dev ' \
-                   f'-c conda-forge -c defaults -c e3sm/label/e3sm_dev -c e3sm'
+        for package in ['moab']:
+            spec = config.get('spack_specs', package)
+            if 'rc' in spec.lower():
+                channels = f'{channels} -c conda-forge/label/{package}_dev'
+
+        # edit if not using a release candidate for a given package
+        dev_labels = ['e3sm_to_cmip', 'e3sm_diags',
+                      'mache', 'mpas_analysis', 'zppy', 'zstash']
+        for package in dev_labels:
+            channels = f'{channels} -c conda-forge/label/{package}_dev'
+        channels = f'{channels} ' \
+                   f'-c conda-forge ' \
+                   f'-c defaults ' \
+                   f'-c e3sm/label/e3sm_dev'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
     packages = f'python={python} pip'
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/conda.sh && ' \
         f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_env = f'{source_activation_scripts}; conda activate {env_name}'
+    activate_env = f'{source_activation_scripts} && conda activate {env_name}'
 
     if not os.path.exists(env_path) or recreate:
         print(f'creating {env_name}')
         packages = f'{packages} "e3sm-unified={version}={mpi_prefix}_*"'
-        commands = f'{activate_base}; ' \
+        commands = f'{activate_base} && ' \
                    f'mamba create -y -n {env_name} {channels} {packages}'
         check_call(commands)
 
         if conda_mpi == 'hpc':
-            remove_packages = 'nco tempest-remap'
+            remove_packages = 'tempest-remap esmf esmpy'
+            if nco_spec != '':
+                remove_packages = f'nco {remove_packages}'
             # remove conda-forge versions so we're sure to use Spack versions
-            commands = f'{activate_base}; conda remove -y --force ' \
+            commands = f'{activate_base} && conda remove -y --force ' \
                        f'-n {env_name} {remove_packages}'
             check_call(commands)
 
@@ -157,56 +175,81 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     return env_path, env_name, activate_env, channels, spack_env
 
 
-def build_sys_ilamb(config, machine, compiler, mpi, template_path,
-                    activate_env, channels):
+def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
+                          activate_env, channels, spack_base, spack_env):
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
     ilamb_version = config.get('e3sm_unified', 'ilamb')
     build_mpi4py = str(mpi4py_version != 'None')
     build_ilamb = str(ilamb_version != 'None')
 
+    esmpy_version = config.get('e3sm_unified', 'esmpy')
+    build_esmpy = str(esmpy_version != 'None')
+
     mpicc, _, _, modules = \
         get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
                                                shell='sh')
 
-    script_filename = 'build.bash'
+    script_filename = 'build_ilamb_esmpy.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
 
     # need to activate the conda environment to install mpi4py and ilamb, and
     # possibly for compilers and MPI library (if not on a supported machine)
-    activate_env_lines = activate_env.replace('; ', '\n')
+    activate_env_lines = activate_env.replace(' && ', '\n')
     modules = f'{activate_env_lines}\n{modules}'
 
+    spack_branch_base = f'{spack_base}/{spack_env}'
+    spack_view = f'{spack_branch_base}/var/spack/environments/' \
+                 f'{spack_env}/.spack-env/view'
     script = template.render(
         mpicc=mpicc, modules=modules, template_path=template_path,
         mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
         ilamb_version=ilamb_version, build_ilamb=build_ilamb,
-        ilamb_channels=channels)
+        ilamb_channels=channels, esmpy_version=esmpy_version,
+        build_esmpy=build_esmpy, spack_view=spack_view)
     print(f'Writing {script_filename}')
     with open(script_filename, 'w') as handle:
         handle.write(script)
 
-    command = '/bin/bash build.bash'
+    command = f'/bin/bash {script_filename}'
     check_call(command)
 
 
 def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
-    spack_base = f'{base_path}/spack/spack_for_mache_{mache_version}'
+    spack_base = f'{base_path}/spack/{spack_env}'
+
+    if config.has_option('e3sm_unified', 'use_system_hdf5_netcdf'):
+        use_system_hdf5_netcdf = config.getboolean('e3sm_unified',
+                                                 'use_system_hdf5_netcdf')
+    else:
+        use_system_hdf5_netcdf = False
+
+    if config.has_option('e3sm_unified', 'spack_mirror'):
+        spack_mirror = config.get('e3sm_unified', 'spack_mirror')
+    else:
+        spack_mirror = None
 
     specs = list()
     section = config['spack_specs']
     for option in section:
+        # skip redundant specs if using E3SM packages
+        if use_system_hdf5_netcdf and \
+                option in ['hdf5', 'netcdf_c', 'netcdf_fortran',
+                           'parallel_netcdf']:
+            continue
         value = section[option]
         if value != '':
-            specs.append(value)
+            specs.append(f'"{value}"')
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
-                   machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True)
+                   machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
+                   include_system_hdf5_netcdf=use_system_hdf5_netcdf,
+                   spack_mirror=spack_mirror)
 
     return spack_base
 
@@ -297,13 +340,17 @@ def check_env(script_filename, env_name, conda_mpi, machine):
         imports.append('acme_diags')
 
     for import_name in imports:
-        command = f'{activate}; python -c "import {import_name}"'
+        command = f'{activate} && python -c "import {import_name}"'
         test_command(command, os.environ, import_name)
+
+    # an extra check because the lack of ESMFRegrid is a problem for e3sm_diags
+    command = f'{activate} && python -c "from regrid2 import ESMFRegrid"'
+    test_command(command, os.environ, 'cdms2')
 
     for command in commands:
         package = command[0]
         command_str = ' '.join(command)
-        command = f'{activate}; {command_str}'
+        command = f'{activate} && {command_str}'
         test_command(command, os.environ, package)
 
 
@@ -341,10 +388,10 @@ def main():
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh; ' \
+        f'source {conda_base}/etc/profile.d/conda.sh && ' \
         f'source {conda_base}/etc/profile.d/mamba.sh'
 
-    activate_base = f'{source_activation_scripts}; conda activate'
+    activate_base = f'{source_activation_scripts} && conda activate'
 
     # install miniconda if needed
     install_miniconda(conda_base, activate_base)
@@ -356,10 +403,11 @@ def main():
         compiler = None
 
     nompi_compiler = None
-    nompi_suffix = '_nompi'
-    # first, make nompi environment
+    nompi_suffix = '_login'
+    # first, make environment for login nodes.  We're using mpich from
+    # conda-forge for now because we haven't had any luck with esmf>8.2.0 nompi
     env_path, env_nompi, _, _, _ = build_env(
-        is_test, recreate, nompi_compiler, mpi, 'nompi', version,
+        is_test, recreate, nompi_compiler, mpi, 'mpich', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
         args.local_conda_build, config)
 
@@ -378,9 +426,9 @@ def main():
 
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
-                                     args.tmpdir, )
-        build_sys_ilamb(config, machine, compiler, mpi, template_path,
-                        activate_env, channels)
+                                     args.tmpdir)
+        build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
+                              activate_env, channels, spack_base, spack_env)
     else:
         spack_base = None
 
@@ -407,7 +455,7 @@ def main():
 
     check_env(test_script_filename, env_name, conda_mpi, machine)
 
-    commands = f'{activate_base}; conda clean -y -p -t'
+    commands = f'{activate_base} && conda clean -y -p -t'
     check_call(commands)
 
     paths = [activ_path, conda_base]

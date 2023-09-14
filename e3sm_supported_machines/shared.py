@@ -14,7 +14,7 @@ except ImportError:
 def parse_args(bootstrap):
     parser = argparse.ArgumentParser(
         description='Deploy E3SM-Unified')
-    parser.add_argument("--version", dest="version", default="1.8.1",
+    parser.add_argument("--version", dest="version", default="1.9.0",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("--conda", dest="conda_base",
                         help="Path for the  conda base")
@@ -52,7 +52,8 @@ def parse_args(bootstrap):
 
 
 def check_call(commands, env=None):
-    print('\n\nrunning:\n  {}\n\n'.format('\n  '.join(commands.split('; '))))
+    print_command = '\n  '.join(commands.split(' && '))
+    print(f'\n\nrunning:\n  {print_command}\n\n')
     proc = subprocess.Popen(commands, env=env, executable='/bin/bash',
                             shell=True)
     proc.wait()
@@ -70,8 +71,8 @@ def install_miniconda(conda_base, activate_base):
         else:
             system = 'Linux'
 
-        miniconda = 'Mambaforge-{}-x86_64.sh'.format(system)
-        url = 'https://github.com/conda-forge/miniforge/releases/latest/download/{}'.format(miniconda)
+        miniconda = f'Mambaforge-{system}-x86_64.sh'
+        url = f'https://github.com/conda-forge/miniforge/releases/latest/download/{miniconda}'
         print(url)
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         f = urlopen(req)
@@ -80,19 +81,18 @@ def install_miniconda(conda_base, activate_base):
             outfile.write(html)
         f.close()
 
-        command = '/bin/bash {} -b -p {}'.format(miniconda, conda_base)
+        command = f'/bin/bash {miniconda} -b -p {conda_base}'
         check_call(command)
         os.remove(miniconda)
 
     print('Doing initial setup')
-    commands = '{}; ' \
-               'conda config --add channels conda-forge; ' \
-               'conda config --set channel_priority strict; ' \
-               'conda install -y boa; ' \
-               'mamba update -y --all; ' \
-               'cp ~/.bashrc ~/.bashrc.conda_bak; ' \
-               'mamba init; ' \
-               'mv ~/.bashrc.conda_bak ~/.bashrc'.format(activate_base)
+    commands = f'{activate_base} && ' \
+               f'conda config --add channels conda-forge && ' \
+               f'conda config --set channel_priority strict && ' \
+               f'mamba update -y --all && ' \
+               f'cp ~/.bashrc ~/.bashrc.conda_bak && ' \
+               f'mamba init && ' \
+               f'mv ~/.bashrc.conda_bak ~/.bashrc'
 
     check_call(commands)
 
@@ -112,8 +112,8 @@ def get_conda_base(conda_base, config, shared):
             conda_base = os.path.abspath(
                 os.path.join(conda_exe, '..', '..'))
             warnings.warn(
-                '--conda path not supplied.  Using conda installed at '
-                '{}'.format(conda_base))
+                f'--conda path not supplied.  Using conda installed at '
+                f'{conda_base}')
         else:
             raise ValueError('No conda base provided with --conda and '
                              'none could be inferred.')
