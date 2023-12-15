@@ -34,7 +34,7 @@ world_read="True"
 channels="-c conda-forge -c defaults -c e3sm"
 
 # The rest of the script should not need to be modified
-if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
+if [[ $NERSC_HOST = "perlmutter"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
   base_path="/global/common/software/e3sm/anaconda_envs/base"
   activ_path="/global/common/software/e3sm/anaconda_envs"
   group="e3sm"
@@ -58,10 +58,6 @@ elif [[ $HOSTNAME = "compy"* ]]; then
   base_path="/share/apps/E3SM/conda_envs/base"
   activ_path="/share/apps/E3SM/conda_envs"
   group="users"
-elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "ba-fe"* ]]; then
-  base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
-  activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
-  group="climate"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
   exit 1
