@@ -47,8 +47,8 @@ elif [[ $HOSTNAME = "blueslogin"* ]] || [[ $HOSTNAME = "chrlogin"* ]]; then
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="cels"
 elif [[ $HOSTNAME = "andes"* ]]; then
-  base_path="/gpfs/alpine/proj-shared/cli115/e3sm-unified/base"
-  activ_path="/gpfs/alpine/proj-shared/cli115/e3sm-unified"
+  base_path="/ccs/proj/cli115/software/e3sm-unified/base"
+  activ_path="/ccs/proj/cli115/software/e3sm-unified"
   group="cli115"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
