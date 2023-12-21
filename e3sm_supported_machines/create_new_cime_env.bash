@@ -21,7 +21,7 @@ check_env () {
 
 # Modify the following to choose which cime-env version(s)
 # the python version(s) are installed
-versions=(1.6.0)
+versions=(1.7.0)
 pythons=(3.9)
 
 default_python=3.9
@@ -34,7 +34,7 @@ world_read="True"
 channels="-c conda-forge -c defaults -c e3sm"
 
 # The rest of the script should not need to be modified
-if [[ $HOSTNAME = "cori"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
+if [[ $NERSC_HOST = "perlmutter"* ]] || [[ $HOSTNAME = "dtn"* ]]; then
   base_path="/global/common/software/e3sm/anaconda_envs/base"
   activ_path="/global/common/software/e3sm/anaconda_envs"
   group="e3sm"
@@ -47,8 +47,8 @@ elif [[ $HOSTNAME = "blueslogin"* ]] || [[ $HOSTNAME = "chrlogin"* ]]; then
   activ_path="/lcrc/soft/climate/e3sm-unified"
   group="cels"
 elif [[ $HOSTNAME = "andes"* ]]; then
-  base_path="/gpfs/alpine/proj-shared/cli115/e3sm-unified/base"
-  activ_path="/gpfs/alpine/proj-shared/cli115/e3sm-unified"
+  base_path="/ccs/proj/cli115/software/e3sm-unified/base"
+  activ_path="/ccs/proj/cli115/software/e3sm-unified"
   group="cli115"
 elif [[ $HOSTNAME = "cooley"* ]]; then
   base_path="/lus/theta-fs0/projects/ccsm/acme/tools/e3sm-unified/base"
@@ -58,10 +58,6 @@ elif [[ $HOSTNAME = "compy"* ]]; then
   base_path="/share/apps/E3SM/conda_envs/base"
   activ_path="/share/apps/E3SM/conda_envs"
   group="users"
-elif [[ $HOSTNAME = "gr-fe"* ]] || [[ $HOSTNAME = "ba-fe"* ]]; then
-  base_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs/base"
-  activ_path="/usr/projects/climate/SHARED_CLIMATE/anaconda_envs"
-  group="climate"
 else
   echo "Unknown host name $HOSTNAME.  Add env_path and group for this machine to the script."
   exit 1
