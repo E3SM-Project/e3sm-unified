@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.9.2rc2" %}
+{% set version = "1.9.2rc3" %}
 {% set build = 0 %}
 
 package:
@@ -31,7 +31,7 @@ requirements:
     ### main packages ###
     - python
     - chemdyg 0.1.4
-    - e3sm_diags 2.10.0
+    - e3sm_diags 2.10.1rc1
     - e3sm_to_cmip 1.11.1rc1
     - geometric_features 1.2.0
     # fixes an issues with cryptography <37 constraint
@@ -42,8 +42,8 @@ requirements:
     - livvkit 3.0.1
     - mache 1.18.0rc1
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mpas-analysis 1.9.1rc1
-    - mpas_tools 0.27.0
+    - mpas-analysis 1.9.1rc2
+    - mpas_tools 0.30.0rc1
     - nco 5.1.9  # [mpi != 'hpc']
     - pcmdi_metrics 2.3.1
     - tempest-remap 2.2.0  # [mpi != 'hpc']
@@ -71,7 +71,7 @@ requirements:
     - genutil 8.2.1
     - globus-sdk
     - gsw
-    - hdf5 1.14.2 {{ mpi_prefix }}_*
+    - hdf5 1.14.3 {{ mpi_prefix }}_*
     - ipygany
     - libnetcdf 4.9.2 {{ mpi_prefix }}_*
     - lxml
