@@ -4,7 +4,7 @@ source {{ conda_base }}/etc/profile.d/mamba.sh
 export E3SMU_SCRIPT="{{ script_filename }}"
 export E3SMU_MACHINE="{{ machine }}"
 
-if [ -z "${SLURM_JOB_ID}" ] && [ -z "${COBALT_JOBID}" ]
+if [ -z ${SLURM_JOB_ID+x} ] && [ -z ${COBALT_JOBID+x} ]
 then
   # we seem to be on a login node, so load the no-MPI environment
 

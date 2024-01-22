@@ -2,26 +2,44 @@
 
 set -e
 
-rm -rf ~/mambaforge/conda-bld
+conda_dir=${HOME}/miniforge
+os_dir=linux-64
 upload=False
 dev=False
 
+rm -rf ${conda_dir}/conda-bld
+
 if [ $dev == "True" ]
 then
-  channels="-c conda-forge/label/zstash_dev \
-            -c conda-forge/label/zppy_dev \
+
+  channels="-c conda-forge/label/e3sm_diags_dev \
+            -c conda-forge/label/e3sm_to_cmip_dev \
+            -c conda-forge/label/mache_dev \
+            -c conda-forge/label/mpas_analysis_dev \
+            -c conda-forge/label/mpas_tools_dev \
+            -c conda-forge/label/zstash_dev \
             -c conda-forge"
+
+  for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
+  do
+    conda mambabuild -m $file --override-channels --use-local $channels .
+  done
+
+  if [ $upload == "True" ]
+  then
+    anaconda upload -u e3sm -l e3sm_dev ${conda_dir}/conda-bld/${os_dir}/e3sm-unified-*.tar.bz2
+  fi
+
 else
+
   channels="-c conda-forge"
-fi
+  for file in configs/mpi_*_python*.yaml
+  do
+    conda mambabuild -m $file --override-channels --use-local $channels .
+  done
 
-# for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
-for file in configs/mpi_*_python*.yaml
-do
-  conda mambabuild -m $file --override-channels --use-local $channels .
-done
-
-if [ $upload == "True" ]
-then
-   anaconda upload -u e3sm ${HOME}/miniconda3/conda-bld/linux-64/e3sm-unified-*.tar.bz2
+  if [ $upload == "True" ]
+  then
+    anaconda upload -u e3sm ${conda_dir}/conda-bld/${os_dir}/e3sm-unified-*.tar.bz2
+  fi
 fi

@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.9.1" %}
+{% set version = "1.9.2" %}
 {% set build = 0 %}
 
 package:
@@ -31,26 +31,26 @@ requirements:
     ### main packages ###
     - python
     - chemdyg 0.1.4
-    - e3sm_diags 2.9.0
-    - e3sm_to_cmip 1.10.0
+    - e3sm_diags 2.10.1
+    - e3sm_to_cmip 1.11.1
     - geometric_features 1.2.0
     # fixes an issues with cryptography <37 constraint
     - globus-cli >=3.15.0
-    - ilamb 2.6  # [mpi != 'nompi' and mpi != 'hpc']
+    - ilamb 2.7  # [mpi != 'nompi' and mpi != 'hpc']
     - ipython
     - jupyter
     - livvkit 3.0.1
-    - mache 1.17.0
+    - mache 1.18.0
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mpas-analysis 1.9.0
-    - mpas_tools 0.27.0
+    - mpas-analysis 1.9.1
+    - mpas_tools 0.30.0
     - nco 5.1.9  # [mpi != 'hpc']
     - pcmdi_metrics 2.3.1
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
-    - xcdat 0.5.0
+    - xcdat 0.6.1
     - zppy 2.3.1
-    - zstash 1.4.1  # [linux]
+    - zstash 1.4.2  # [linux]
     ### dependencies ###
     - {{ mpi }}  # [mpi != 'nompi' and mpi != 'hpc']
     - blas
@@ -71,7 +71,7 @@ requirements:
     - genutil 8.2.1
     - globus-sdk
     - gsw
-    - hdf5 1.14.2 {{ mpi_prefix }}_*
+    - hdf5 1.14.3 {{ mpi_prefix }}_*
     - ipygany
     - libnetcdf 4.9.2 {{ mpi_prefix }}_*
     - lxml
@@ -81,7 +81,7 @@ requirements:
     - nb_conda
     - nb_conda_kernels
     - ncview 2.1.8
-    - ncvis-climate
+    - ncvis-climate 2023.09.12
     - netcdf4 1.6.4 nompi_*
     - notebook <7.0.0
     - numpy >1.13
@@ -90,9 +90,9 @@ requirements:
     - pillow
     - plotly
     - progressbar2
-    - proj 9.2.1
+    - proj 9.3.1
     - pyevtk
-    - pyproj 3.6.0
+    - pyproj 3.6.1
     - pyremap
     - pytest
     - pywavelets
@@ -104,7 +104,7 @@ requirements:
     - xarray 2023.5.0
     - xesmf
 
-    # addition ilamb 2.6 dependencies, for system MPI builds
+    # addition ilamb 2.7 dependencies, for system MPI builds
     - cython
     - cf-units >=2.0.0
     - psutil
@@ -132,7 +132,6 @@ test:
     - zstash --help  # [linux]
     - ilamb-fetch -h  # [mpi != 'nompi' and mpi != 'hpc']
     - ilamb-run -h  # [mpi != 'nompi' and mpi != 'hpc']
-    - ilamb-table -h  # [mpi != 'nompi' and mpi != 'hpc']
     - ncks --help  # [mpi != 'hpc']
     - ncap2 --help  # [mpi != 'hpc']
     - jupyter --help
