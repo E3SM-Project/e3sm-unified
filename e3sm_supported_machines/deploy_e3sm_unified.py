@@ -7,7 +7,12 @@ import sys
 
 from configparser import ConfigParser
 
-from shared import parse_args, check_call, install_miniconda, get_conda_base
+from shared import (
+    check_call,
+    get_conda_base,
+    install_miniforge3,
+    parse_args,
+)
 
 
 def get_config(config_file):
@@ -35,18 +40,17 @@ def bootstrap(activate_install_env, source_path, local_conda_build):
     sys.exit(0)
 
 
-def setup_install_env(activate_base, config, use_local):
+def setup_install_env(activate_base, use_local, mache):
     print('Setting up a conda environment for installing E3SM-Unified')
-    mache_version = config.get('e3sm_unified', 'mache')
     channels = []
     if use_local:
         channels.append('--use-local')
-    if 'rc' in mache_version:
+    if 'rc' in mache:
         channels.append('-c conda-forge/label/mache_dev')
     channels = ' '.join(channels)
     commands = f'{activate_base} && ' \
-               f'mamba create -y -n temp_e3sm_unified_install ' \
-               f'{channels} progressbar2 jinja2 mache={mache_version}'
+               f'conda create -y -n temp_e3sm_unified_install ' \
+               f'{channels} progressbar2 jinja2 {mache}'
 
     check_call(commands)
 
@@ -56,6 +60,21 @@ def remove_install_env(activate_base):
     commands = f'{activate_base} && ' \
                f'conda remove -y --all -n ' \
                f'temp_e3sm_unified_install'
+
+    check_call(commands)
+
+
+def install_mache_from_branch(activate_install_env, fork, branch):
+    print('Clone and install local mache\n')
+    commands = f'{activate_install_env} && ' \
+                f'rm -rf build_mache && ' \
+                f'mkdir -p build_mache && ' \
+                f'cd build_mache && ' \
+                f'git clone -b {branch} ' \
+                f'git@github.com:{fork}.git mache && ' \
+                f'cd mache && ' \
+                f'conda install -y --file spec-file.txt && ' \
+                f'python -m pip install --no-deps .'
 
     check_call(commands)
 
@@ -70,8 +89,14 @@ def main():
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh && ' \
-        f'source {conda_base}/etc/profile.d/mamba.sh'
+        f'source {conda_base}/etc/profile.d/conda.sh'
+
+    local_mache = args.mache_fork is not None and args.mache_branch is not None
+    if local_mache:
+        mache = ''
+    else:
+        mache_version = config.get('e3sm_unified', 'mache')
+        mache = f'"mache={mache_version}"'
 
     activate_base = f'{source_activation_scripts} && conda activate'
 
@@ -80,9 +105,14 @@ def main():
         f'conda activate temp_e3sm_unified_install'
 
     # install miniconda if needed
-    install_miniconda(conda_base, activate_base)
+    install_miniforge3(conda_base, activate_base)
 
-    setup_install_env(activate_base, config, args.use_local)
+    setup_install_env(activate_base, args.use_local, mache)
+
+    if local_mache:
+        install_mache_from_branch(activate_install_env=activate_install_env,
+                                  fork=args.mache_fork,
+                                  branch=args.mache_branch)
 
     if args.release:
         is_test = False

@@ -11,7 +11,12 @@ from mache import discover_machine
 from mache.spack import make_spack_env, get_spack_script, \
     get_modules_env_vars_and_mpi_compilers
 from mache.permissions import update_permissions
-from shared import parse_args, check_call, install_miniconda, get_conda_base
+from shared import (
+    check_call,
+    get_conda_base,
+    install_miniforge3,
+    parse_args,
+)
 
 
 def get_config(config_file, machine):
@@ -147,8 +152,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     packages = f'python={python} pip'
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh && ' \
-        f'source {conda_base}/etc/profile.d/mamba.sh'
+        f'source {conda_base}/etc/profile.d/conda.sh'
 
     activate_env = f'{source_activation_scripts} && conda activate {env_name}'
 
@@ -156,7 +160,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         print(f'creating {env_name}')
         packages = f'{packages} "e3sm-unified={version}={mpi_prefix}_*"'
         commands = f'{activate_base} && ' \
-                   f'mamba create -y -n {env_name} {channels} {packages}'
+                   f'conda create -y -n {env_name} {channels} {packages}'
         check_call(commands)
 
         if conda_mpi == 'hpc':
@@ -172,6 +176,15 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         print(f'{env_name} already exists')
 
     return env_path, env_name, activate_env, channels, spack_env
+
+
+def install_mache_from_branch(activate_env, fork, branch):
+    print('Clone and install local mache\n')
+    commands = f'{activate_env} && ' \
+                f'cd build_mache/mache && ' \
+                f'python -m pip install --no-deps .'
+
+    check_call(commands)
 
 
 def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
@@ -378,6 +391,8 @@ def main():
 
     config = get_config(args.config_file, machine)
 
+    local_mache = args.mache_fork is not None and args.mache_branch is not None
+
     if args.release:
         is_test = False
     else:
@@ -387,13 +402,12 @@ def main():
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
-        f'source {conda_base}/etc/profile.d/conda.sh && ' \
-        f'source {conda_base}/etc/profile.d/mamba.sh'
+        f'source {conda_base}/etc/profile.d/conda.sh'
 
     activate_base = f'{source_activation_scripts} && conda activate'
 
     # install miniconda if needed
-    install_miniconda(conda_base, activate_base)
+    install_miniforge3(conda_base, activate_base)
 
     python, recreate, compiler, mpi, conda_mpi, activ_suffix, env_suffix, \
         activ_path = get_env_setup(args, config, machine)
@@ -405,10 +419,15 @@ def main():
     nompi_suffix = '_login'
     # first, make environment for login nodes.  We're using mpich from
     # conda-forge for now because we haven't had any luck with esmf>8.2.0 nompi
-    env_path, env_nompi, _, _, _ = build_env(
+    env_path, env_nompi, activate_env, _, _ = build_env(
         is_test, recreate, nompi_compiler, mpi, 'mpich', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
         args.local_conda_build, config)
+
+    if local_mache:
+        install_mache_from_branch(activate_env=activate_env,
+                                  fork=args.mache_fork,
+                                  branch=args.mache_branch)
 
     if not is_test:
         # make a symlink to the environment
