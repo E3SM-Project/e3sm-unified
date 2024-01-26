@@ -45,8 +45,16 @@ def parse_args(bootstrap):
         parser.add_argument("--local_conda_build", dest="local_conda_build",
                             type=str,
                             help="A path for conda packages (for testing).")
+    parser.add_argument("--mache_fork", dest="mache_fork",
+                        help="Point to a mache fork (and branch) for testing")
+    parser.add_argument("--mache_branch", dest="mache_branch",
+                        help="Point to a mache branch (and fork) for testing")
 
     args = parser.parse_args(sys.argv[1:])
+
+    if (args.mache_fork is None) != (args.mache_branch is None):
+        raise ValueError('You must supply both or neither of '
+                         '--mache_fork and --mache_branch')
 
     return args
 
@@ -61,38 +69,35 @@ def check_call(commands, env=None):
         raise subprocess.CalledProcessError(proc.returncode, commands)
 
 
-def install_miniconda(conda_base, activate_base):
+def install_miniforge3(conda_base, activate_base):
     if not os.path.exists(conda_base):
-        print('Installing Miniconda3')
+        print('Installing Miniforge3')
         if platform.system() == 'Linux':
             system = 'Linux'
         elif platform.system() == 'Darwin':
             system = 'MacOSX'
         else:
             system = 'Linux'
-
-        miniconda = f'Mambaforge-{system}-x86_64.sh'
-        url = f'https://github.com/conda-forge/miniforge/releases/latest/download/{miniconda}'
+        miniforge = f'Miniforge3-{system}-x86_64.sh'
+        url = f'https://github.com/conda-forge/miniforge/releases/latest/download/{miniforge}'  # noqa: E501
         print(url)
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         f = urlopen(req)
         html = f.read()
-        with open(miniconda, 'wb') as outfile:
+        with open(miniforge, 'wb') as outfile:
             outfile.write(html)
         f.close()
 
-        command = f'/bin/bash {miniconda} -b -p {conda_base}'
+        command = f'/bin/bash {miniforge} -b -p {conda_base}'
         check_call(command)
-        os.remove(miniconda)
+        os.remove(miniforge)
 
-    print('Doing initial setup')
+    print('Doing initial setup\n')
     commands = f'{activate_base} && ' \
                f'conda config --add channels conda-forge && ' \
                f'conda config --set channel_priority strict && ' \
-               f'mamba update -y --all && ' \
-               f'cp ~/.bashrc ~/.bashrc.conda_bak && ' \
-               f'mamba init && ' \
-               f'mv ~/.bashrc.conda_bak ~/.bashrc'
+               f'conda update -y --all && ' \
+               f'conda init --no-user'
 
     check_call(commands)
 
