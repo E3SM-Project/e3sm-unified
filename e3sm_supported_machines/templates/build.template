@@ -14,7 +14,7 @@ fi
 
 
 if [ "{{ build_ilamb }}" == "True" ]; then
-    mamba install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
+    conda install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
 fi
 
 if [ "{{ build_esmpy }}" == "True" ]; then

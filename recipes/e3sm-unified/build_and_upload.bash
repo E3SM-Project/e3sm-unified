@@ -22,7 +22,7 @@ then
 
   for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
   do
-    conda mambabuild -m $file --override-channels --use-local $channels .
+    conda build -m $file --override-channels --use-local $channels .
   done
 
   if [ $upload == "True" ]
@@ -35,7 +35,7 @@ else
   channels="-c conda-forge"
   for file in configs/mpi_*_python*.yaml
   do
-    conda mambabuild -m $file --override-channels --use-local $channels .
+    conda build -m $file --override-channels --use-local $channels .
   done
 
   if [ $upload == "True" ]
