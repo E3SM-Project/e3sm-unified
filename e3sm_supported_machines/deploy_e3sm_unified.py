@@ -50,7 +50,7 @@ def setup_install_env(activate_base, use_local, mache):
     channels = ' '.join(channels)
     commands = f'{activate_base} && ' \
                f'conda create -y -n temp_e3sm_unified_install ' \
-               f'{channels} progressbar2 jinja2 {mache}'
+               f'{channels} progressbar2 jinja2 {mache} pip'
 
     check_call(commands)
 
@@ -67,14 +67,14 @@ def remove_install_env(activate_base):
 def install_mache_from_branch(activate_install_env, fork, branch):
     print('Clone and install local mache\n')
     commands = f'{activate_install_env} && ' \
-                f'rm -rf build_mache && ' \
-                f'mkdir -p build_mache && ' \
-                f'cd build_mache && ' \
-                f'git clone -b {branch} ' \
-                f'git@github.com:{fork}.git mache && ' \
-                f'cd mache && ' \
-                f'conda install -y --file spec-file.txt && ' \
-                f'python -m pip install --no-deps .'
+               f'rm -rf build_mache && ' \
+               f'mkdir -p build_mache && ' \
+               f'cd build_mache && ' \
+               f'git clone -b {branch} ' \
+               f'git@github.com:{fork}.git mache && ' \
+               f'cd mache && ' \
+               f'conda install -y --file spec-file.txt && ' \
+               f'python -m pip install --no-deps .'
 
     check_call(commands)
 

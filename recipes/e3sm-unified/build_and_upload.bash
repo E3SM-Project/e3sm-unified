@@ -14,6 +14,7 @@ then
 
   channels="-c conda-forge/label/e3sm_diags_dev \
             -c conda-forge/label/e3sm_to_cmip_dev \
+            -c conda-forge/label/mache_dev \
             -c conda-forge/label/mpas_analysis_dev \
             -c conda-forge/label/zppy_dev \
             -c conda-forge"

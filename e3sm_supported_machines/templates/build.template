@@ -28,7 +28,7 @@ if [ "{{ build_esmpy }}" == "True" ]; then
     # this is an unused dumping grounds and causes disconcerting warnings
     rm -rf src/esmpy/fragments
 
-    python -m pip install .
+    python -m pip install --no-deps .
 
     cd ${build_dir}
 fi
