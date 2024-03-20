@@ -12,9 +12,10 @@ rm -rf ${conda_dir}/conda-bld
 if [ $dev == "True" ]
 then
 
-  channels="-c conda-forge/label/mache_dev \
+  channels="-c conda-forge/label/e3sm_diags_dev \
+            -c conda-forge/label/e3sm_to_cmip_dev \
             -c conda-forge/label/mpas_analysis_dev \
-            -c conda-forge/label/pyremap_dev \
+            -c conda-forge/label/zppy_dev \
             -c conda-forge"
 
   for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
