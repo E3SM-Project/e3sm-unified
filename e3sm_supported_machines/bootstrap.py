@@ -140,7 +140,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
         # edit if not using a release candidate for a given package
         dev_labels = ['e3sm_diags', 'e3sm_to_cmip', 'mache', 'mpas_analysis',
-                      'mpas_tools', 'zstash']
+                      'zppy']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
         channels = f'{channels} ' \

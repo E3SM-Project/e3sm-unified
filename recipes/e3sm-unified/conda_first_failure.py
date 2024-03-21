@@ -79,7 +79,7 @@ specs = ['python=3.10',
          'pandas'
          ]
 
-base_command = ['mamba', 'create', '-y', '-n', 'test', '--dry-run',
+base_command = ['conda', 'create', '-y', '-n', 'dry-run', '--dry-run',
                 '--override-channels',
                 '-c', 'conda-forge/label/mpas_analysis_dev',
                 '-c', 'conda-forge/label/zstash_dev',

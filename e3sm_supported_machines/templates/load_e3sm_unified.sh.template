@@ -1,5 +1,4 @@
 source {{ conda_base }}/etc/profile.d/conda.sh
-source {{ conda_base }}/etc/profile.d/mamba.sh
 
 export E3SMU_SCRIPT="{{ script_filename }}"
 export E3SMU_MACHINE="{{ machine }}"
@@ -9,7 +8,7 @@ then
   # we seem to be on a login node, so load the no-MPI environment
 
   export E3SMU_MPI="NOMPI"
-  mamba activate {{ env_nompi }}
+  conda activate {{ env_nompi }}
 
   export HDF5_USE_FILE_LOCKING=FALSE
 
@@ -17,7 +16,7 @@ else
   # we seem to be on a compute node, so load the MPI environment
 
   export E3SMU_MPI="{{ env_type }}"
-  mamba activate {{ env_name }}
+  conda activate {{ env_name }}
 
   {{ spack }}
 
