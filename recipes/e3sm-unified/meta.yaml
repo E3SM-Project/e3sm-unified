@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.9.3rc3" %}
+{% set version = "1.9.3rc4" %}
 {% set build = 0 %}
 
 package:
@@ -42,9 +42,9 @@ requirements:
     - livvkit 3.0.1
     - mache 1.21.0rc1
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mpas-analysis 1.10.0rc2
+    - mpas-analysis 1.10.0
     - mpas_tools 0.32.0
-    - nco 5.2.1  # [mpi != 'hpc']
+    - nco 5.2.2  # [mpi != 'hpc']
     - pcmdi_metrics 2.3.1
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
