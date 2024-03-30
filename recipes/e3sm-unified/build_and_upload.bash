@@ -5,7 +5,7 @@ set -e
 conda_dir=${HOME}/miniforge3
 os_dir=linux-64
 upload=False
-dev=True
+dev=False
 
 rm -rf ${conda_dir}/conda-bld
 
