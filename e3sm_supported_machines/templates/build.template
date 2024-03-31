@@ -14,7 +14,7 @@ fi
 
 
 if [ "{{ build_ilamb }}" == "True" ]; then
-    mamba install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
+    conda install -y {{ ilamb_channels }} --no-deps "ilamb={{ ilamb_version }}"
 fi
 
 if [ "{{ build_esmpy }}" == "True" ]; then
@@ -28,7 +28,7 @@ if [ "{{ build_esmpy }}" == "True" ]; then
     # this is an unused dumping grounds and causes disconcerting warnings
     rm -rf src/esmpy/fragments
 
-    python -m pip install .
+    python -m pip install --no-deps .
 
     cd ${build_dir}
 fi

@@ -2,7 +2,7 @@
 
 set -e
 
-conda_dir=${HOME}/miniforge
+conda_dir=${HOME}/miniforge3
 os_dir=linux-64
 upload=False
 dev=False
@@ -15,14 +15,12 @@ then
   channels="-c conda-forge/label/e3sm_diags_dev \
             -c conda-forge/label/e3sm_to_cmip_dev \
             -c conda-forge/label/mache_dev \
-            -c conda-forge/label/mpas_analysis_dev \
-            -c conda-forge/label/mpas_tools_dev \
-            -c conda-forge/label/zstash_dev \
+            -c conda-forge/label/zppy_dev \
             -c conda-forge"
 
   for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
   do
-    conda mambabuild -m $file --override-channels --use-local $channels .
+    conda build -m $file --override-channels --use-local $channels .
   done
 
   if [ $upload == "True" ]
@@ -35,7 +33,7 @@ else
   channels="-c conda-forge"
   for file in configs/mpi_*_python*.yaml
   do
-    conda mambabuild -m $file --override-channels --use-local $channels .
+    conda build -m $file --override-channels $channels .
   done
 
   if [ $upload == "True" ]

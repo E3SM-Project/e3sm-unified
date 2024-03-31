@@ -1,8 +1,8 @@
 # E3SM-Unified
 
-A metapackage for a unified 
+A metapackage for a unified
 [conda environment](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
-for analysis an other post-processing of results from Energy Exascale Earth 
+for analysis an other post-processing of results from Energy Exascale Earth
 System Model (E3SM) simulations.
 
 E3SM-Unified currently supports Linux and OSX, and python >=3.9,<3.11.
@@ -10,17 +10,17 @@ Support for Windows is not planned.
 
 To create a new conda environment on a laptop or workstation (or on
 HPC that is not already supported by the E3SM team), first install
-[Mambaforge](https://github.com/conda-forge/miniforge#mambaforge).  Then,
+[Miniforge3](https://github.com/conda-forge/miniforge#miniforge3).  Then,
 create the E3SM-Unified environment (with MPI support from the `mpich` package
 in this example), use:
-```bash 
-mamba create -n e3sm-unified -c conda-forge -c defaults -c e3sm \
+```bash
+conda create -n e3sm-unified -c conda-forge -c defaults -c e3sm \
     python=3.10 "e3sm-unified=*=mpi_mpich_*"
-mamba activate e3sm-unified
+conda activate e3sm-unified
 ```
 Each time you want to use the environment in the future, again run:
 ```bash
-mamba activate e3sm-unified
+conda activate e3sm-unified
 ```
 
 For the full list of packages in the current version of the metapackages, see:
