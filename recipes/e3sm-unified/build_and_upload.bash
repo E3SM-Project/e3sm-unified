@@ -13,9 +13,11 @@ if [ $dev == "True" ]
 then
 
   channels="-c conda-forge/label/e3sm_diags_dev \
+            -c conda-forge/label/mpas_analysis_dev \
             -c conda-forge/label/zppy_dev \
             -c conda-forge \
-            -c e3sm/label/e3sm_dev"
+            -c e3sm/label/e3sm_dev
+            -c mahf708"
 
   for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
   do
