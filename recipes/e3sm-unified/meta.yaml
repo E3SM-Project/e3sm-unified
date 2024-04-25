@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.10.0rc2" %}
+{% set version = "1.10.0rc3" %}
 {% set build = 0 %}
 
 package:
@@ -52,7 +52,7 @@ requirements:
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - uxarray >=2024.02.01
     - xcdat 0.7.0
-    - zppy 2.5.0rc1
+    - zppy 2.5.0rc2
     - zstash 1.4.2  # [linux]
 
     ### mkdocs
