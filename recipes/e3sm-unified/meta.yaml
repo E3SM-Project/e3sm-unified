@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.10.0rc4" %}
+{% set version = "1.10.0rc5" %}
 {% set build = 0 %}
 
 package:
@@ -31,7 +31,7 @@ requirements:
     ### main packages ###
     - python
     - r
-    - chemdyg 1.0.0
+    - chemdyg 1.0.1
     - e3sm_diags 2.12.0rc1
     - e3sm_to_cmip 1.11.2
     - e3sm-tools 3.0.0rc2
@@ -50,7 +50,7 @@ requirements:
     - pcmdi_metrics 2.3.1
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
-    - uxarray >=2024.02.01
+    - uxarray >=2024.04.0
     - xcdat 0.7.0
     - zppy 2.5.0rc2
     - zstash 1.4.2  # [linux]
