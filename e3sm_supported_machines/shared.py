@@ -14,7 +14,7 @@ except ImportError:
 def parse_args(bootstrap):
     parser = argparse.ArgumentParser(
         description='Deploy E3SM-Unified')
-    parser.add_argument("--version", dest="version", default="1.10.0rc5",
+    parser.add_argument("--version", dest="version", default="1.10.0",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("--conda", dest="conda_base",
                         help="Path for the  conda base")

@@ -144,8 +144,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
             channels = f'{channels} -c conda-forge/label/{package}_dev'
         channels = f'{channels} ' \
                    f'-c conda-forge ' \
-                   f'-c e3sm/label/e3sm_dev ' \
-                   f'-c mahf708'
+                   f'-c e3sm/label/e3sm_dev'
     else:
         channels = '--override-channels -c conda-forge -c defaults -c e3sm'
 
