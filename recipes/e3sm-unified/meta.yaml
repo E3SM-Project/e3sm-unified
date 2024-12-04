@@ -47,7 +47,7 @@ requirements:
     - mpas-analysis 1.11.0
     - mpas_tools 0.33.0
     - nco 5.2.4  # [mpi != 'hpc']
-    - pcmdi_metrics 3.5
+    - pcmdi_metrics 3.8
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - uxarray >=2024.04.0
