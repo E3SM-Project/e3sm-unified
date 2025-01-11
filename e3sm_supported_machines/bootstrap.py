@@ -139,14 +139,14 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
                 channels = f'{channels} -c conda-forge/label/{package}_dev'
 
         # edit if not using a release candidate for a given package
-        dev_labels = ['e3sm_diags', 'mpas_analysis', 'zppy']
+        dev_labels = ['e3sm_unified', 'chemdyg', 'e3sm_diags', 'mpas_analysis',
+                      'zppy', 'zstash']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
         channels = f'{channels} ' \
-                   f'-c conda-forge ' \
-                   f'-c e3sm/label/e3sm_dev'
+                   f'-c conda-forge '
     else:
-        channels = '--override-channels -c conda-forge -c defaults -c e3sm'
+        channels = '--override-channels -c conda-forge'
 
     packages = f'python={python} pip'
 
@@ -180,8 +180,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 def install_mache_from_branch(activate_env, fork, branch):
     print('Clone and install local mache\n')
     commands = f'{activate_env} && ' \
-                f'cd build_mache/mache && ' \
-                f'python -m pip install --no-deps .'
+               f'cd build_mache/mache && ' \
+               f'python -m pip install --no-deps .'
 
     check_call(commands)
 
@@ -233,11 +233,11 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/{spack_env}'
 
-    if config.has_option('e3sm_unified', 'use_system_hdf5_netcdf'):
-        use_system_hdf5_netcdf = config.getboolean('e3sm_unified',
-                                                 'use_system_hdf5_netcdf')
+    if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
+        use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
+                                                 'use_e3sm_hdf5_netcdf')
     else:
-        use_system_hdf5_netcdf = False
+        use_e3sm_hdf5_netcdf = False
 
     if config.has_option('e3sm_unified', 'spack_mirror'):
         spack_mirror = config.get('e3sm_unified', 'spack_mirror')
@@ -248,7 +248,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     section = config['spack_specs']
     for option in section:
         # skip redundant specs if using E3SM packages
-        if use_system_hdf5_netcdf and \
+        if use_e3sm_hdf5_netcdf and \
                 option in ['hdf5', 'netcdf_c', 'netcdf_fortran',
                            'parallel_netcdf']:
             continue
@@ -259,7 +259,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
                    machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
-                   include_system_hdf5_netcdf=use_system_hdf5_netcdf,
+                   include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf,
                    spack_mirror=spack_mirror)
 
     return spack_base
