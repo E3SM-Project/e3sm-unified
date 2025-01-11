@@ -144,9 +144,9 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
             channels = f'{channels} -c conda-forge/label/{package}_dev'
         channels = f'{channels} ' \
                    f'-c conda-forge ' \
-                   f'-c e3sm/label/e3sm_dev'
+                   f'-c conda-forge/label/e3sm_unified_dev'
     else:
-        channels = '--override-channels -c conda-forge -c defaults -c e3sm'
+        channels = '--override-channels -c conda-forge'
 
     packages = f'python={python} pip'
 
@@ -180,8 +180,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 def install_mache_from_branch(activate_env, fork, branch):
     print('Clone and install local mache\n')
     commands = f'{activate_env} && ' \
-                f'cd build_mache/mache && ' \
-                f'python -m pip install --no-deps .'
+               f'cd build_mache/mache && ' \
+               f'python -m pip install --no-deps .'
 
     check_call(commands)
 
