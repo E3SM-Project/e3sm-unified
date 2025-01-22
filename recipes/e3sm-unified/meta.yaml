@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.11.0rc2" %}
+{% set version = "1.11.0rc3" %}
 {% set build = 0 %}
 
 package:
@@ -33,7 +33,7 @@ requirements:
     - r
     - cdo
     - cime_gen_domain 6.1.59  # [linux]
-    - chemdyg 1.1.0rc1
+    - chemdyg 1.1.0rc2
     - e3sm_diags 3.0.0rc1
     - e3sm_to_cmip 1.11.3
     - e3sm-tools 3.0.2  # [linux]
@@ -47,14 +47,15 @@ requirements:
     - mache 1.28.0rc1
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mosaic 1.0.0  # [py>=310]
-    - mpas-analysis 1.13.0rc3
+    - mpas-analysis 1.13.0rc4
     - mpas_tools 0.36.0
     - nco 5.3.1  # [mpi != 'hpc']
     - pcmdi_metrics 3.8
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.3 {{ mpi_prefix }}_*  # [mpi != 'hpc']
-    - uxarray >=2024.12.0
+    - uxarray 2024.11.1  # [py<310]
+    - uxarray >=2024.12.0  # [py>=310]
     - xcdat 0.7.3
     - zppy 3.0.0rc1
     - zppy-interfaces 0.1.1
@@ -65,7 +66,7 @@ requirements:
     - pymdown-extensions
     - mkdocs-monorepo-plugin
     - mdutils
-    - mkdocs-bibtex
+    - mkdocs-bibtex 2.18.0
     - mkdocs-redirects
     - markdownlint-cli2
 
