@@ -227,6 +227,9 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     command = f'/bin/bash {script_filename}'
     check_call(command)
 
+    esmf_mk = f'export ESMFMKFILE={spack_view}/lib/esmf.mk'
+    return esmf_mk
+
 
 def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
@@ -339,6 +342,7 @@ def check_env(script_filename, env_name, conda_mpi, machine):
                'IPython', 'globus_cli', 'zstash']
     if conda_mpi not in ['nompi', 'hpc']:
         imports.append('ILAMB')
+        imports.append('esmpy')
 
     commands = [['mpas_analysis', '-h'],
                 ['livv', '--version'],
@@ -417,7 +421,7 @@ def main():
     nompi_compiler = None
     nompi_suffix = '_login'
     # first, make environment for login nodes.  We're using mpich from
-    # conda-forge for now because we haven't had any luck with esmf>8.2.0 nompi
+    # conda-forge for now
     env_path, env_nompi, activate_env, _, _ = build_env(
         is_test, recreate, nompi_compiler, mpi, 'mpich', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
@@ -444,8 +448,10 @@ def main():
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
                                      args.tmpdir)
-        build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
-                              activate_env, channels, spack_base, spack_env)
+        esmf_mk = build_sys_ilamb_esmpy(config, machine, compiler, mpi,
+                                        template_path, activate_env, channels,
+                                        spack_base, spack_env)
+        sys_info['env_vars'].append(esmf_mk)
     else:
         spack_base = None
 
