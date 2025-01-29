@@ -211,8 +211,7 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     activate_env_lines = activate_env.replace(' && ', '\n')
     modules = f'{activate_env_lines}\n{modules}'
 
-    spack_branch_base = f'{spack_base}/{spack_env}'
-    spack_view = f'{spack_branch_base}/var/spack/environments/' \
+    spack_view = f'{spack_base}/var/spack/environments/' \
                  f'{spack_env}/.spack-env/view'
     script = template.render(
         mpicc=mpicc, modules=modules, template_path=template_path,
