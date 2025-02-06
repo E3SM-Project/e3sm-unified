@@ -148,7 +148,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         channels = '--override-channels -c conda-forge'
 
-    packages = f'python={python} pip'
+    packages = f'python={python} pip "setuptools>=41.2" setuptools_scm ' \
+        'setuptools-git-versioning'
 
     source_activation_scripts = \
         f'source {conda_base}/etc/profile.d/conda.sh'
