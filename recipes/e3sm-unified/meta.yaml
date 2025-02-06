@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.11.0rc5" %}
+{% set version = "1.11.0rc6" %}
 {% set build = 0 %}
 
 package:
@@ -49,7 +49,7 @@ requirements:
     - mosaic 1.0.0  # [py>=310]
     - mpas-analysis 1.13.0rc4
     - mpas_tools 0.36.0
-    - nco 5.3.1  # [mpi != 'hpc']
+    - nco 5.3.2  # [mpi != 'hpc']
     - pcmdi_metrics 3.8.2
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
@@ -132,7 +132,7 @@ requirements:
     # the last version before python 3.9 support was dropped
     - xarray 2024.7.0  # [py<310]
     - xarray 2025.1.1  # [py>=310]
-    - xesmf
+    - xesmf 0.8.8
 
     # addition ilamb 2.7 dependencies, for system MPI builds
     - cython  # [mpi == 'hpc']

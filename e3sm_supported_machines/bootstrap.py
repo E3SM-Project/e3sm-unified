@@ -163,7 +163,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         check_call(commands)
 
         if conda_mpi == 'hpc':
-            remove_packages = 'tempest-remap esmf esmpy'
+            remove_packages = 'tempest-remap esmf esmpy xesmf'
             if nco_spec != '':
                 remove_packages = f'nco {remove_packages}'
             # remove conda-forge versions so we're sure to use Spack versions
@@ -197,11 +197,14 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     esmpy_version = config.get('e3sm_unified', 'esmpy')
     build_esmpy = str(esmpy_version != 'None')
 
+    xesmf_version = config.get('e3sm_unified', 'xesmf')
+    build_xesmf = str(xesmf_version != 'None')
+
     mpicc, _, _, modules = \
         get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
                                                shell='sh')
 
-    script_filename = 'build_ilamb_esmpy.bash'
+    script_filename = 'build_ilamb_esmpy_xesmf.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
@@ -218,7 +221,8 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
         mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
         ilamb_version=ilamb_version, build_ilamb=build_ilamb,
         ilamb_channels=channels, esmpy_version=esmpy_version,
-        build_esmpy=build_esmpy, spack_view=spack_view)
+        build_esmpy=build_esmpy, xesmf_version=xesmf_version,
+        build_xesmf=build_xesmf, spack_view=spack_view)
     print(f'Writing {script_filename}')
     with open(script_filename, 'w') as handle:
         handle.write(script)
