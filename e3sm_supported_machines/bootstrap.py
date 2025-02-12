@@ -149,7 +149,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         channels = '--override-channels -c conda-forge'
 
     packages = f'python={python} pip "setuptools>=41.2" setuptools_scm ' \
-        'setuptools-git-versioning'
+               f'setuptools-git-versioning'
 
     source_activation_scripts = \
         f'source {conda_base}/etc/profile.d/conda.sh'
@@ -164,8 +164,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         check_call(commands)
 
         if conda_mpi == 'hpc':
-            remove_packages = 'tempest-remap esmf esmpy xesmf'
-            if nco_spec != '':
+            remove_packages = 'tempest-remap'
+            if nco_spec != 'None':
                 remove_packages = f'nco {remove_packages}'
             # remove conda-forge versions so we're sure to use Spack versions
             commands = f'{activate_base} && conda remove -y --force ' \

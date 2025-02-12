@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.11.0rc6" %}
+{% set version = "1.11.0rc7" %}
 {% set build = 0 %}
 
 package:
