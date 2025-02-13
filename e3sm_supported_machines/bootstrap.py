@@ -123,6 +123,13 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         mpi_prefix = f'mpi_{conda_mpi}'
 
     nco_spec = config.get('spack_specs', 'nco')
+
+    # whether to remove esmpy and xesmf, becasue they will be installed
+    # manually with pip
+    remove_esmf_esmpy_xesmf = (
+        config.get('e3sm_unified', 'esmpy') != 'None' and
+        config.get('e3sm_unified', 'xesmf') != 'None')
+
     if is_test:
 
         nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
@@ -167,6 +174,10 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
             remove_packages = 'tempest-remap'
             if nco_spec != 'None':
                 remove_packages = f'nco {remove_packages}'
+
+            if remove_esmf_esmpy_xesmf:
+                remove_packages = f'{remove_packages} esmf esmpy xesmf'
+
             # remove conda-forge versions so we're sure to use Spack versions
             commands = f'{activate_base} && conda remove -y --force ' \
                        f'-n {env_name} {remove_packages}'
@@ -231,7 +242,12 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     command = f'/bin/bash {script_filename}'
     check_call(command)
 
-    esmf_mk = f'export ESMFMKFILE={spack_view}/lib/esmf.mk'
+    if build_esmpy:
+        # use spack esmf
+        esmf_mk = f'export ESMFMKFILE={spack_view}/lib/esmf.mk'
+    else:
+        # use conda esmf
+        esmf_mk = 'export ESMFMKFILE=${CONDA_PREFIX}/lib/esmf.mk'
     return esmf_mk
 
 
@@ -424,10 +440,10 @@ def main():
 
     nompi_compiler = None
     nompi_suffix = '_login'
-    # first, make environment for login nodes.  We're using mpich from
+    # first, make environment for login nodes.  We're using no-MPI from
     # conda-forge for now
     env_path, env_nompi, activate_env, _, _ = build_env(
-        is_test, recreate, nompi_compiler, mpi, 'mpich', version,
+        is_test, recreate, nompi_compiler, mpi, 'nompi', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
         args.local_conda_build, config)
 

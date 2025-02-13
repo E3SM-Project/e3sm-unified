@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.11.0rc7" %}
+{% set version = "1.11.0rc8" %}
 {% set build = 0 %}
 
 package:
@@ -44,10 +44,10 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.1.0
-    - mache 1.28.0rc2
+    - mache 1.28.0rc3
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mosaic 1.0.0  # [py>=310]
-    - mpas-analysis 1.13.0rc4
+    - mpas-analysis 1.13.0rc5
     - mpas_tools 0.36.0
     - nco 5.3.2  # [mpi != 'hpc']
     - pcmdi_metrics 3.8.2
@@ -57,7 +57,7 @@ requirements:
     - uxarray 2024.11.1  # [py<310]
     - uxarray >=2024.12.0  # [py>=310]
     - xcdat 0.7.3
-    - zppy 3.0.0rc2
+    - zppy 3.0.0rc3
     - zppy-interfaces 0.1.1
     - zstash 1.4.4rc1  # [linux]
 
