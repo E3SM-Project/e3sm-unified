@@ -242,7 +242,7 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     command = f'/bin/bash {script_filename}'
     check_call(command)
 
-    if build_esmpy:
+    if build_esmpy == 'True':
         # use spack esmf
         esmf_mk = f'export ESMFMKFILE={spack_view}/lib/esmf.mk'
     else:
