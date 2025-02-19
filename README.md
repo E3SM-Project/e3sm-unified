@@ -1,5 +1,7 @@
 # E3SM-Unified
 
+![E3SM-Unified](e3sm_unified_logo_200.png)
+
 A metapackage for a unified
 [conda environment](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 for analysis an other post-processing of results from Energy Exascale Earth
