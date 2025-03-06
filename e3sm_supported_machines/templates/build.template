@@ -28,7 +28,20 @@ if [ "{{ build_esmpy }}" == "True" ]; then
     # this is an unused dumping grounds and causes disconcerting warnings
     rm -rf src/esmpy/fragments
 
-    python -m pip install --no-deps .
+    python -m pip install --no-deps --no-build-isolation .
+
+    cd ${build_dir}
+fi
+
+if [ "{{ build_xesmf }}" == "True" ]; then
+
+    git clone git@github.com:pangeo-data/xESMF.git -b v{{ xesmf_version }} xesmf-{{ xesmf_version }}
+
+    export ESMFMKFILE={{ spack_view }}/lib/esmf.mk
+
+    cd xesmf-{{ xesmf_version }}
+
+    python -m pip install --no-deps --no-build-isolation .
 
     cd ${build_dir}
 fi
