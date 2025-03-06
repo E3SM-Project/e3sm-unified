@@ -146,7 +146,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
                 channels = f'{channels} -c conda-forge/label/{package}_dev'
 
         # edit if not using a release candidate for a given package
-        dev_labels = ['e3sm_unified', 'chemdyg', 'e3sm_diags', 'mache',
+        dev_labels = ['e3sm_unified', 'chemdyg', 'e3sm_diags',
                       'mpas_analysis', 'zppy', 'zstash']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
@@ -203,14 +203,14 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
     ilamb_version = config.get('e3sm_unified', 'ilamb')
-    build_mpi4py = str(mpi4py_version != 'None')
-    build_ilamb = str(ilamb_version != 'None')
+    build_mpi4py = mpi4py_version != 'None'
+    build_ilamb = ilamb_version != 'None'
 
     esmpy_version = config.get('e3sm_unified', 'esmpy')
-    build_esmpy = str(esmpy_version != 'None')
+    build_esmpy = esmpy_version != 'None'
 
     xesmf_version = config.get('e3sm_unified', 'xesmf')
-    build_xesmf = str(xesmf_version != 'None')
+    build_xesmf = xesmf_version != 'None'
 
     mpicc, _, _, modules = \
         get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
@@ -230,11 +230,11 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
                  f'{spack_env}/.spack-env/view'
     script = template.render(
         mpicc=mpicc, modules=modules, template_path=template_path,
-        mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
-        ilamb_version=ilamb_version, build_ilamb=build_ilamb,
+        mpi4py_version=mpi4py_version, build_mpi4py=str(build_mpi4py),
+        ilamb_version=ilamb_version, build_ilamb=str(build_ilamb),
         ilamb_channels=channels, esmpy_version=esmpy_version,
-        build_esmpy=build_esmpy, xesmf_version=xesmf_version,
-        build_xesmf=build_xesmf, spack_view=spack_view)
+        build_esmpy=str(build_esmpy), xesmf_version=xesmf_version,
+        build_xesmf=str(build_xesmf), spack_view=spack_view)
     print(f'Writing {script_filename}')
     with open(script_filename, 'w') as handle:
         handle.write(script)
@@ -242,7 +242,7 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     command = f'/bin/bash {script_filename}'
     check_call(command)
 
-    if build_esmpy == 'True':
+    if build_esmpy:
         # use spack esmf
         esmf_mk = f'export ESMFMKFILE={spack_view}/lib/esmf.mk'
     else:
