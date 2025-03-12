@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.11.0rc11" %}
+{% set version = "1.11.0rc12" %}
 {% set build = 0 %}
 
 package:
@@ -47,7 +47,7 @@ requirements:
     - mache 1.28.0
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mosaic 1.1.0  # [py>=310]
-    - mpas-analysis 1.13.0rc8
+    - mpas-analysis 1.13.0rc9
     - mpas_tools 0.36.0
     - nco 5.3.2  # [mpi != 'hpc']
     - pcmdi_metrics 3.8.2
