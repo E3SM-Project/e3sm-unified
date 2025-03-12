@@ -123,6 +123,13 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         mpi_prefix = f'mpi_{conda_mpi}'
 
     nco_spec = config.get('spack_specs', 'nco')
+
+    # whether to remove esmpy and xesmf, becasue they will be installed
+    # manually with pip
+    remove_esmf_esmpy_xesmf = (
+        config.get('e3sm_unified', 'esmpy') != 'None' and
+        config.get('e3sm_unified', 'xesmf') != 'None')
+
     if is_test:
 
         nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
@@ -139,16 +146,17 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
                 channels = f'{channels} -c conda-forge/label/{package}_dev'
 
         # edit if not using a release candidate for a given package
-        dev_labels = ['e3sm_diags', 'mpas_analysis', 'zppy']
+        dev_labels = ['e3sm_unified', 'chemdyg', 'e3sm_diags',
+                      'mpas_analysis', 'zppy', 'zstash']
         for package in dev_labels:
             channels = f'{channels} -c conda-forge/label/{package}_dev'
         channels = f'{channels} ' \
-                   f'-c conda-forge ' \
-                   f'-c e3sm/label/e3sm_dev'
+                   f'-c conda-forge '
     else:
-        channels = '--override-channels -c conda-forge -c defaults -c e3sm'
+        channels = '--override-channels -c conda-forge'
 
-    packages = f'python={python} pip'
+    packages = f'python={python} pip "setuptools>=41.2" setuptools_scm ' \
+               f'setuptools-git-versioning'
 
     source_activation_scripts = \
         f'source {conda_base}/etc/profile.d/conda.sh'
@@ -163,9 +171,13 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         check_call(commands)
 
         if conda_mpi == 'hpc':
-            remove_packages = 'tempest-remap esmf esmpy'
-            if nco_spec != '':
+            remove_packages = 'tempest-remap'
+            if nco_spec != 'None':
                 remove_packages = f'nco {remove_packages}'
+
+            if remove_esmf_esmpy_xesmf:
+                remove_packages = f'{remove_packages} esmf esmpy xesmf'
+
             # remove conda-forge versions so we're sure to use Spack versions
             commands = f'{activate_base} && conda remove -y --force ' \
                        f'-n {env_name} {remove_packages}'
@@ -180,8 +192,8 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 def install_mache_from_branch(activate_env, fork, branch):
     print('Clone and install local mache\n')
     commands = f'{activate_env} && ' \
-                f'cd build_mache/mache && ' \
-                f'python -m pip install --no-deps .'
+               f'cd build_mache/mache && ' \
+               f'python -m pip install --no-deps .'
 
     check_call(commands)
 
@@ -191,17 +203,20 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
     ilamb_version = config.get('e3sm_unified', 'ilamb')
-    build_mpi4py = str(mpi4py_version != 'None')
-    build_ilamb = str(ilamb_version != 'None')
+    build_mpi4py = mpi4py_version != 'None'
+    build_ilamb = ilamb_version != 'None'
 
     esmpy_version = config.get('e3sm_unified', 'esmpy')
-    build_esmpy = str(esmpy_version != 'None')
+    build_esmpy = esmpy_version != 'None'
+
+    xesmf_version = config.get('e3sm_unified', 'xesmf')
+    build_xesmf = xesmf_version != 'None'
 
     mpicc, _, _, modules = \
         get_modules_env_vars_and_mpi_compilers(machine, compiler, mpi,
                                                shell='sh')
 
-    script_filename = 'build_ilamb_esmpy.bash'
+    script_filename = 'build_ilamb_esmpy_xesmf.bash'
 
     with open(f'{template_path}/build.template', 'r') as f:
         template = Template(f.read())
@@ -211,15 +226,15 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     activate_env_lines = activate_env.replace(' && ', '\n')
     modules = f'{activate_env_lines}\n{modules}'
 
-    spack_branch_base = f'{spack_base}/{spack_env}'
-    spack_view = f'{spack_branch_base}/var/spack/environments/' \
+    spack_view = f'{spack_base}/var/spack/environments/' \
                  f'{spack_env}/.spack-env/view'
     script = template.render(
         mpicc=mpicc, modules=modules, template_path=template_path,
-        mpi4py_version=mpi4py_version, build_mpi4py=build_mpi4py,
-        ilamb_version=ilamb_version, build_ilamb=build_ilamb,
+        mpi4py_version=mpi4py_version, build_mpi4py=str(build_mpi4py),
+        ilamb_version=ilamb_version, build_ilamb=str(build_ilamb),
         ilamb_channels=channels, esmpy_version=esmpy_version,
-        build_esmpy=build_esmpy, spack_view=spack_view)
+        build_esmpy=str(build_esmpy), xesmf_version=xesmf_version,
+        build_xesmf=str(build_xesmf), spack_view=spack_view)
     print(f'Writing {script_filename}')
     with open(script_filename, 'w') as handle:
         handle.write(script)
@@ -227,17 +242,25 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     command = f'/bin/bash {script_filename}'
     check_call(command)
 
+    if build_esmpy:
+        # use spack esmf
+        esmf_mk = f'export ESMFMKFILE={spack_view}/lib/esmf.mk'
+    else:
+        # use conda esmf
+        esmf_mk = 'export ESMFMKFILE=${CONDA_PREFIX}/lib/esmf.mk'
+    return esmf_mk
+
 
 def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
     spack_base = f'{base_path}/spack/{spack_env}'
 
-    if config.has_option('e3sm_unified', 'use_system_hdf5_netcdf'):
-        use_system_hdf5_netcdf = config.getboolean('e3sm_unified',
-                                                 'use_system_hdf5_netcdf')
+    if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
+        use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
+                                                 'use_e3sm_hdf5_netcdf')
     else:
-        use_system_hdf5_netcdf = False
+        use_e3sm_hdf5_netcdf = False
 
     if config.has_option('e3sm_unified', 'spack_mirror'):
         spack_mirror = config.get('e3sm_unified', 'spack_mirror')
@@ -248,7 +271,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     section = config['spack_specs']
     for option in section:
         # skip redundant specs if using E3SM packages
-        if use_system_hdf5_netcdf and \
+        if use_e3sm_hdf5_netcdf and \
                 option in ['hdf5', 'netcdf_c', 'netcdf_fortran',
                            'parallel_netcdf']:
             continue
@@ -259,7 +282,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
                    machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
-                   include_system_hdf5_netcdf=use_system_hdf5_netcdf,
+                   include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf,
                    spack_mirror=spack_mirror)
 
     return spack_base
@@ -339,6 +362,7 @@ def check_env(script_filename, env_name, conda_mpi, machine):
                'IPython', 'globus_cli', 'zstash']
     if conda_mpi not in ['nompi', 'hpc']:
         imports.append('ILAMB')
+        imports.append('esmpy')
 
     commands = [['mpas_analysis', '-h'],
                 ['livv', '--version'],
@@ -416,10 +440,10 @@ def main():
 
     nompi_compiler = None
     nompi_suffix = '_login'
-    # first, make environment for login nodes.  We're using mpich from
-    # conda-forge for now because we haven't had any luck with esmf>8.2.0 nompi
+    # first, make environment for login nodes.  We're using no-MPI from
+    # conda-forge for now
     env_path, env_nompi, activate_env, _, _ = build_env(
-        is_test, recreate, nompi_compiler, mpi, 'mpich', version,
+        is_test, recreate, nompi_compiler, mpi, 'nompi', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
         args.local_conda_build, config)
 
@@ -444,8 +468,10 @@ def main():
     if compiler is not None:
         spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
                                      args.tmpdir)
-        build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
-                              activate_env, channels, spack_base, spack_env)
+        esmf_mk = build_sys_ilamb_esmpy(config, machine, compiler, mpi,
+                                        template_path, activate_env, channels,
+                                        spack_base, spack_env)
+        sys_info['env_vars'].append(esmf_mk)
     else:
         spack_base = None
 
