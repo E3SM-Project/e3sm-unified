@@ -1,0 +1,63 @@
+name: CI/CD Build Workflow
+
+on:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+env:
+  CANCEL_OTHERS: false
+  PATHS_IGNORE: '["**/README.md", "**/docs/**"]'
+
+jobs:
+  build:
+    name: test E3SM-Unified - python ${{ matrix.python-version }} - mpi ${{ matrix.mpi }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10"]
+        mpi: ["hpc", "nompi", "mpich", "openmpi"]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Build Environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: e3sm_unified_dev
+          init-shell: bash
+          condarc: |
+            channel_priority: strict
+            channels:
+                - conda-forge
+          create-args: >-
+            python=${{ matrix.python-version }}
+
+      - name: Finalize Build Environment
+        run: |
+          conda install -y conda conda-build
+          conda build -m "recipes/e3sm-unified/configs/mpi_${{ matrix.mpi }}_python${{ matrix.python-version }}.yaml" "recipes/e3sm-unified"
+
+      - name: Install E3SM-Unified
+        run: |
+          conda install -y -c ${CONDA_PREFIX}/conda-bld/ e3sm-unified
+          conda install -y --file dev-spec.txt
+
+      - name: Build Sphinx Docs
+        run: |
+          cd docs
+          DOCS_VERSION=test make versioned-html
+          condarc: |
+            channel_priority: strict
+            channels:
+                - conda-forge
+          create-args: >-
+            python=${{ matrix.python-version }}
