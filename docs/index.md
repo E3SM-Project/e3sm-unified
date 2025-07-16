@@ -28,8 +28,7 @@ This documentation is for both **users** of the E3SM-Unified environment and
 
 * 💠 [Using E3SM-Unified Tools](using-tools.md)
 * 🧪 [Testing Release Candidates](testing-release-candidates.md)
-* 🦠 [Release Engineering](release-engineering.md)
-* 🚚 [Deployment on HPCs](deployment.md)
+* 🚚 [The E3SM-Unified Release Workflow](releasing/release-workflow.md)
 * 📦 [Package Catalog](packages.md)
 * ❓ [Troubleshooting & FAQs](troubleshooting.md)
 * 🤝 [Contributing & Community](contributing.md)
