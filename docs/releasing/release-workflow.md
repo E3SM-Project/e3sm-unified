@@ -17,8 +17,7 @@ The release process typically follows this progression:
 1. **[How Conda and Spack Work Together in E3SM-Unified](conda-vs-spack.md)**
 2. **[Planning Package Updates](planning-updates.md)**
 3. **[Creating Release Candidates](creating-rcs/overview.md)**
-4. **[Deploying on HPCs for Testing](deploying-testing.md)**
-5. **[Testing Across the Ecosystem](testing-ecosystem.md)**
+4. **[Deployment and Testing](testing/overview.md)**
 6. **[Finalizing the Release](finalizing-release.md)**
 
 Each of these steps is detailed in its own page. See below for a high-level
