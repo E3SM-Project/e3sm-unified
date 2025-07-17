@@ -47,7 +47,7 @@ supports evolving analysis and diagnostic workflows.
 
 The best way to suggest a package or version change:
 
-1. Edit the Confluence table for the upcoming version (if you have access)
+1. Edit the **Confluence table** for the upcoming version (if you have access)
 2. If not, open an issue on GitHub with your suggestion and rationale
 3. Optional: Tag maintainers or post on Slack to coordinate
 
@@ -116,6 +116,20 @@ During planning, for any core dependency that is pinned:
      migrated packages against that version (typically merging to a branch
      on the conda-forge feedstock other than `main`).
 
+**Note:** Some packages in E3SM-Unified directly depend on pinned libraries
+like `hdf5` or `libnetcdf` — that is, these pinned packages are
+*dependencies of E3SM-Unified's dependencies*.
+
+If E3SM-Unified requires an older version of such a package (e.g., `nco` or
+`moab`), and that version has only been built on conda-forge with an older
+version of the pinned library, you may encounter compatibility issues during
+the build.
+
+In these cases, it is often easier to upgrade the E3SM-Unified dependency to
+a newer version that was built against the newer pinned library — as long as
+that version is still compatible with the rest of the environment. This avoids
+the complexity of manually rebuilding older versions with newer core libraries.
+
 ### 🌀 Multiple Migrations
 
 When multiple overlapping migrations are in progress (e.g., `hdf5`,
@@ -139,3 +153,38 @@ so less care is required.
 
 This list may evolve from release to release as new packages are added or
 pinned more strictly.
+
+---
+
+## 🔄 Other Places That Require Updates
+
+In addition to updating versions in `meta.yaml` and the conda-forge feedstocks,
+the following deployment-related files should also be kept in sync:
+
+### 📦 `e3sm_supported_machines/default.cfg`
+
+This file specifies the versions of key packages (both Spack-built and
+Conda-installed) used during deployment.
+
+**Best Practice:** Package versions listed in `default.cfg` should typically
+match the versions in `recipes/e3sm-unified/meta.yaml`, unless there's a clear
+technical reason to diverge (e.g., system module incompatibilities or build
+issues with a newer version).
+
+Maintainers should update these entries as part of planning and testing a new
+release candidate.
+
+### 🛠️ `e3sm_supported_machines/shared.py`
+
+The version of E3SM-Unified being deployed is hard-coded here:
+
+```python
+parser.add_argument("--version", dest="version", default="1.11.1",
+                    help="The version of E3SM-Unified to deploy")
+```
+
+This value should be updated manually for **each new release candidate** and
+final release to reflect the current version being tested or deployed.
+
+> 🧩 Note: We plan to automate this step in the future, but for now it must be
+updated manually.
