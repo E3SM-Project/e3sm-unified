@@ -171,6 +171,10 @@ match the versions in `recipes/e3sm-unified/meta.yaml`, unless there's a clear
 technical reason to diverge (e.g., system module incompatibilities or build
 issues with a newer version).
 
+**ESMPy:** We have found that `ESMPy` build with system compilers is not
+compatible with `xesmf`, which is used by `xcdat` and `e3sm_diags`.  As a
+results, the current best practice is to set `esmpy = None` in `default.cfg`.
+
 Maintainers should update these entries as part of planning and testing a new
 release candidate.
 
