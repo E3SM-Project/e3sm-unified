@@ -7,6 +7,13 @@ A metapackage for a unified
 for analysis and other pre- and post-processing for the Energy Exascale Earth
 System Model (E3SM).
 
+## Documentation
+
+[Latest documentation](http://docs.e3sm.org/e3sm-unified/main) for users,
+developers and maintainers.
+
+## Getting Started
+
 E3SM-Unified currently supports Linux and OSX, and python >=3.9,<3.11.
 Support for Windows is not planned.
 
