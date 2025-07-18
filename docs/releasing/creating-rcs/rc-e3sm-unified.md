@@ -100,7 +100,34 @@ resolution issues.
 
 ---
 
-## 6. Tag and Publish the RC
+## 6. Make a draft PR
+
+Push the branch to your fork of `e3sm-unified` and make a draft PR to the
+main `e3sm-unified` repo.  Use that PR to document progress and highlight
+important version updates in this release for the public (those without
+acces to E3SM's Confluence pages). See
+[this example](https://github.com/E3SM-Project/e3sm-unified/pull/125).
+
+---
+
+## 7. Keeping updated on Confluence
+
+As deployment and testing progresses, you needs to make sure that the packages
+in your `update-to-<version>` branch match the
+[agreed-upon versions on Confluence](https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Next-versions).
+Maintainers of dependencies will need to inform you as new release candidates
+or final releases become available, preferably by updating Confluence and also
+sending a Slack message or email.
+
+As testing nears completion, it is also time to draft a release note, similar
+to [this example](https://e3sm.atlassian.net/wiki/spaces/DOC/pages/4908515329/E3SM-Unified+1.11.0+release+notes).
+Ask maintainers of any of the main E3SM-Unified packages that have been
+updated since the last release to describe (**briefly and with minimal
+jargon**) what is new in their package that would be of interest to users.
+
+---
+
+## 8. Tag and Publish the RC
 
 After test builds are successful:
 

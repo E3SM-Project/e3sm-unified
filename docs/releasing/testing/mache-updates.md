@@ -36,7 +36,45 @@ Each change should be tested by deploying a release candidate of E3SM-Unified.
 
 ## Key Tasks
 
-### 1. Edit Spack Templates
+### 1. Update config options
+
+Each HPC machine supported by E3SM-Unified has a
+[config file in `mache`](https://github.com/E3SM-Project/mache/tree/main/mache/machines).
+
+The config file has a section `[e3sm_unified]`, e.g.:
+
+```cfg
+# Options related to deploying an e3sm-unified conda environment on supported
+# machines
+[e3sm_unified]
+
+# the unix group for permissions for the e3sm-unified conda environment
+group = cels
+
+# the compiler set to use for system libraries
+compiler = gnu
+
+# the system MPI library
+mpi = openmpi
+
+# the path to the directory where activation scripts, the base environment, and
+# system libraries will be deployed
+base_path = /lcrc/soft/climate/e3sm-unified
+
+# whether to use E3SM modules for hdf5, netcdf-c, netcdf-fortran and pnetcdf
+# (spack modules are used otherwise)
+use_e3sm_hdf5_netcdf = False
+```
+
+These config options control the default deployment behavior, including the
+Unix `group` that the E3SM-Unified environment will belong to, the
+`compiler` and `mpi` library used to build E3SM-Unified Spack packages by
+default, The `base_path` under which the conda and spack environments as well
+as the activation scripts will be installed, and whether that machine will
+use E3SM's version of `hdf5`, `netcdf-c`, `netcdf-fortran`, `parallel-netcdf`,
+etc. or install them from Spack.
+
+### 2. Edit Spack Templates
 
 Spack environment templates live in:
 
@@ -62,7 +100,7 @@ with.
 
 ---
 
-### 2. Create a Release Candidate
+### 3. Create a Release Candidate
 
 Use the typical GitHub flow:
 
@@ -86,7 +124,7 @@ always cleaner to use a release candidate.
 
 ---
 
-### 3. Finalize the Release
+### 4. Finalize the Release
 
 Once testing across all platforms is complete:
 
