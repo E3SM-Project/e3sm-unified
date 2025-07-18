@@ -64,6 +64,9 @@ If a `dev` branch does not already exist:
 3. Edit `recipe/meta.yaml`:
 
 * Update the `version` field to match your RC tag (e.g., `v3.0.0rc1`)
+* Set the `sha256` hash.  To determine the hash, you need to download the
+  source file on a Linux (e.g. HPC) machine and run `sha256sum` on it.  For
+  some reason, Macs seem to produce an incorrect hash.
 * Update dependencies if needed (e.g., pin to RC versions of other tools)
 
 4. If you created the `dev` branch above and no previous release candidates
@@ -83,8 +86,9 @@ If a `dev` branch does not already exist:
 
 6. Open a pull request:
 
-   * **Source:** your fork’s RC branch
-   * **Target:** the `dev` branch on the conda-forge feedstock
+   * **Source:** your RC branch on your fork (head repository)
+   * **Target:** the `dev` branch on the conda-forge feedstock (base
+     repository)
 
 ---
 
