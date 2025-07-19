@@ -1,0 +1,240 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Updating the E3SM Spack Fork</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Updating the E3SM Spack Fork</a><ul>
+<li><a class="reference internal" href="#repo-location">Repo Location</a></li>
+<li><a class="reference internal" href="#key-tasks">Key Tasks</a><ul>
+<li><a class="reference internal" href="#add-or-update-package-versions">1. Add or Update Package Versions</a></li>
+<li><a class="reference internal" href="#create-spack-for-mache-version-branches">2. Create <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> Branches</a></li>
+<li><a class="reference internal" href="#rebasing-develop-onto-spack-releases">3. Rebasing <code class="docutils literal notranslate"><span class="pre">develop</span></code> onto Spack Releases</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Updating the E3SM Spack Fork</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/testing/spack-updates.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="updating-the-e3sm-spack-fork">
+<h1>Updating the E3SM Spack Fork<a class="headerlink" href="#updating-the-e3sm-spack-fork" title="Link to this heading"></a></h1>
+<p>E3SM-Unified relies on a custom fork of Spack to build performance-critical
+software components that are not managed by Conda. This fork includes
+specialized packages (e.g., <code class="docutils literal notranslate"><span class="pre">moab</span></code>, <code class="docutils literal notranslate"><span class="pre">tempestremap</span></code>, <code class="docutils literal notranslate"><span class="pre">esmf</span></code>) and system-aware
+configurations to support a wide range of HPC environments.</p>
+<p>This page outlines the steps for updating and managing the E3SM Spack fork
+during an E3SM-Unified release cycle.</p>
+<hr class="docutils" />
+<section id="repo-location">
+<h2>Repo Location<a class="headerlink" href="#repo-location" title="Link to this heading"></a></h2>
+<p>The E3SM Spack fork lives at:
+🔗 <a class="reference external" href="https://github.com/E3SM-Project/spack">https://github.com/E3SM-Project/spack</a></p>
+</section>
+<hr class="docutils" />
+<section id="key-tasks">
+<h2>Key Tasks<a class="headerlink" href="#key-tasks" title="Link to this heading"></a></h2>
+<section id="add-or-update-package-versions">
+<h3>1. Add or Update Package Versions<a class="headerlink" href="#add-or-update-package-versions" title="Link to this heading"></a></h3>
+<p>You may need to:</p>
+<ul class="simple">
+<li><p>Add new versions of packages like <code class="docutils literal notranslate"><span class="pre">nco</span></code>, <code class="docutils literal notranslate"><span class="pre">moab</span></code>, <code class="docutils literal notranslate"><span class="pre">esmf</span></code>, <code class="docutils literal notranslate"><span class="pre">tempestremap</span></code>, etc.</p></li>
+<li><p>Update build configurations, variants, or patches</p></li>
+<li><p>rebase onto new releases of the main <a class="reference external" href="https://github.com/spack/spack">spack repo</a></p></li>
+</ul>
+<p>Follow Spack’s standard packaging conventions. Builds will typically be tested
+as part of E3SM-Unified deployment (or deployment of Polaris or Compass), so
+no other testing is typically necessary or practical.</p>
+<p>After changes are validated, push them to the appropriate branch or branches
+(see next section).</p>
+</section>
+<hr class="docutils" />
+<section id="create-spack-for-mache-version-branches">
+<h3>2. Create <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> Branches<a class="headerlink" href="#create-spack-for-mache-version-branches" title="Link to this heading"></a></h3>
+<p>The main development branch on E3SM’s spack for is <code class="docutils literal notranslate"><span class="pre">develop</span></code>.  Each release of
+<code class="docutils literal notranslate"><span class="pre">mache</span></code> also references a specific Spack branch named:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spack_for_mache_</span><span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spack_for_mache_1</span><span class="mf">.32.0</span>
+</pre></div>
+</div>
+<p>To create one from a local clone of the E3SM spack repo:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>develop
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>spack_for_mache_1.32.0
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>spack_for_mache_1.32.0
+</pre></div>
+</div>
+<p>This ensures that the version of <code class="docutils literal notranslate"><span class="pre">mache</span></code> used for deployment has a stable and
+reproducible Spack reference.  During development of a <code class="docutils literal notranslate"><span class="pre">mache</span></code> version, this
+also let you make potentially breaking changes to <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code>
+for testing without breaking the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch.  (Make sure to always push
+your changes to <code class="docutils literal notranslate"><span class="pre">origin</span></code> so they are available during E3SM-Unified deployment.)</p>
+<p><strong>Note</strong>: Your <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> branch name should not include
+<code class="docutils literal notranslate"><span class="pre">rc&lt;n&gt;</span></code> even if you are testing a release candidate of <code class="docutils literal notranslate"><span class="pre">mache</span></code> as part of your
+E3SM-Unified deployment.  The deployment scripts automatically strip off the
+<code class="docutils literal notranslate"><span class="pre">rc&lt;n&gt;</span></code> part when determining the name of the appropriate spack branch.</p>
+<p>Once you have a relatively stable <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> branch, you can
+push the changes you have made to <code class="docutils literal notranslate"><span class="pre">develop</span></code> so they are available for future
+<code class="docutils literal notranslate"><span class="pre">mache</span></code> versions and other users of E3SM’s spack fork.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>develop
+git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>spack_for_mache_1.32.0
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>develop
+</pre></div>
+</div>
+<p>Please be careful not to use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--force</span></code> here.  You should only be
+adding new commits, not changing the history of <code class="docutils literal notranslate"><span class="pre">develop</span></code>.</p>
+</section>
+<section id="rebasing-develop-onto-spack-releases">
+<h3>3. Rebasing <code class="docutils literal notranslate"><span class="pre">develop</span></code> onto Spack Releases<a class="headerlink" href="#rebasing-develop-onto-spack-releases" title="Link to this heading"></a></h3>
+<p>One important maintenance task for the E3SM Spack fork is to keep it up-to-date
+with the <a class="reference external" href="https://github.com/spack/spack">main Spack repo</a>.  This requires
+interactively rebasing the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch onto the release, interactively
+selecting only commits authored within the E3SM Spack fork (i.e., excluding
+upstream Spack commits), and troubleshooting any merge conflicts that arise.</p>
+<p>Because this will involve a force-push, it is important to coordinate with
+other users of the fork. Make an issue similar to
+<a class="reference external" href="https://github.com/E3SM-Project/spack/issues/36">this exampe</a> and ping
+relevant developers to arrange a good time for the update.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>develop
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>spack/spack<span class="w"> </span>git@github.com:spack/spack.git
+git<span class="w"> </span>fetch<span class="w"> </span>--all<span class="w"> </span>-p
+git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>spack/spack/v0.23.1
+<span class="c1"># edit the list of commits so the first is &quot;Add v2.1.0 to v2.1.6 to TempestRemap&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>--force<span class="w"> </span>origin<span class="w"> </span>develop
+</pre></div>
+</div>
+<p>You may wish to perform the rebase using a new branch (e.g.,
+<code class="docutils literal notranslate"><span class="pre">rebase-onto-v0.23.1</span></code>) that you can point to in the issue you post to
+coordinate with other developers.  This way, you can ask for guidance if you
+are unsure about the way you resolved any merge conflicts that arose.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Keep <code class="docutils literal notranslate"><span class="pre">develop</span></code> clean and stable — avoid experimental changes</p></li>
+<li><p>Use branches to track specific <code class="docutils literal notranslate"><span class="pre">mache</span></code> releases</p></li>
+<li><p>Coordinate with other E3SM package maintainers when rebasing the <code class="docutils literal notranslate"><span class="pre">develop</span></code>
+branch or updating shared packages</p></li>
+</ul>
+<hr class="docutils" />
+<p>➡ Next: <a class="reference internal" href="mache-updates.html"><span class="std std-doc">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

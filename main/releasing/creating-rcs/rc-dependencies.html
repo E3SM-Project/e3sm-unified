@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creating RCs for Dependency Packages</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Creating RCs for Dependency Packages</a><ul>
+<li><a class="reference internal" href="#step-by-step-creating-an-rc-for-e3sm-diags">Step-by-Step: Creating an RC for <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code></a><ul>
+<li><a class="reference internal" href="#tag-a-release-candidate-in-the-source-repo">1. Tag a Release Candidate in the Source Repo</a></li>
+<li><a class="reference internal" href="#prepare-the-feedstock-pr">2. Prepare the Feedstock PR</a></li>
+<li><a class="reference internal" href="#fork-the-feedstock-and-create-a-pr">3. Fork the Feedstock and Create a PR</a></li>
+<li><a class="reference internal" href="#merge-the-pr-once-ci-passes">4. Merge the PR Once CI Passes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Creating RCs for Dependency Packages</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/creating-rcs/rc-dependencies.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="creating-rcs-for-dependency-packages">
+<h1>Creating RCs for Dependency Packages<a class="headerlink" href="#creating-rcs-for-dependency-packages" title="Link to this heading"></a></h1>
+<p>This page describes how to create release candidates (RCs) for packages that
+are included in the E3SM-Unified environment, such as <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mpas-analysis</span></code>, <code class="docutils literal notranslate"><span class="pre">zppy</span></code>, and <code class="docutils literal notranslate"><span class="pre">zstash</span></code>.</p>
+<p>We use <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code> as a concrete example, but the process is similar for all
+E3SM-developed dependencies.</p>
+<hr class="docutils" />
+<section id="step-by-step-creating-an-rc-for-e3sm-diags">
+<h2>Step-by-Step: Creating an RC for <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code><a class="headerlink" href="#step-by-step-creating-an-rc-for-e3sm-diags" title="Link to this heading"></a></h2>
+<section id="tag-a-release-candidate-in-the-source-repo">
+<h3>1. Tag a Release Candidate in the Source Repo<a class="headerlink" href="#tag-a-release-candidate-in-the-source-repo" title="Link to this heading"></a></h3>
+<p>Go to the source repository:
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm_diags">E3SM Diags GitHub</a></p>
+<p>Create a release tag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>fetch<span class="w"> </span>--all<span class="w"> </span>-p
+git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>origin/main
+git<span class="w"> </span>tag<span class="w"> </span>v3.0.0rc1
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v3.0.0rc1
+</pre></div>
+</div>
+<p><strong>Note:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code> uses a <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix in version tags (e.g., <code class="docutils literal notranslate"><span class="pre">v3.0.0rc1</span></code>) as part
+of its established convention.</p></li>
+<li><p>For new packages, it’s recommended to follow
+<a class="reference external" href="https://semver.org/">Semantic Versioning</a> and omit the <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix (i.e.,
+tag as <code class="docutils literal notranslate"><span class="pre">3.0.0rc1</span></code>).</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="prepare-the-feedstock-pr">
+<h3>2. Prepare the Feedstock PR<a class="headerlink" href="#prepare-the-feedstock-pr" title="Link to this heading"></a></h3>
+<p>Go to the conda-forge feedstock for <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>:
+<a class="reference external" href="https://github.com/conda-forge/e3sm_diags-feedstock">E3SM Diags Feedstock</a></p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch does not already exist:</p>
+<ul>
+<li><p>Clone the feedstock repo locally</p></li>
+<li><p>Create a new branch off <code class="docutils literal notranslate"><span class="pre">main</span></code> called <code class="docutils literal notranslate"><span class="pre">dev</span></code></p></li>
+<li><p>Push it to the origin</p>
+<p><strong>Note:</strong> By making no changes from the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch, you ensure that no
+new packages will be created when you push the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch to the origin</p>
+</li>
+</ul>
+</section>
+<section id="fork-the-feedstock-and-create-a-pr">
+<h3>3. Fork the Feedstock and Create a PR<a class="headerlink" href="#fork-the-feedstock-and-create-a-pr" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Fork the feedstock repo to your GitHub account.</p></li>
+<li><p>In your fork, create a new branch (e.g., <code class="docutils literal notranslate"><span class="pre">update-v3.0.0rc1</span></code>).</p>
+<p><strong>Important:</strong> Do <strong>not</strong> create branches directly on the main conda-forge
+feedstock. All changes should go through a pull request from your personal
+fork. Creating a branch on the main feedstock can trigger package builds
+before your updates have been properly tested or reviewed. (e.g.,
+<code class="docutils literal notranslate"><span class="pre">update-v3.0.0rc1</span></code>).</p>
+</li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">recipe/meta.yaml</span></code>:</p></li>
+</ol>
+<ul class="simple">
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">version</span></code> field to match your RC tag (e.g., <code class="docutils literal notranslate"><span class="pre">v3.0.0rc1</span></code>)</p></li>
+<li><p>Set the <code class="docutils literal notranslate"><span class="pre">sha256</span></code> hash.  To determine the hash, you need to download the
+source file on a Linux (e.g. HPC) machine and run <code class="docutils literal notranslate"><span class="pre">sha256sum</span></code> on it.  For
+some reason, Macs seem to produce an incorrect hash.</p></li>
+<li><p>Update dependencies if needed (e.g., pin to RC versions of other tools)</p></li>
+</ul>
+<ol class="arabic" start="4">
+<li><p>If you created the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch above and no previous release candidates
+have been added, you will need to add <code class="docutils literal notranslate"><span class="pre">recipe/conda_build_config.yaml</span></code> with
+contents like:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">channel_targets</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">conda-forge e3sm_diags_dev</span>
+</pre></div>
+</div>
+<p>The label is the name of the package with any <code class="docutils literal notranslate"><span class="pre">-</span></code> replaced by <code class="docutils literal notranslate"><span class="pre">_</span></code>, followed
+by <code class="docutils literal notranslate"><span class="pre">_dev</span></code>.</p>
+</li>
+<li><p>Commit the changes and push them to the branch on your fork (unless editing
+on GitHub directly).</p></li>
+<li><p>Open a pull request:</p>
+<ul class="simple">
+<li><p><strong>Source:</strong> your RC branch on your fork (head repository)</p></li>
+<li><p><strong>Target:</strong> the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch on the conda-forge feedstock (base
+repository)</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="merge-the-pr-once-ci-passes">
+<h3>4. Merge the PR Once CI Passes<a class="headerlink" href="#merge-the-pr-once-ci-passes" title="Link to this heading"></a></h3>
+<p>After CI completes successfully:</p>
+<ul class="simple">
+<li><p>Review the logs if needed</p></li>
+<li><p>Merge the PR into the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch</p></li>
+</ul>
+<p>The RC build will now be published to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span><span class="o">-</span><span class="n">forge</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">e3sm_diags_dev</span>
+</pre></div>
+</div>
+<p>You can test the RC by installing it like so:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge/label/e3sm_diags_dev<span class="w"> </span>e3sm_diags
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Creating an RC for a dependency involves:</p>
+<ol class="arabic simple">
+<li><p>Tagging the source repository</p></li>
+<li><p>Opening a PR on the feedstock targeting the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch</p></li>
+<li><p>Waiting for CI to pass, then merging</p></li>
+</ol>
+<p>This process enables E3SM-Unified maintainers to incorporate the RC version of
+your package into a unified test build.</p>
+<p>➡ Next: <a class="reference internal" href="rc-e3sm-unified.html"><span class="std std-doc">Creating an RC for E3SM-Unified</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

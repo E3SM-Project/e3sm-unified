@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creating an RC for E3SM-Unified</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Creating an RC for E3SM-Unified</a><ul>
+<li><a class="reference internal" href="#create-a-branch-for-the-new-version">1. Create a Branch for the New Version</a></li>
+<li><a class="reference internal" href="#update-the-conda-recipe">2. Update the Conda Recipe</a></li>
+<li><a class="reference internal" href="#regenerate-the-build-matrix">3. Regenerate the Build Matrix</a></li>
+<li><a class="reference internal" href="#edit-build-package-bash">4. Edit <code class="docutils literal notranslate"><span class="pre">build_package.bash</span></code></a></li>
+<li><a class="reference internal" href="#build-and-troubleshoot">5. Build and Troubleshoot</a></li>
+<li><a class="reference internal" href="#make-a-draft-pr">6. Make a draft PR</a></li>
+<li><a class="reference internal" href="#keeping-updated-on-confluence">7. Keeping updated on Confluence</a></li>
+<li><a class="reference internal" href="#tag-and-publish-the-rc">8. Tag and Publish the RC</a><ul>
+<li><a class="reference internal" href="#tag-a-release-candidate">Tag a Release Candidate</a></li>
+<li><a class="reference internal" href="#create-a-conda-forge-pr">Create a Conda-Forge PR</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Creating an RC for E3SM-Unified</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/creating-rcs/rc-e3sm-unified.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="creating-an-rc-for-e3sm-unified">
+<h1>Creating an RC for E3SM-Unified<a class="headerlink" href="#creating-an-rc-for-e3sm-unified" title="Link to this heading"></a></h1>
+<p>Once release candidates (RCs) of core E3SM packages (like <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mpas-analysis</span></code>, etc.) have been published, an RC version of the E3SM-Unified
+metapackage can be built and tested.</p>
+<p>This guide walks through creating a release candidate of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> based
+on those RC dependencies.</p>
+<hr class="docutils" />
+<section id="create-a-branch-for-the-new-version">
+<h2>1. Create a Branch for the New Version<a class="headerlink" href="#create-a-branch-for-the-new-version" title="Link to this heading"></a></h2>
+<p>Create a feature branch on your fork of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code>, typically called:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>update-to-&lt;version&gt;
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>update-to-1.12.0
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="update-the-conda-recipe">
+<h2>2. Update the Conda Recipe<a class="headerlink" href="#update-the-conda-recipe" title="Link to this heading"></a></h2>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code>:</p>
+<ul class="simple">
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">version</span></code> field to match the RC version (e.g., <code class="docutils literal notranslate"><span class="pre">1.12.0rc1</span></code>)</p></li>
+<li><p>Update the list of dependencies and versions, including RCs</p></li>
+<li><p>Be sure to include the correct version for each core tool (e.g.,
+<code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">mpas-analysis</span></code>, etc.)</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="regenerate-the-build-matrix">
+<h2>3. Regenerate the Build Matrix<a class="headerlink" href="#regenerate-the-build-matrix" title="Link to this heading"></a></h2>
+<p>Run the matrix generator script to define combinations of Python and MPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>recipes/e3sm-unified/configs
+rm<span class="w"> </span>*.yaml
+python<span class="w"> </span>generate.py
+</pre></div>
+</div>
+<p>This produces matrix files like:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mpi_mpich_python3.10.yaml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mpi_hpc_python3.10.yaml</span></code></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="edit-build-package-bash">
+<h2>4. Edit <code class="docutils literal notranslate"><span class="pre">build_package.bash</span></code><a class="headerlink" href="#edit-build-package-bash" title="Link to this heading"></a></h2>
+<p>Update the channel list to include dev labels for any packages still in RC
+form. For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">channels</span><span class="o">=</span><span class="s2">&quot;-c conda-forge/label/chemdyg_dev \</span>
+<span class="s2">         -c conda-forge/label/e3sm_diags_dev \</span>
+<span class="s2">         -c conda-forge/label/mache_dev \</span>
+<span class="s2">         -c conda-forge/label/mpas_analysis_dev \</span>
+<span class="s2">         -c conda-forge/label/zppy_dev \</span>
+<span class="s2">         -c conda-forge/label/zstash_dev \</span>
+<span class="s2">         -c conda-forge&quot;</span>
+</pre></div>
+</div>
+<p>Then define which matrix files to test. For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>configs/mpi_mpich_python3.10.yaml<span class="w"> </span>configs/mpi_hpc_python3.10.yaml
+<span class="k">do</span>
+<span class="w">  </span>conda<span class="w"> </span>build<span class="w"> </span>-m<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>--override-channels<span class="w"> </span><span class="nv">$channels</span><span class="w"> </span>.
+<span class="k">done</span>
+</pre></div>
+</div>
+<p>Make sure:</p>
+<ul class="simple">
+<li><p>You use <code class="docutils literal notranslate"><span class="pre">--override-channels</span></code> to isolate testing to dev packages</p></li>
+<li><p>You only include dev labels for packages with RCs — use stable versions
+otherwise</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="build-and-troubleshoot">
+<h2>5. Build and Troubleshoot<a class="headerlink" href="#build-and-troubleshoot" title="Link to this heading"></a></h2>
+<p>Run the script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>build_package.bash
+</pre></div>
+</div>
+<p>If builds fail, consult the
+<a class="reference internal" href="rc-troubleshooting.html"><span class="std std-doc">Troubleshooting Conda Build Failures</span></a> guide.
+This includes how to use <code class="docutils literal notranslate"><span class="pre">conda_first_failure.py</span></code> to debug dependency
+resolution issues.</p>
+</section>
+<hr class="docutils" />
+<section id="make-a-draft-pr">
+<h2>6. Make a draft PR<a class="headerlink" href="#make-a-draft-pr" title="Link to this heading"></a></h2>
+<p>Push the branch to your fork of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> and make a draft PR to the
+main <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo.  Use that PR to document progress and highlight
+important version updates in this release for the public (those without
+acces to E3SM’s Confluence pages). See
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified/pull/125">this example</a>.</p>
+</section>
+<hr class="docutils" />
+<section id="keeping-updated-on-confluence">
+<h2>7. Keeping updated on Confluence<a class="headerlink" href="#keeping-updated-on-confluence" title="Link to this heading"></a></h2>
+<p>As deployment and testing progresses, you needs to make sure that the packages
+in your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch match the
+<a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Next-versions">agreed-upon versions on Confluence</a>.
+Maintainers of dependencies will need to inform you as new release candidates
+or final releases become available, preferably by updating Confluence and also
+sending a Slack message or email.</p>
+<p>As testing nears completion, it is also time to draft a release note, similar
+to <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/4908515329/E3SM-Unified+1.11.0+release+notes">this example</a>.
+Ask maintainers of any of the main E3SM-Unified packages that have been
+updated since the last release to describe (<strong>briefly and with minimal
+jargon</strong>) what is new in their package that would be of interest to users.</p>
+</section>
+<hr class="docutils" />
+<section id="tag-and-publish-the-rc">
+<h2>8. Tag and Publish the RC<a class="headerlink" href="#tag-and-publish-the-rc" title="Link to this heading"></a></h2>
+<p>After test builds are successful:</p>
+<section id="tag-a-release-candidate">
+<h3>Tag a Release Candidate<a class="headerlink" href="#tag-a-release-candidate" title="Link to this heading"></a></h3>
+<p>Tag your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch in the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>update-to-1.12.0
+git<span class="w"> </span>tag<span class="w"> </span><span class="m">1</span>.12.0rc1
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>E3SM-Project/e3sm-unified<span class="w"> </span>git@github.com:E3SM-Project/e3sm-unified.git
+git<span class="w"> </span>fetch<span class="w"> </span>--all<span class="w"> </span>-p
+git<span class="w"> </span>push<span class="w"> </span>E3SM-Project/e3sm-unified<span class="w"> </span><span class="m">1</span>.12.0rc1
+</pre></div>
+</div>
+</section>
+<section id="create-a-conda-forge-pr">
+<h3>Create a Conda-Forge PR<a class="headerlink" href="#create-a-conda-forge-pr" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Fork the <a class="reference external" href="https://github.com/conda-forge/e3sm-unified-feedstock"><code class="docutils literal notranslate"><span class="pre">e3sm-unified-feedstock</span></code></a></p></li>
+<li><p>Create a new branch in your fork (e.g., <code class="docutils literal notranslate"><span class="pre">update-1.12.0rc1</span></code>)</p></li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">recipe/meta.yaml</span></code>:</p>
+<ul class="simple">
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">version</span></code> field (e.g., <code class="docutils literal notranslate"><span class="pre">1.12.0rc1</span></code>)</p></li>
+<li><p>Update all dependencies to match the versions in your
+<code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo</p></li>
+</ul>
+<p>⚠️ <strong>Reminder:</strong> The feedstock’s <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> is the authoritative source
+for the Conda package. The one in the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo is for testing
+and provenance only.</p>
+</li>
+<li><p>Open a PR from your fork → <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch on the feedstock</p></li>
+<li><p>Merge once CI passes</p></li>
+</ol>
+<p>The RC package will now be available under the label:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span><span class="o">-</span><span class="n">forge</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">e3sm_unified_dev</span>
+</pre></div>
+</div>
+<p>It’s ready to be tested and deployed on HPC systems.</p>
+<p>➡ Next: <a class="reference internal" href="../testing/deploying-on-hpcs.html"><span class="std std-doc">Deploying on HPCs for Testing</span></a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

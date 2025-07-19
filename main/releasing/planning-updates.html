@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planning Package Updates</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Planning Package Updates</a><ul>
+<li><a class="reference internal" href="#where-planning-happens">Where Planning Happens</a></li>
+<li><a class="reference internal" href="#types-of-updates">Types of Updates</a><ul>
+<li><a class="reference internal" href="#new-packages">✅ New Packages</a></li>
+<li><a class="reference internal" href="#version-updates">⬆️ Version Updates</a></li>
+<li><a class="reference internal" href="#package-removal">❌ Package Removal</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#making-suggestions">Making Suggestions</a></li>
+<li><a class="reference internal" href="#final-selection">Final Selection</a></li>
+<li><a class="reference internal" href="#managing-version-pins-during-conda-forge-migrations">📦 Managing Version Pins During Conda-Forge Migrations</a><ul>
+<li><a class="reference internal" href="#what-happens-during-a-migration">🔀 What Happens During a Migration?</a></li>
+<li><a class="reference internal" href="#why-this-matters">⚠ Why This Matters</a></li>
+<li><a class="reference internal" href="#how-to-handle-it">🧠 How to Handle It</a></li>
+<li><a class="reference internal" href="#multiple-migrations">🌀 Multiple Migrations</a></li>
+<li><a class="reference internal" href="#e3sm-unified-dependencies-affected-by-conda-forge-pins">📦 E3SM-Unified Dependencies Affected by Conda-Forge Pins</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-places-that-require-updates">🔄 Other Places That Require Updates</a><ul>
+<li><a class="reference internal" href="#e3sm-supported-machines-default-cfg">📦 <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code></a></li>
+<li><a class="reference internal" href="#e3sm-supported-machines-shared-py">🛠️ <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Planning Package Updates</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/releasing/planning-updates.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="planning-package-updates">
+<h1>Planning Package Updates<a class="headerlink" href="#planning-package-updates" title="Link to this heading"></a></h1>
+<p>Before each release of E3SM-Unified, the Infrastructure Team works with the
+broader E3SM community to decide which packages and versions should be
+included. This planning stage helps ensure compatibility across tools and
+supports evolving analysis and diagnostic workflows.</p>
+<p><em>Note: Access to Confluence and Slack is limited to E3SM/BER collaborators.</em></p>
+<hr class="docutils" />
+<section id="where-planning-happens">
+<h2>Where Planning Happens<a class="headerlink" href="#where-planning-happens" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Confluence Discussion Page</strong>: Most planning takes place on the “Next
+Version” page in the internal E3SM Documentation space. For those with
+access, use <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Next-versions">this link</a></p></li>
+<li><p><strong>GitHub Issues/PRs</strong>: Occasionally, suggestions or discussions take place
+in issues or pull requests on the
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified">E3SM-Unified GitHub repository</a>.
+This is the main avenue for community members without access to E3SM’s
+Confluence pages.</p></li>
+<li><p><strong>Slack (<code class="docutils literal notranslate"><span class="pre">#e3sm-help-postproc</span></code>)</strong>: For quick suggestions or discussion
+prompts for those with access to E3SM’s or BER’s Slack spaces.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="types-of-updates">
+<h2>Types of Updates<a class="headerlink" href="#types-of-updates" title="Link to this heading"></a></h2>
+<section id="new-packages">
+<h3>✅ New Packages<a class="headerlink" href="#new-packages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Tools that have become important to E3SM workflows</p></li>
+<li><p>Visualization, diagnostics, or file conversion utilities</p></li>
+</ul>
+</section>
+<section id="version-updates">
+<h3>⬆️ Version Updates<a class="headerlink" href="#version-updates" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Upgrading packages already in the environment to more recent releases</p></li>
+<li><p>Ensuring compatibility with latest E3SM output formats or Python versions</p></li>
+</ul>
+</section>
+<section id="package-removal">
+<h3>❌ Package Removal<a class="headerlink" href="#package-removal" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Rare, but sometimes necessary for deprecated tools or packages no longer
+maintained</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="making-suggestions">
+<h2>Making Suggestions<a class="headerlink" href="#making-suggestions" title="Link to this heading"></a></h2>
+<p>The best way to suggest a package or version change:</p>
+<ol class="arabic simple">
+<li><p>Edit the <strong>Confluence table</strong> for the upcoming version (if you have access)</p></li>
+<li><p>If not, open an issue on GitHub with your suggestion and rationale</p></li>
+<li><p>Optional: Tag maintainers or post on Slack to coordinate</p></li>
+</ol>
+<p>When requesting a new package, please include:</p>
+<ul class="simple">
+<li><p>Package name and version</p></li>
+<li><p>Maintainer or expert point of contact (if known)</p></li>
+<li><p>Why it’s useful for E3SM workflows</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="final-selection">
+<h2>Final Selection<a class="headerlink" href="#final-selection" title="Link to this heading"></a></h2>
+<p>The final list of packages is curated by the Infrastructure Team based on:</p>
+<ul class="simple">
+<li><p>Compatibility</p></li>
+<li><p>Stability of upstream packages</p></li>
+<li><p>Success in testing</p></li>
+<li><p>Community need and usage patterns</p></li>
+</ul>
+<p>Once the list is mostly settled, the team begins creating release candidates
+using the <a class="reference internal" href="#creating-rcs.md"><span class="xref myst">Creating Release Candidates</span></a> workflow.</p>
+</section>
+<hr class="docutils" />
+<section id="managing-version-pins-during-conda-forge-migrations">
+<h2>📦 Managing Version Pins During Conda-Forge Migrations<a class="headerlink" href="#managing-version-pins-during-conda-forge-migrations" title="Link to this heading"></a></h2>
+<p>E3SM-Unified often needs to coordinate with conda-forge’s centralized version
+pinning. Many packages used by E3SM-Unified are governed by
+<a class="reference external" href="https://conda-forge.org/docs/maintainer/pinning_deps/">global pins</a> (exact
+required versions) in:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml"><code class="docutils literal notranslate"><span class="pre">conda_build_config.yaml</span></code></a></p></li>
+</ul>
+<section id="what-happens-during-a-migration">
+<h3>🔀 What Happens During a Migration?<a class="headerlink" href="#what-happens-during-a-migration" title="Link to this heading"></a></h3>
+<p>Conda-forge frequently upgrades pinned versions of core libraries (e.g.,
+<code class="docutils literal notranslate"><span class="pre">hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">libnetcdf</span></code>, <code class="docutils literal notranslate"><span class="pre">proj</span></code>) via version migrations. These are tracked under:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/conda-forge/conda-forge-pinning-feedstock/tree/main/recipe/migrations/"><code class="docutils literal notranslate"><span class="pre">migrations/</span></code></a></p></li>
+</ul>
+<p>For example, the migration to <code class="docutils literal notranslate"><span class="pre">hdf5</span></code> 1.14.6 is described here:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/c78051a2495698e9e612860efe058eb7e39fc528/recipe/migrations/hdf51146.yaml"><code class="docutils literal notranslate"><span class="pre">hdf51146.yaml</span></code></a></p></li>
+</ul>
+</section>
+<section id="why-this-matters">
+<h3>⚠ Why This Matters<a class="headerlink" href="#why-this-matters" title="Link to this heading"></a></h3>
+<p>If your dependencies are built against different versions of a migrating
+library, you can end up with <strong>incompatible binary builds</strong> that silently fail
+or break at runtime — especially with low-level C/C++ or Fortran dependencies.</p>
+</section>
+<section id="how-to-handle-it">
+<h3>🧠 How to Handle It<a class="headerlink" href="#how-to-handle-it" title="Link to this heading"></a></h3>
+<p>During planning, for any core dependency that is pinned:</p>
+<ol class="arabic simple">
+<li><p>Check if it’s listed in a migration YAML file.</p></li>
+<li><p>Determine how far the migration has progressed on the
+<a class="reference external" href="https://conda-forge.org/status/">conda-forge status page</a>:</p>
+<ul class="simple">
+<li><p>If <strong>all</strong> of E3SM-Unified’s dependencies have adopted the new version,
+use it.</p></li>
+<li><p>If <strong>none</strong> have, stick with the current version in
+<code class="docutils literal notranslate"><span class="pre">conda_build_config.yaml</span></code>.</p></li>
+<li><p>If <strong>some</strong> have and some haven’t:
+➔ You must <em>freeze to the old version</em> and <em>manually rebuild</em> any
+migrated packages against that version (typically merging to a branch
+on the conda-forge feedstock other than <code class="docutils literal notranslate"><span class="pre">main</span></code>).</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Note:</strong> Some packages in E3SM-Unified directly depend on pinned libraries
+like <code class="docutils literal notranslate"><span class="pre">hdf5</span></code> or <code class="docutils literal notranslate"><span class="pre">libnetcdf</span></code> — that is, these pinned packages are
+<em>dependencies of E3SM-Unified’s dependencies</em>.</p>
+<p>If E3SM-Unified requires an older version of such a package (e.g., <code class="docutils literal notranslate"><span class="pre">nco</span></code> or
+<code class="docutils literal notranslate"><span class="pre">moab</span></code>), and that version has only been built on conda-forge with an older
+version of the pinned library, you may encounter compatibility issues during
+the build.</p>
+<p>In these cases, it is often easier to upgrade the E3SM-Unified dependency to
+a newer version that was built against the newer pinned library — as long as
+that version is still compatible with the rest of the environment. This avoids
+the complexity of manually rebuilding older versions with newer core libraries.</p>
+</section>
+<section id="multiple-migrations">
+<h3>🌀 Multiple Migrations<a class="headerlink" href="#multiple-migrations" title="Link to this heading"></a></h3>
+<p>When multiple overlapping migrations are in progress (e.g., <code class="docutils literal notranslate"><span class="pre">hdf5</span></code>,
+<code class="docutils literal notranslate"><span class="pre">libnetcdf</span></code>), assess each separately but prioritize compatibility. This is
+often one of the trickiest parts of managing an E3SM-Unified release candidate.</p>
+</section>
+<section id="e3sm-unified-dependencies-affected-by-conda-forge-pins">
+<h3>📦 E3SM-Unified Dependencies Affected by Conda-Forge Pins<a class="headerlink" href="#e3sm-unified-dependencies-affected-by-conda-forge-pins" title="Link to this heading"></a></h3>
+<p>The ones in <strong>bold</strong> are those where we provide pins of our own and special care
+must be taken. The rest either are unconstrained in E3SM-Unified or use version
+constraints without strict pins (i.e., <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> rather than an exact version),
+so less care is required.</p>
+<ul class="simple">
+<li><p>ffmpeg</p></li>
+<li><p><strong>hdf5</strong></p></li>
+<li><p><strong>libnetcdf</strong></p></li>
+<li><p>numpy</p></li>
+<li><p><strong>proj</strong></p></li>
+<li><p><strong>python</strong></p></li>
+<li><p>scipy</p></li>
+</ul>
+<p>This list may evolve from release to release as new packages are added or
+pinned more strictly.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="other-places-that-require-updates">
+<h2>🔄 Other Places That Require Updates<a class="headerlink" href="#other-places-that-require-updates" title="Link to this heading"></a></h2>
+<p>In addition to updating versions in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and the conda-forge feedstocks,
+the following deployment-related files should also be kept in sync:</p>
+<section id="e3sm-supported-machines-default-cfg">
+<h3>📦 <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code><a class="headerlink" href="#e3sm-supported-machines-default-cfg" title="Link to this heading"></a></h3>
+<p>This file specifies the versions of key packages (both Spack-built and
+Conda-installed) used during deployment.</p>
+<p><strong>Best Practice:</strong> Package versions listed in <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> should typically
+match the versions in <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code>, unless there’s a clear
+technical reason to diverge (e.g., system module incompatibilities or build
+issues with a newer version).</p>
+<p><strong>ESMPy:</strong> We have found that <code class="docutils literal notranslate"><span class="pre">ESMPy</span></code> build with system compilers is not
+compatible with <code class="docutils literal notranslate"><span class="pre">xesmf</span></code>, which is used by <code class="docutils literal notranslate"><span class="pre">xcdat</span></code> and <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>.  As a
+results, the current best practice is to set <code class="docutils literal notranslate"><span class="pre">esmpy</span> <span class="pre">=</span> <span class="pre">None</span></code> in <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code>.</p>
+<p>Maintainers should update these entries as part of planning and testing a new
+release candidate.</p>
+</section>
+<section id="e3sm-supported-machines-shared-py">
+<h3>🛠️ <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code><a class="headerlink" href="#e3sm-supported-machines-shared-py" title="Link to this heading"></a></h3>
+<p>The version of E3SM-Unified being deployed is hard-coded here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--version&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1.11.1&quot;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The version of E3SM-Unified to deploy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This value should be updated manually for <strong>each new release candidate</strong> and
+final release to reflect the current version being tested or deployed.</p>
+<blockquote>
+<div><p>🧩 Note: We plan to automate this step in the future, but for now it must be
+updated manually.</p>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

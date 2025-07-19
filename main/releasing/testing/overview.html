@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deployment and Testing Overview</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Deployment and Testing Overview</a><ul>
+<li><a class="reference internal" href="#phased-deployment-strategy">Phased Deployment Strategy</a></li>
+<li><a class="reference internal" href="#key-components-of-the-deployment-process">Key Components of the Deployment Process</a><ul>
+<li><a class="reference internal" href="#updating-the-e3sm-spack-fork">🛠️ <span class="xref myst">Updating the E3SM Spack Fork</span></a></li>
+<li><a class="reference internal" href="#updating-mache">🧩 <span class="xref myst">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></span></a></li>
+<li><a class="reference internal" href="#deploying-on-hpcs">🚀 <span class="xref myst">Deploying on HPCs</span></a></li>
+<li><a class="reference internal" href="#troubleshooting-deployment-issues">🧪 <span class="xref myst">Troubleshooting Deployment Issues</span></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#audience">Audience</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Deployment and Testing Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/testing/overview.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="deployment-and-testing-overview">
+<h1>Deployment and Testing Overview<a class="headerlink" href="#deployment-and-testing-overview" title="Link to this heading"></a></h1>
+<p>Once a release candidate (RC) of E3SM-Unified has been successfully built, it
+must be thoroughly tested across supported HPC systems before a full release
+can occur. This phase ensures compatibility with system modules,
+performance-critical tools, and real-world analysis workflows.</p>
+<p>This section documents the full testing and deployment process, including how
+to:</p>
+<ul class="simple">
+<li><p>Update the E3SM Spack fork to support new versions</p></li>
+<li><p>Maintain and release new versions of <code class="docutils literal notranslate"><span class="pre">mache</span></code> for system-specific Spack
+configurations</p></li>
+<li><p>Deploy RCs and full releases of E3SM-Unified on supported HPC platforms</p></li>
+<li><p>Identify and resolve deployment issues</p></li>
+</ul>
+<hr class="docutils" />
+<section id="phased-deployment-strategy">
+<h2>Phased Deployment Strategy<a class="headerlink" href="#phased-deployment-strategy" title="Link to this heading"></a></h2>
+<p>Testing typically begins with a <strong>partial deployment</strong> of an E3SM-Unified RC
+to a few key HPC systems. Once core functionality and package compatibility
+are verified, a <strong>full deployment</strong> to all supported machines is performed.</p>
+<p>Each iteration involves collaboration between the Infrastructure Team and tool
+maintainers to:</p>
+<ul class="simple">
+<li><p>Validate that tools like <code class="docutils literal notranslate"><span class="pre">zppy</span></code>, <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, and <code class="docutils literal notranslate"><span class="pre">mpas-analysis</span></code> run
+correctly</p></li>
+<li><p>Confirm compatibility with system MPI, compilers, and Python versions</p></li>
+<li><p>Identify mismatches or conflicts in environment resolution</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="key-components-of-the-deployment-process">
+<h2>Key Components of the Deployment Process<a class="headerlink" href="#key-components-of-the-deployment-process" title="Link to this heading"></a></h2>
+<p>The following steps and infrastructure are used when testing and deploying a
+new release:</p>
+<section id="updating-the-e3sm-spack-fork">
+<h3>🛠️ <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating the E3SM Spack Fork</span></a><a class="headerlink" href="#updating-the-e3sm-spack-fork" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add new versions of performance-critical tools (e.g., NCO, ESMF, MOAB)</p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> branches for use in <code class="docutils literal notranslate"><span class="pre">mache</span></code></p></li>
+</ul>
+</section>
+<section id="updating-mache">
+<h3>🧩 <a class="reference internal" href="mache-updates.html"><span class="std std-doc">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></span></a><a class="headerlink" href="#updating-mache" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Keep system-specific Spack environment templates in sync with E3SM module
+stacks</p></li>
+<li><p>Create RC and final releases of <code class="docutils literal notranslate"><span class="pre">mache</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">utils/update_cime_machine_config.py</span></code> to streamline updates</p></li>
+</ul>
+</section>
+<section id="deploying-on-hpcs">
+<h3>🚀 <a class="reference internal" href="deploying-on-hpcs.html"><span class="std std-doc">Deploying on HPCs</span></a><a class="headerlink" href="#deploying-on-hpcs" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code> script and template infrastructure in
+<code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines</span></code></p></li>
+<li><p>Build environments and activation scripts tailored to each system</p></li>
+</ul>
+</section>
+<section id="troubleshooting-deployment-issues">
+<h3>🧪 <a class="reference internal" href="troubleshooting-deploy.html"><span class="std std-doc">Troubleshooting Deployment Issues</span></a><a class="headerlink" href="#troubleshooting-deployment-issues" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Resolve Spack build failures and MPI/compiler mismatches</p></li>
+<li><p>Address problems with activation, modules, or symbolic links</p></li>
+<li><p>Common pitfalls in <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> or <code class="docutils literal notranslate"><span class="pre">shared.py</span></code> configuration</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="audience">
+<h2>Audience<a class="headerlink" href="#audience" title="Link to this heading"></a></h2>
+<p>This section is primarily intended for E3SM-Unified maintainers and release
+engineers. Familiarity with Spack, Conda, and HPC system environments is
+assumed.</p>
+<p>➡ Start with: <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating the E3SM Spack Fork</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

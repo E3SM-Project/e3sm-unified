@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting Conda Build Failures</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Troubleshooting Conda Build Failures</a><ul>
+<li><a class="reference internal" href="#common-failure-conda-solver-errors">Common Failure: Conda Solver Errors</a></li>
+<li><a class="reference internal" href="#strategy-use-conda-first-failure-py">Strategy: Use <code class="docutils literal notranslate"><span class="pre">conda_first_failure.py</span></code></a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#interpreting-results">Interpreting Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advanced-debugging-tips">Advanced Debugging Tips</a></li>
+<li><a class="reference internal" href="#when-youre-stuck">When You’re Stuck</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting Conda Build Failures</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/creating-rcs/rc-troubleshooting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting-conda-build-failures">
+<h1>Troubleshooting Conda Build Failures<a class="headerlink" href="#troubleshooting-conda-build-failures" title="Link to this heading"></a></h1>
+<p>When building a release candidate (RC) of E3SM-Unified, it’s common to
+encounter solver or build failures due to dependency conflicts, pinning
+mismatches, or version incompatibilities.</p>
+<p>This page outlines common issues and how to debug them effectively.</p>
+<hr class="docutils" />
+<section id="common-failure-conda-solver-errors">
+<h2>Common Failure: Conda Solver Errors<a class="headerlink" href="#common-failure-conda-solver-errors" title="Link to this heading"></a></h2>
+<p>The most frequent issue occurs during environment solving:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ResolvePackageNotFound:
+<span class="w">  </span>-<span class="w"> </span><span class="nv">some_package</span><span class="o">=</span><span class="m">1</span>.2.3
+</pre></div>
+</div>
+<p>Or more subtly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Found<span class="w"> </span>conflicts!<span class="w"> </span>Looking<span class="w"> </span><span class="k">for</span><span class="w"> </span>incompatible<span class="w"> </span>packages.
+...UnsatisfiableError:<span class="w"> </span>The<span class="w"> </span>following<span class="w"> </span>specifications<span class="w"> </span>were<span class="w"> </span>found<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>incompatible...
+</pre></div>
+</div>
+<p>These often stem from:</p>
+<ul class="simple">
+<li><p>Conflicting dependencies across packages</p></li>
+<li><p>Incompatible versions due to partially-completed conda-forge migrations</p></li>
+<li><p>Conda environment solver hitting internal limits</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="strategy-use-conda-first-failure-py">
+<h2>Strategy: Use <code class="docutils literal notranslate"><span class="pre">conda_first_failure.py</span></code><a class="headerlink" href="#strategy-use-conda-first-failure-py" title="Link to this heading"></a></h2>
+<p>To help identify the root cause, E3SM-Unified provides:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recipes</span><span class="o">/</span><span class="n">e3sm</span><span class="o">-</span><span class="n">unified</span><span class="o">/</span><span class="n">conda_first_failure</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This utility performs a dry-run install using a list of dependencies, then
+uses bisection to find the first package that causes solver failure.</p>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Copy the list of dependencies from <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> → <code class="docutils literal notranslate"><span class="pre">build:</span></code> section into a
+text file (e.g., <code class="docutils literal notranslate"><span class="pre">specs.txt</span></code>)</p></li>
+<li><p>Constrain the python version to a single minor version, e.g.:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python &gt;=3.10,&lt;3.11</span>
+</pre></div>
+</div>
+</li>
+<li><p>Remove or replace any jinja2 emplating or conflicthing selector comments,
+for example:</p>
+<ul>
+<li><p>replace <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">mpi_prefix</span> <span class="pre">}}</span></code> with <code class="docutils literal notranslate"><span class="pre">mpi_mpich</span></code> or <code class="docutils literal notranslate"><span class="pre">nompi</span></code></p></li>
+<li><p>depending on the python version you are testing, pick only one of:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyproj 3.6.1</span><span class="w">  </span><span class="c1"># [py&lt;310]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyproj 3.7.0</span><span class="w">  </span><span class="c1"># [py&gt;=310]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Run the script:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>conda_first_failure.py<span class="w"> </span>specs.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>The script will print the <strong>first package</strong> that causes a conflict.</p></li>
+</ol>
+</section>
+<section id="interpreting-results">
+<h3>Interpreting Results<a class="headerlink" href="#interpreting-results" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The failing package might not be the root issue — it may simply conflict
+with another dependency in the list.</p></li>
+<li><p>To explore this, move the failing package to the <strong>top</strong> of the list and
+re-run the script. The new failure likely points to a <strong>conflicting pair</strong>.</p></li>
+<li><p>Examine the dependencies (via the respective conda-forge feedstocks) of
+the conflicting pair of packages to see if you can understand the conflict.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="advanced-debugging-tips">
+<h2>Advanced Debugging Tips<a class="headerlink" href="#advanced-debugging-tips" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add transitive dependencies to the <code class="docutils literal notranslate"><span class="pre">specs.txt</span></code> file (e.g., if the problem
+might involve <code class="docutils literal notranslate"><span class="pre">hdf5</span></code>, add <code class="docutils literal notranslate"><span class="pre">libnetcdf</span></code>, <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code>, etc.)</p></li>
+<li><p>Compare dependency trees using:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--dry-run<span class="w"> </span>-n<span class="w"> </span>test-env<span class="w"> </span>&lt;packages&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">search</span> <span class="pre">&lt;package&gt;</span></code> with <code class="docutils literal notranslate"><span class="pre">--info</span></code> to inspect available versions
+and build strings</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="when-youre-stuck">
+<h2>When You’re Stuck<a class="headerlink" href="#when-youre-stuck" title="Link to this heading"></a></h2>
+<p>As the E3SM-Unified maintainer, you’re likely the most experienced person on
+the team when it comes to Conda packaging and dependency resolution.</p>
+<p>If the conflict is particularly subtle or deep within upstream packages:</p>
+<ul class="simple">
+<li><p>Dig into transitive dependencies (e.g., <code class="docutils literal notranslate"><span class="pre">conda-tree</span></code> can be useful)</p></li>
+<li><p>Inspect recent changes to pinned versions in conda-forge</p></li>
+<li><p>Examine dependency metadata from feedstocks</p></li>
+</ul>
+<p>When further help is needed, reach out directly to:</p>
+<ul class="simple">
+<li><p>Other E3SM tool maintainers (e.g., for <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">mpas_analysis</span></code>, etc.)</p></li>
+<li><p>Colleagues with Spack or Conda-forge packaging experience</p></li>
+</ul>
+<p>Ultimately, it’s up to the release engineer to resolve these issues through
+investigation, collaboration, or temporary workarounds until a proper fix is
+found.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

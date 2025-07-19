@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction to E3SM-Unified</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Introduction to E3SM-Unified</a><ul>
+<li><a class="reference internal" href="#what-is-e3sm-unified">What is E3SM-Unified?</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#common-use-cases">Common Use Cases</a></li>
+<li><a class="reference internal" href="#supported-platforms">Supported Platforms</a></li>
+<li><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Introduction to E3SM-Unified</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/introduction.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-e3sm-unified">
+<h1>Introduction to E3SM-Unified<a class="headerlink" href="#introduction-to-e3sm-unified" title="Link to this heading"></a></h1>
+<a class="reference internal image-reference" href="_images/e3sm_unified_logo_200.png"><img alt="_images/e3sm_unified_logo_200.png" class="align-center" src="_images/e3sm_unified_logo_200.png" style="width: 200px;" />
+</a>
+<section id="what-is-e3sm-unified">
+<h2>What is E3SM-Unified?<a class="headerlink" href="#what-is-e3sm-unified" title="Link to this heading"></a></h2>
+<p>E3SM-Unified is a unified conda-based environment that provides pre- and
+post-processing tools for the Energy Exascale Earth System Model (E3SM). It is
+designed to streamline the analysis, visualization, and transformation of model
+output for scientists and developers.</p>
+<p>This environment bundles together a curated set of Python and compiled tools
+that work well across supported platforms, particularly on E3SM-managed
+high-performance computing (HPC) systems.</p>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Combines dozens of packages into one environment, eliminating setup friction.</p></li>
+<li><p>Maintains consistency across HPC platforms (Anvil, Chrysalis, Compy, etc.).</p></li>
+<li><p>Offers both Conda and Spack-installed components for MPI performance.</p></li>
+<li><p>Fully open source and community-maintained via GitHub.</p></li>
+</ul>
+</section>
+<section id="common-use-cases">
+<h2>Common Use Cases<a class="headerlink" href="#common-use-cases" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Diagnostics and evaluation (e.g., <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">MPAS-Analysis</span></code>)</p></li>
+<li><p>CMIP output conversion (<code class="docutils literal notranslate"><span class="pre">e3sm_to_cmip</span></code>)</p></li>
+<li><p>Time series generation, viewer creation, and archiving (<code class="docutils literal notranslate"><span class="pre">zppy</span></code>, <code class="docutils literal notranslate"><span class="pre">zstash</span></code>)</p></li>
+<li><p>Domain generation and mesh visualization (<code class="docutils literal notranslate"><span class="pre">cime_gen_domain</span></code>, <code class="docutils literal notranslate"><span class="pre">mosaic</span></code>)</p></li>
+</ul>
+</section>
+<section id="supported-platforms">
+<h2>Supported Platforms<a class="headerlink" href="#supported-platforms" title="Link to this heading"></a></h2>
+<p>E3SM-Unified is available on many E3SM-supported systems:</p>
+<ul class="simple">
+<li><p>Andes</p></li>
+<li><p>Anvil</p></li>
+<li><p>Chrysalis</p></li>
+<li><p>Compy</p></li>
+<li><p>Dane</p></li>
+<li><p>Frontier</p></li>
+<li><p>Perlmutter</p></li>
+<li><p>Polaris (ALCF)</p></li>
+<li><p>Ruby</p></li>
+</ul>
+<p>It can also be installed on Linux or macOS laptops for limited use (see
+<a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart Guide</span></a>). Windows is not supported.</p>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart Guide</span></a></p></li>
+<li><p>GitHub: <a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified">E3SM-Unified repository</a></p></li>
+<li><p>Slack: <code class="docutils literal notranslate"><span class="pre">#e3sm-help-postproc</span></code></p></li>
+<li><p>Issues/questions: GitHub Issues or contact <a class="reference external" href="mailto:xylar&#37;&#52;&#48;lanl&#46;gov">xylar<span>&#64;</span>lanl<span>&#46;</span>gov</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="./">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

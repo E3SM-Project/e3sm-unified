@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintaining Past Versions</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Maintaining Past Versions</a><ul>
+<li><a class="reference internal" href="#goals">🎯 Goals</a></li>
+<li><a class="reference internal" href="#avoid-breaking-changes">🔒 Avoid Breaking Changes</a><ul>
+<li><a class="reference internal" href="#dont-delete-spack-or-conda-environments">Don’t Delete Spack or Conda Environments</a></li>
+<li><a class="reference internal" href="#dont-remove-activation-scripts">Don’t Remove Activation Scripts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-can-be-removed">🧹 What Can Be Removed</a><ul>
+<li><a class="reference internal" href="#test-environments">Test Environments</a></li>
+<li><a class="reference internal" href="#intermediate-build-artifacts">Intermediate Build Artifacts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rebuilding-past-versions">🔁 Rebuilding Past Versions</a></li>
+<li><a class="reference internal" href="#communication">💬 Communication</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Maintaining Past Versions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/releasing/maintaining-past-versions.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="maintaining-past-versions">
+<h1>Maintaining Past Versions<a class="headerlink" href="#maintaining-past-versions" title="Link to this heading"></a></h1>
+<p>After a new version of E3SM-Unified is released, older versions may still be
+in use for months or years by analysis workflows, diagnostic pipelines, or
+collaborators working on older datasets. This page outlines best practices for
+keeping past versions available and usable.</p>
+<hr class="docutils" />
+<section id="goals">
+<h2>🎯 Goals<a class="headerlink" href="#goals" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Ensure long-term reproducibility</p></li>
+<li><p>Avoid breaking existing workflows</p></li>
+<li><p>Minimize overhead for maintainers</p></li>
+<li><p>Free up limited disk space when required</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="avoid-breaking-changes">
+<h2>🔒 Avoid Breaking Changes<a class="headerlink" href="#avoid-breaking-changes" title="Link to this heading"></a></h2>
+<section id="dont-delete-spack-or-conda-environments">
+<h3>Don’t Delete Spack or Conda Environments<a class="headerlink" href="#dont-delete-spack-or-conda-environments" title="Link to this heading"></a></h3>
+<p>E3SM-Unified installs are isolated by version. Do not delete directories like:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.11.0/
+/lcrc/soft/climate/e3sm-unified/spack/e3sm_unified_1.11.0_chrysalis_gnu_mpich/
+</pre></div>
+</div>
+<p>These environments may be used by others via scripts, batch jobs, or notebooks.</p>
+<p><strong>Exception</strong>: If the environment is broken beyond repair and cannot be
+recreated, it should be removed. If there is no more disk space for software,
+the oldest environments must be deleted to make room for new ones. Use your
+best judgment and document removals on Confluence.</p>
+</section>
+<section id="dont-remove-activation-scripts">
+<h3>Don’t Remove Activation Scripts<a class="headerlink" href="#dont-remove-activation-scripts" title="Link to this heading"></a></h3>
+<p>Keep activation scripts for previous versions (e.g.,
+<code class="docutils literal notranslate"><span class="pre">load_e3sm_unified_1.11.0_chrysalis.sh</span></code>) in place.</p>
+<p><strong>Exception</strong>: If the environment has been removed, it is safe to remove the
+associated activation scripts.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="what-can-be-removed">
+<h2>🧹 What Can Be Removed<a class="headerlink" href="#what-can-be-removed" title="Link to this heading"></a></h2>
+<section id="test-environments">
+<h3>Test Environments<a class="headerlink" href="#test-environments" title="Link to this heading"></a></h3>
+<p>You can safely delete environments or activation scripts for
+<strong>release candidates</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_e3sm_unified_1.11.0rc3_*.sh</span></code></p></li>
+<li><p>Conda environments like <code class="docutils literal notranslate"><span class="pre">test_e3sm_unified_install</span></code></p></li>
+</ul>
+<p>These were used only during internal testing and should be removed when they
+are no longer needed to free up disk space.</p>
+</section>
+<section id="intermediate-build-artifacts">
+<h3>Intermediate Build Artifacts<a class="headerlink" href="#intermediate-build-artifacts" title="Link to this heading"></a></h3>
+<p>Temporary logs or caches (e.g., from failed deployments) can be removed to
+save space.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="rebuilding-past-versions">
+<h2>🔁 Rebuilding Past Versions<a class="headerlink" href="#rebuilding-past-versions" title="Link to this heading"></a></h2>
+<p>If a past version breaks due to:</p>
+<ul class="simple">
+<li><p>OS upgrades</p></li>
+<li><p>Module stack changes</p></li>
+<li><p>File system reorganizations</p></li>
+</ul>
+<p>…you may need to rebuild that version. Follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Checkout the appropriate tag in the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo (e.g., <code class="docutils literal notranslate"><span class="pre">1.11.0</span></code>)</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code> with the <code class="docutils literal notranslate"><span class="pre">--version</span></code> flag (as a precaution):</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.11.0<span class="w"> </span>--release<span class="w"> </span>--recreate
+</pre></div>
+</div>
+<p>You may run into difficulty solving for older conda environments e.g. because
+of packages that have been marked as broken in the interim.  At some point, it
+may simply not be possible to recreate older E3SM-Unified conda environments
+because of this.</p>
+</section>
+<hr class="docutils" />
+<section id="communication">
+<h2>💬 Communication<a class="headerlink" href="#communication" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Coordinate cleanup of old versions via Slack (<code class="docutils literal notranslate"><span class="pre">#e3sm-help-postproc</span></code>)</p></li>
+<li><p>Use Confluence notes to document version removals or rebuilds</p></li>
+</ul>
+<hr class="docutils" />
+<p>Back to: <a class="reference internal" href="#publishing-final-release.md"><span class="xref myst">Publishing the Final Release</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="main">
+  <meta name="doc-site-root" content="../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>
