@@ -48,7 +48,7 @@ jobs:
       - name: Copy Docs and Commit
         run: |
           set -e
-          cd conda_package/docs
+          cd docs
           # gh-pages branch must already exist
           git clone https://github.com/E3SM-Project/e3sm-unified.git --branch gh-pages --single-branch gh-pages
 
@@ -81,6 +81,6 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
-          directory: conda_package/docs/gh-pages
+          directory: docs/gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force: true
