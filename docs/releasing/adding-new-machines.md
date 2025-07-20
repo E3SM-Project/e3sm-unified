@@ -44,7 +44,7 @@ After updating `mache`, you'll need to:
 2. **Update Spack if needed**
 
    * If new versions of external tools are required, update the
-     [`spack_for_mache_<version>`](spack-updates.md) branch of the
+     [`spack_for_mache_<version>`](testing/spack-updates.md) branch of the
      [E3SM Spack fork](https://github.com/E3SM-Project/spack)
 
 ---
@@ -52,7 +52,7 @@ After updating `mache`, you'll need to:
 ## ✅ Testing Your Changes
 
 Use the standard test deployment approach from
-[Deploying on HPCs](deploying-on-hpcs.md):
+[Deploying on HPCs](testing/deploying-on-hpcs.md):
 
 ```bash
 cd e3sm_supported_machines
@@ -88,4 +88,4 @@ During testing, focus on:
 
 ---
 
-➡ Next: [Publishing the Final Release](publishing-final-release.md)
+➡ Next: [Publishing the Final Release](finalizing-release.md)

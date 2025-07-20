@@ -1,9 +1,4 @@
-# Deployment and Testing Overview
-
-Once a release candidate (RC) of E3SM-Unified has been successfully built, it
-must be thoroughly tested across supported HPC systems before a full release
-can occur. This phase ensures compatibility with system modules,
-performance-critical tools, and real-world analysis workflows.
+# Overview of Deployment and Testing
 
 This section documents the full testing and deployment process, including how
 to:

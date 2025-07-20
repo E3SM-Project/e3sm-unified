@@ -1,16 +1,4 @@
-# The E3SM-Unified Release Workflow
-
-Releasing a new version of E3SM-Unified is an iterative, collaborative process
-involving Conda, Spack, and coordinated deployment across HPC systems. This
-guide serves as a roadmap for each stage in the workflow.
-
-Whether you're updating packages, building release candidates, or testing on
-HPC platforms, this section documents the steps needed to bring a new version
-of E3SM-Unified from planning to full deployment.
-
----
-
-## Overview of the Workflow
+# Overview of the Workflow
 
 The release process typically follows this progression:
 
@@ -18,7 +6,9 @@ The release process typically follows this progression:
 2. **[Planning Package Updates](planning-updates.md)**
 3. **[Creating Release Candidates](creating-rcs/overview.md)**
 4. **[Deployment and Testing](testing/overview.md)**
+5. **[Adding a New Machine](adding-new-machines.md)**
 6. **[Finalizing the Release](finalizing-release.md)**
+7. **[Maintaining Past Versionse](maintaining-past-versions.md)**
 
 Each of these steps is detailed in its own page. See below for a high-level
 summary.

@@ -69,7 +69,7 @@ The final list of packages is curated by the Infrastructure Team based on:
 * Community need and usage patterns
 
 Once the list is mostly settled, the team begins creating release candidates
-using the [Creating Release Candidates](creating-rcs.md) workflow.
+using the [Creating Release Candidates](creating-rcs/overview.md) workflow.
 
 ---
 
