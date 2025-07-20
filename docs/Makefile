@@ -11,7 +11,7 @@ BUILDDIR      = _build
 # Build into a versioned subdirectory
 versioned-html:
 	@echo "Building version: $(DOCS_VERSION)"
-	$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)/html/$(DOCS_VERSION)"
+	$(SPHINXBUILD) -b html -nW --keep-going "$(SOURCEDIR)" "$(BUILDDIR)/html/$(DOCS_VERSION)"
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html/$(DOCS_VERSION)."
 	@echo "Setting up shared version switcher for local preview..."
 	mkdir -p _build/html/shared
