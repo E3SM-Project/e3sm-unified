@@ -1,3 +1,17 @@
+```{toctree}
+:hidden:
+:maxdepth: 3
+
+introduction
+quickstart
+using-tools
+testing-release-candidates
+releasing/release-workflow
+packages
+troubleshooting
+contributing
+```
+
 # Welcome to E3SM-Unified Documentation
 
 ```{image} logo/e3sm_unified_logo_200.png
@@ -27,7 +41,6 @@ This documentation is for both **users** of the E3SM-Unified environment and
 ## 📚 Contents
 
 * 💠 [Using E3SM-Unified Tools](using-tools.md)
-* 🧪 [Testing Release Candidates](testing-release-candidates.md)
 * 🚚 [The E3SM-Unified Release Workflow](releasing/release-workflow.md)
 * 📦 [Package Catalog](packages.md)
 * ❓ [Troubleshooting & FAQs](troubleshooting.md)
