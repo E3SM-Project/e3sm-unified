@@ -1,4 +1,4 @@
-# 📦 E3SM-Unified Package Catalog
+# Package Catalog
 
 This page provides a complete inventory of packages included in the latest
 E3SM-Unified release (`1.11.1`), along with their versions. These packages
@@ -8,6 +8,12 @@ for what is installed in the environment.
 ---
 
 ## Main Packages and Dependencies
+
+Empty cells under "Version Constraint" indicate that there is no constraint
+on that package.  Blank cells under "Package Name" indicate the same package
+as above.  Some package are forced to have different versions for different
+python versions (typically when the dependency has dropped support for a python
+version that we wish to support).
 
 | Package Name         | Version Constraint          |
 |----------------------|-----------------------------|
@@ -23,7 +29,8 @@ for what is installed in the environment.
 | cime_gen_domain      | 6.1.59                      |
 | cmocean              |                             |
 | cython               |                             |
-| dask                 | 2024.8.0 (py<3.10), 2024.11.2 (py>=3.10) |
+| dask                 | 2024.8.0 (py<3.10)          |
+|                      | 2024.11.2 (py>=3.10)        |
 | dogpile.cache        |                             |
 | e3sm_diags           | 3.0.0                       |
 | e3sm-tools           | 3.0.2                       |
@@ -74,7 +81,8 @@ for what is installed in the environment.
 | progessbar2          |                             |
 | proj                 | 9.5.1                       |
 | psutil               |                             |
-| pyproj               | 3.6.1 (py<3.10), 3.7.0 (py>=3.10) |
+| pyproj               | 3.6.1 (py<3.10)             |
+|                      | 3.7.0 (py>=3.10)            |
 | pyevtk               |                             |
 | pyremap              |                             |
 | pytest               |                             |
@@ -91,9 +99,11 @@ for what is installed in the environment.
 | tabulate             |                             |
 | tempest-extremes     | 2.2.3                       |
 | tempest-remap        | 2.2.0                       |
-| uxarray              | 2024.11.1 (py<3.10), >=2024.12.0 (py>=3.10) |
+| uxarray              | 2024.11.1 (py<3.10)         |
+|                      | >=2024.12.0 (py>=3.10)      |
 | windspharm           |                             |
-| xarray               | 2024.7.0 (py<3.10), 2025.1.1 (py>=3.10) |
+| xarray               | 2024.7.0 (py<3.10)          |
+|                      | 2025.1.1 (py>=3.10)         |
 | xcdat                | 0.8.0                       |
 | xesmf                | 0.8.8                       |
 | zppy                 | 3.0.0                       |

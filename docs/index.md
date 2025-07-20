@@ -1,27 +1,11 @@
 ```{toctree}
 :hidden:
-:maxdepth: 3
+:maxdepth: 1
 
 introduction
 quickstart
 using-tools
-
-releasing/release-workflow
-releasing/conda-vs-spack
-releasing/planning-updates
-releasing/creating-rcs/overview
-releasing/creating-rcs/rc-dependencies
-releasing/creating-rcs/rc-e3sm-unified
-releasing/creating-rcs/rc-troubleshooting
-releasing/testing/overview
-releasing/testing/spack-updates
-releasing/testing/mache-updates
-releasing/testing/deploying-on-hpcs
-releasing/testing/troubleshooting-deploy
-releasing/adding-new-machines
-releasing/finalizing-release
-releasing/maintaining-past-versions
-
+releasing/index
 packages
 troubleshooting
 contributing
