@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deployment and Testing Overview</title>
+  <title>Overview of Deployment and Testing</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
@@ -19,6 +19,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Updating the E3SM Spack Fork" href="spack-updates.html" />
+    <link rel="prev" title="Deployment and Testing" href="index.html" />
     <link href="../../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -42,12 +44,34 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../release-workflow.html">The E3SM-Unified Release Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Deployment and Testing</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Overview of Deployment and Testing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phased-deployment-strategy">Phased Deployment Strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-components-of-the-deployment-process">Key Components of the Deployment Process</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audience">Audience</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating the E3SM Spack Fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="deploying-on-hpcs.html">Deploying on HPCs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting-deploy.html">Troubleshooting Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -66,7 +90,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Deployment and Testing Overview</li>
+          <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Deployment and Testing</a></li>
+      <li class="breadcrumb-item active">Overview of Deployment and Testing</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/releasing/testing/overview.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,12 +102,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="deployment-and-testing-overview">
-<h1>Deployment and Testing Overview<a class="headerlink" href="#deployment-and-testing-overview" title="Link to this heading"></a></h1>
-<p>Once a release candidate (RC) of E3SM-Unified has been successfully built, it
-must be thoroughly tested across supported HPC systems before a full release
-can occur. This phase ensures compatibility with system modules,
-performance-critical tools, and real-world analysis workflows.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-deployment-and-testing">
+<h1>Overview of Deployment and Testing<a class="headerlink" href="#overview-of-deployment-and-testing" title="Link to this heading"></a></h1>
 <p>This section documents the full testing and deployment process, including how
 to:</p>
 <ul class="simple">
@@ -157,7 +179,10 @@ assumed.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Deployment and Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="spack-updates.html" class="btn btn-neutral float-right" title="Updating the E3SM Spack Fork" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

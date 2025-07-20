@@ -19,6 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Package Catalog" href="../packages.html" />
+    <link rel="prev" title="Publishing the Final Release" href="finalizing-release.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -42,12 +44,37 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-workflow.html">The E3SM-Unified Release Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Maintaining Past Versions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#goals">🎯 Goals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#avoid-breaking-changes">🔒 Avoid Breaking Changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dont-delete-spack-or-conda-environments">Don’t Delete Spack or Conda Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dont-remove-activation-scripts">Don’t Remove Activation Scripts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#what-can-be-removed">🧹 What Can Be Removed</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#test-environments">Test Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#intermediate-build-artifacts">Intermediate Build Artifacts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#rebuilding-past-versions">🔁 Rebuilding Past Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#communication">💬 Communication</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -66,6 +93,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Release Workflow</a></li>
       <li class="breadcrumb-item active">Maintaining Past Versions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/releasing/maintaining-past-versions.md.txt" rel="nofollow"> View page source</a>
@@ -166,14 +194,17 @@ because of this.</p>
 <li><p>Use Confluence notes to document version removals or rebuilds</p></li>
 </ul>
 <hr class="docutils" />
-<p>Back to: <a class="reference internal" href="#publishing-final-release.md"><span class="xref myst">Publishing the Final Release</span></a></p>
+<p>Back to: <a class="reference internal" href="finalizing-release.html"><span class="std std-doc">Publishing the Final Release</span></a></p>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="finalizing-release.html" class="btn btn-neutral float-left" title="Publishing the Final Release" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../packages.html" class="btn btn-neutral float-right" title="Package Catalog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

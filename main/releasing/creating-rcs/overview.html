@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Creating Release Candidates</title>
+  <title>Overview of Release Candidate Workflows</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
@@ -19,6 +19,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Creating RCs for Dependency Packages" href="rc-dependencies.html" />
+    <link rel="prev" title="Creating Release Candidates" href="index.html" />
     <link href="../../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -42,12 +44,32 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../release-workflow.html">The E3SM-Unified Release Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Creating Release Candidates</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Overview of Release Candidate Workflows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-is-a-release-candidate">What Is a Release Candidate?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#overview-of-the-process">Overview of the Process</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rc-dependencies.html">Creating RCs for Dependency Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rc-e3sm-unified.html">Creating an RC for E3SM-Unified</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rc-troubleshooting.html">Troubleshooting Conda Build Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -66,7 +88,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Creating Release Candidates</li>
+          <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Creating Release Candidates</a></li>
+      <li class="breadcrumb-item active">Overview of Release Candidate Workflows</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/releasing/creating-rcs/overview.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,16 +100,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="creating-release-candidates">
-<h1>Creating Release Candidates<a class="headerlink" href="#creating-release-candidates" title="Link to this heading"></a></h1>
-<p>E3SM-Unified and its core dependencies follow a structured release process
-that relies on <strong>release candidates (RCs)</strong>. These pre-release versions are
-used for testing and validation before an official release is finalized and
-deployed.</p>
-<p>This section describes how to create RCs for both individual dependencies
-(like <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code> or <code class="docutils literal notranslate"><span class="pre">mpas-analysis</span></code>) and for the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> metapackage
-itself. It also includes tools and tips for troubleshooting build failures.</p>
-<hr class="docutils" />
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-release-candidate-workflows">
+<h1>Overview of Release Candidate Workflows<a class="headerlink" href="#overview-of-release-candidate-workflows" title="Link to this heading"></a></h1>
 <section id="what-is-a-release-candidate">
 <h2>What Is a Release Candidate?<a class="headerlink" href="#what-is-a-release-candidate" title="Link to this heading"></a></h2>
 <p>A release candidate (RC) is a build intended for testing before a final
@@ -129,7 +145,10 @@ tailored to the E3SM-Unified release workflow.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Creating Release Candidates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rc-dependencies.html" class="btn btn-neutral float-right" title="Creating RCs for Dependency Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

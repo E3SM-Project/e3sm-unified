@@ -19,6 +19,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Adding a New Machine" href="../adding-new-machines.html" />
+    <link rel="prev" title="Deploying on HPCs" href="deploying-on-hpcs.html" />
     <link href="../../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -42,12 +44,39 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../release-workflow.html">The E3SM-Unified Release Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Deployment and Testing</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Deployment and Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating the E3SM Spack Fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="deploying-on-hpcs.html">Deploying on HPCs</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Troubleshooting Deployment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spack-build-failures">1. 🛠️ Spack Build Failures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#activation-script-or-module-issues">2. 🔢 Activation Script or Module Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conda-environment-problems">3. 🚫 Conda Environment Problems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#filesystem-and-permission-issues">4. 💾 Filesystem and Permission Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mache-configuration-problems">5. 🧰 <code class="docutils literal notranslate"><span class="pre">mache</span></code> Configuration Problems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spack-caching-and-environment-contamination">6. 🪖 Spack Caching and Environment Contamination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#common-fix-full-clean-re-run">7. ⚠️ Common Fix: Full Clean + Re-run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-tools-tips">📎 Related Tools &amp; Tips</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -66,6 +95,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Deployment and Testing</a></li>
       <li class="breadcrumb-item active">Troubleshooting Deployment</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/releasing/testing/troubleshooting-deploy.md.txt" rel="nofollow"> View page source</a>
@@ -249,7 +280,10 @@ build.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deploying-on-hpcs.html" class="btn btn-neutral float-left" title="Deploying on HPCs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../adding-new-machines.html" class="btn btn-neutral float-right" title="Adding a New Machine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

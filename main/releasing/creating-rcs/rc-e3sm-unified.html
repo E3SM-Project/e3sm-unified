@@ -19,6 +19,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Troubleshooting Conda Build Failures" href="rc-troubleshooting.html" />
+    <link rel="prev" title="Creating RCs for Dependency Packages" href="rc-dependencies.html" />
     <link href="../../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -42,12 +44,38 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../release-workflow.html">The E3SM-Unified Release Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Creating Release Candidates</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Release Candidate Workflows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rc-dependencies.html">Creating RCs for Dependency Packages</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Creating an RC for E3SM-Unified</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-branch-for-the-new-version">1. Create a Branch for the New Version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update-the-conda-recipe">2. Update the Conda Recipe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#regenerate-the-build-matrix">3. Regenerate the Build Matrix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit-build-package-bash">4. Edit <code class="docutils literal notranslate"><span class="pre">build_package.bash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-and-troubleshoot">5. Build and Troubleshoot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#make-a-draft-pr">6. Make a draft PR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#keeping-updated-on-confluence">7. Keeping updated on Confluence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tag-and-publish-the-rc">8. Tag and Publish the RC</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rc-troubleshooting.html">Troubleshooting Conda Build Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -66,6 +94,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Creating Release Candidates</a></li>
       <li class="breadcrumb-item active">Creating an RC for E3SM-Unified</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/releasing/creating-rcs/rc-e3sm-unified.md.txt" rel="nofollow"> View page source</a>
@@ -231,7 +261,10 @@ and provenance only.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rc-dependencies.html" class="btn btn-neutral float-left" title="Creating RCs for Dependency Packages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rc-troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting Conda Build Failures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

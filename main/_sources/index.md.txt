@@ -1,12 +1,11 @@
 ```{toctree}
 :hidden:
-:maxdepth: 3
+:maxdepth: 1
 
 introduction
 quickstart
 using-tools
-testing-release-candidates
-releasing/release-workflow
+releasing/index
 packages
 troubleshooting
 contributing

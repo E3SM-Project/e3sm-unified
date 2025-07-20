@@ -19,6 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Creating Release Candidates" href="creating-rcs/index.html" />
+    <link rel="prev" title="How Conda and Spack Work Together in E3SM-Unified" href="conda-vs-spack.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -42,12 +44,46 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-workflow.html">The E3SM-Unified Release Workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Planning Package Updates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#where-planning-happens">Where Planning Happens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#types-of-updates">Types of Updates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-packages">✅ New Packages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#version-updates">⬆️ Version Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#package-removal">❌ Package Removal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#making-suggestions">Making Suggestions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#final-selection">Final Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#managing-version-pins-during-conda-forge-migrations">📦 Managing Version Pins During Conda-Forge Migrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-happens-during-a-migration">🔀 What Happens During a Migration?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-this-matters">⚠ Why This Matters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-handle-it">🧠 How to Handle It</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-migrations">🌀 Multiple Migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e3sm-unified-dependencies-affected-by-conda-forge-pins">📦 E3SM-Unified Dependencies Affected by Conda-Forge Pins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#other-places-that-require-updates">🔄 Other Places That Require Updates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e3sm-supported-machines-default-cfg">📦 <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e3sm-supported-machines-shared-py">🛠️ <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -66,6 +102,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Release Workflow</a></li>
       <li class="breadcrumb-item active">Planning Package Updates</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/releasing/planning-updates.md.txt" rel="nofollow"> View page source</a>
@@ -151,7 +188,7 @@ maintained</p></li>
 <li><p>Community need and usage patterns</p></li>
 </ul>
 <p>Once the list is mostly settled, the team begins creating release candidates
-using the <a class="reference internal" href="#creating-rcs.md"><span class="xref myst">Creating Release Candidates</span></a> workflow.</p>
+using the <a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Creating Release Candidates</span></a> workflow.</p>
 </section>
 <hr class="docutils" />
 <section id="managing-version-pins-during-conda-forge-migrations">
@@ -276,7 +313,10 @@ updated manually.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="conda-vs-spack.html" class="btn btn-neutral float-left" title="How Conda and Spack Work Together in E3SM-Unified" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="creating-rcs/index.html" class="btn btn-neutral float-right" title="Creating Release Candidates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

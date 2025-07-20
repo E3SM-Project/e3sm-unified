@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The E3SM-Unified Release Workflow</title>
+  <title>Overview of the Workflow</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="📦 E3SM-Unified Package Catalog" href="../packages.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="../testing-release-candidates.html" />
+    <link rel="next" title="How Conda and Spack Work Together in E3SM-Unified" href="conda-vs-spack.html" />
+    <link rel="prev" title="Release Workflow" href="index.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -48,18 +48,27 @@
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The E3SM-Unified Release Workflow</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-workflow">Overview of the Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-conda-and-spack-work-together-in-e3sm-unified">1. How Conda and Spack Work Together in E3SM-Unified</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#planning-package-updates">2. Planning Package Updates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#creating-release-candidates">3. Creating Release Candidates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#deploying-and-testing-on-hpcs">4. Deploying and Testing on HPCs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#adding-a-new-machine">5. Adding a New Machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#finalizing-the-release">6. Finalizing the Release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#maintaining-past-versions">7. Maintaining Past Versions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Overview of the Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-conda-and-spack-work-together-in-e3sm-unified">1. How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#planning-package-updates">2. Planning Package Updates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-release-candidates">3. Creating Release Candidates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploying-and-testing-on-hpcs">4. Deploying and Testing on HPCs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-machine">5. Adding a New Machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finalizing-the-release">6. Finalizing the Release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintaining-past-versions">7. Maintaining Past Versions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../packages.html">📦 E3SM-Unified Package Catalog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../packages.html">Package Catalog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing &amp; Community</a></li>
 </ul>
@@ -78,7 +87,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">The E3SM-Unified Release Workflow</li>
+          <li class="breadcrumb-item"><a href="index.html">Release Workflow</a></li>
+      <li class="breadcrumb-item active">Overview of the Workflow</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/releasing/release-workflow.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -88,28 +98,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="the-e3sm-unified-release-workflow">
-<h1>The E3SM-Unified Release Workflow<a class="headerlink" href="#the-e3sm-unified-release-workflow" title="Link to this heading"></a></h1>
-<p>Releasing a new version of E3SM-Unified is an iterative, collaborative process
-involving Conda, Spack, and coordinated deployment across HPC systems. This
-guide serves as a roadmap for each stage in the workflow.</p>
-<p>Whether you’re updating packages, building release candidates, or testing on
-HPC platforms, this section documents the steps needed to bring a new version
-of E3SM-Unified from planning to full deployment.</p>
-<hr class="docutils" />
-<section id="overview-of-the-workflow">
-<h2>Overview of the Workflow<a class="headerlink" href="#overview-of-the-workflow" title="Link to this heading"></a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-the-workflow">
+<h1>Overview of the Workflow<a class="headerlink" href="#overview-of-the-workflow" title="Link to this heading"></a></h1>
 <p>The release process typically follows this progression:</p>
 <ol class="arabic simple">
 <li><p><strong><a class="reference internal" href="conda-vs-spack.html"><span class="std std-doc">How Conda and Spack Work Together in E3SM-Unified</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="planning-updates.html"><span class="std std-doc">Planning Package Updates</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Creating Release Candidates</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="testing/overview.html"><span class="std std-doc">Deployment and Testing</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="adding-new-machines.html"><span class="std std-doc">Adding a New Machine</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="finalizing-release.html"><span class="std std-doc">Finalizing the Release</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Maintaining Past Versionse</span></a></strong></p></li>
 </ol>
 <p>Each of these steps is detailed in its own page. See below for a high-level
 summary.</p>
-</section>
 <hr class="docutils" />
 <section id="how-conda-and-spack-work-together-in-e3sm-unified">
 <h2>1. How Conda and Spack Work Together in E3SM-Unified<a class="headerlink" href="#how-conda-and-spack-work-together-in-e3sm-unified" title="Link to this heading"></a></h2>
@@ -181,8 +183,8 @@ deletion).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../testing-release-candidates.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../packages.html" class="btn btn-neutral float-right" title="📦 E3SM-Unified Package Catalog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Release Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="conda-vs-spack.html" class="btn btn-neutral float-right" title="How Conda and Spack Work Together in E3SM-Unified" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

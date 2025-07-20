@@ -95,4 +95,4 @@ because of this.
 
 ---
 
-Back to: [Publishing the Final Release](publishing-final-release.md)
+Back to: [Publishing the Final Release](finalizing-release.md)
