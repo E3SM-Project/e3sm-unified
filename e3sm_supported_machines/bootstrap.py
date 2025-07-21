@@ -274,7 +274,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
             continue
         value = section[option]
         if value != '':
-            specs.append(f'"{value}"')
+            specs.append(f'{value}')
 
     make_spack_env(spack_path=spack_base, env_name=spack_env,
                    spack_specs=specs, compiler=compiler, mpi=mpi,
