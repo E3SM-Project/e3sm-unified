@@ -1,0 +1,1 @@
+../../e3sm_supported_machines/shared.py
