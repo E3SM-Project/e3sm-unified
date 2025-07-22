@@ -126,7 +126,7 @@ used during deployment.
    connection and you should pipe the output to a log file, e.g.:
 
    ```bash
-   ./deploy_e3sm_unified.py --conda ~/miniforge3 | tee deploy.log
+   ./deploy_e3sm_unified.py --conda ~/miniforge3 2>&1 | tee deploy.log
    ```
 
    **Note:** It is not recommended that you try to deploy E3SM-Unified
