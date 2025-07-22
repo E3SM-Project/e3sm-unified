@@ -46,8 +46,9 @@ Other flags are optional and will be discussed below.
   versions of some conda packages required in the installation environment
   (notably `mache`)
 * Version numbers here should match `meta.yaml` unless diverging for a reason
-* A special case is `esmpy = None`, required so ESMPy comes from conda-forge,
-  not Spack.
+* Special case are `esmpy = None` and `xesmf = None`, required so ESMPy and
+  xESMF come from conda-forge, not Spack (for compatibility with xCDAT and
+  E3SM Diags).
 
 ### ⚙️ `shared.py`
 
