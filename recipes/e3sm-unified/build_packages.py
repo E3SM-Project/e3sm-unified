@@ -15,16 +15,20 @@ RELEASE_PYTHON_VERSIONS = ["3.9", "3.10"]
 RELEASE_MPI_VERSIONS = ["nompi", "mpich", "openmpi", "hpc"]
 
 
-def generate_matrix_files(dev):
+def generate_matrix_files(dev, python_versions, mpi_versions):
     with open("configs/template.yaml") as f:
         template_text = f.read()
     template = Template(template_text)
-    if dev:
-        python_versions = DEV_PYTHON_VERSIONS
-        mpi_versions = DEV_MPI_VERSIONS
-    else:
-        python_versions = RELEASE_PYTHON_VERSIONS
-        mpi_versions = RELEASE_MPI_VERSIONS
+    if python_versions is None:
+        if dev:
+            python_versions = DEV_PYTHON_VERSIONS
+        else:
+            python_versions = RELEASE_PYTHON_VERSIONS
+    if mpi_versions is None:
+        if dev:
+            mpi_versions = DEV_MPI_VERSIONS
+        else:
+            mpi_versions = RELEASE_MPI_VERSIONS
     matrix_files = []
     for python in python_versions:
         for mpi in mpi_versions:
@@ -46,6 +50,16 @@ def main():
         default=os.path.expanduser("~/miniforge3"),
         help="Path to the conda base directory (default: ~/miniforge3)."
     )
+    parser.add_argument(
+        "--python",
+        nargs="+",
+        help="Python version(s) to build for (overrides default matrix)."
+    )
+    parser.add_argument(
+        "--mpi",
+        nargs="+",
+        help="MPI variant(s) to build for (overrides default matrix)."
+    )
     args = parser.parse_args()
 
     conda_dir = os.path.expanduser(args.conda)
@@ -59,7 +73,11 @@ def main():
         shutil.rmtree(bld_dir)
 
     # Generate matrix files on the fly
-    matrix_files = generate_matrix_files(dev)
+    matrix_files = generate_matrix_files(
+        dev,
+        python_versions=args.python,
+        mpi_versions=args.mpi,
+    )
 
     dev_labels = []
     if dev:
