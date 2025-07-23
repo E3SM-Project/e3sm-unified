@@ -375,10 +375,6 @@ def check_env(script_filename, env_name, conda_mpi, machine):
         command = f'{activate} && python -c "import {import_name}"'
         test_command(command, os.environ, import_name)
 
-    # an extra check because the lack of ESMFRegrid is a problem for e3sm_diags
-    command = f'{activate} && python -c "from regrid2 import ESMFRegrid"'
-    test_command(command, os.environ, 'cdms2')
-
     for command in commands:
         package = command[0]
         command_str = ' '.join(command)
