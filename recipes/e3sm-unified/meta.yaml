@@ -46,7 +46,7 @@ requirements:
     - livvkit 3.1.0
     - mache 1.31.0
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mosaic 1.1.0  # [py>=310]
+    - mosaic 1.1.0
     - mpas-analysis 1.14.0rc01
     - mpas_tools 1.2.2
     - nco 5.3.4  # [mpi != 'hpc']
@@ -55,8 +55,7 @@ requirements:
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.2.3 {{ mpi_prefix }}_*  # [mpi != 'hpc']
-    - uxarray 2024.11.1  # [py<310]
-    - uxarray >=2024.12.0  # [py>=310]
+    - uxarray >=2024.12.0
     - xcdat 0.8.0
     - zppy 3.0.0
     - zppy-interfaces 0.1.2
@@ -77,9 +76,7 @@ requirements:
     - bottleneck
     - cartopy >=0.17.0
     - cmocean
-    # the last version before python 3.9 support was dropped
-    - dask 2024.8.0  # [py<310]
-    - dask 2024.11.2  # [py>=310]
+    - dask 2024.11.2
     - dogpile.cache
     - eofs
     - esmf 8.8.1 {{ mpi_prefix }}_*
@@ -110,9 +107,7 @@ requirements:
     - progressbar2
     - proj 9.5.1
     - pyevtk
-    # the last version before python 3.9 support was dropped
-    - pyproj 3.6.1  # [py<310]
-    - pyproj 3.7.0  # [py>=310]
+    - pyproj 3.7.0
     - pyremap
     - pytest
     - pywavelets
@@ -124,10 +119,8 @@ requirements:
     - shapely
     - sympy >=0.7.6
     - tabulate
-    - windspharm  # [py<=310]
-    # the last version before python 3.9 support was dropped
-    - xarray 2024.7.0  # [py<310]
-    - xarray 2025.1.1  # [py>=310]
+    - windspharm
+    - xarray 2025.1.1
     - xesmf 0.8.8
 
     # addition ilamb 2.7 dependencies, for system MPI builds
