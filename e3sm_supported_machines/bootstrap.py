@@ -14,6 +14,7 @@ from mache.permissions import update_permissions
 from shared import (
     check_call,
     get_conda_base,
+    get_rc_dev_labels,
     install_miniforge3,
     parse_args,
 )
@@ -132,24 +133,20 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
 
     if is_test:
 
-        nco_dev = ('alpha' in nco_spec or 'beta' in nco_spec)
-
         channels = '--override-channels'
         if local_conda_build is not None:
             channels = f'{channels} -c {local_conda_build}'
 
-        if nco_dev:
-            channels = f'{channels} -c conda-forge/label/nco_dev'
-        for package in ['moab']:
-            spec = config.get('spack_specs', package)
-            if 'rc' in spec.lower():
-                channels = f'{channels} -c conda-forge/label/{package}_dev'
-
-        # edit if not using a release candidate for a given package
-        dev_labels = ['e3sm_unified', 'chemdyg', 'e3sm_diags',
-                      'mpas_analysis', 'zppy', 'zstash']
-        for package in dev_labels:
-            channels = f'{channels} -c conda-forge/label/{package}_dev'
+        meta_yaml_path = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "recipes",
+            "e3sm-unified",
+            "meta.yaml"
+        )
+        dev_labels = get_rc_dev_labels(meta_yaml_path)
+        for dev_label in dev_labels:
+            channels = f'{channels} -c conda-forge/label/{dev_label}'
         channels = f'{channels} ' \
                    f'-c conda-forge '
     else:

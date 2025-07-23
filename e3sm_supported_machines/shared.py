@@ -8,13 +8,28 @@ import warnings
 try:
     from urllib.request import urlopen, Request
 except ImportError:
+    # For Python 2 compatibility
     from urllib2 import urlopen, Request
+
+LABELS = {
+     "chemdyg": "chemdyg_dev",
+     "e3sm_diags": "e3sm_diags_dev",
+     "e3sm_to_cmip": "e3sm_to_cmip_dev",
+     "mache": "mache_dev",
+     "moab": "moab_dev",
+     "mpas-analysis": "mpas_analysis_dev",
+     "mpas_tools": "mpas_tools_dev",
+     "nco": "nco_dev",
+     "xcdat": "xcdat_dev",
+     "zppy": "zppy_dev",
+     "zstash": "zstash_dev",
+}
 
 
 def parse_args(bootstrap):
     parser = argparse.ArgumentParser(
         description='Deploy E3SM-Unified')
-    parser.add_argument("--version", dest="version", default="1.11.1",
+    parser.add_argument("--version", dest="version",
                         help="The version of E3SM-Unified to deploy")
     parser.add_argument("--conda", dest="conda_base",
                         help="Path for the  conda base")
@@ -55,6 +70,16 @@ def parse_args(bootstrap):
     if (args.mache_fork is None) != (args.mache_branch is None):
         raise ValueError('You must supply both or neither of '
                          '--mache_fork and --mache_branch')
+
+    if args.version is None:
+        meta_yaml_path = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "recipes",
+            "e3sm-unified",
+            "meta.yaml"
+        )
+        args.version = get_version_from_meta(meta_yaml_path)
 
     return args
 
@@ -125,3 +150,64 @@ def get_conda_base(conda_base, config, shared):
     # handle "~" in the path
     conda_base = os.path.abspath(os.path.expanduser(conda_base))
     return conda_base
+
+
+def get_rc_dev_labels(meta_yaml_path):
+    """Parse meta.yaml and return a list of dev labels for RC dependencies."""
+
+    # a rare case where module-level imports are not a good idea because
+    # the deploy_e3sm_unified.py script may be called from an environment
+    # where jinja2 and yaml are not installed.
+    import yaml
+    from jinja2 import Template
+
+    labels_dict = LABELS
+
+    # Render the jinja template with dummy/default values
+    with open(meta_yaml_path) as f:
+        template_text = f.read()
+    # Provide dummy/default values for all jinja variables used in meta.yaml
+    template = Template(template_text)
+    rendered = template.render(
+        mpi='mpich',  # or any valid value
+        py='310',     # or any valid value
+        CONDA_PY='310',  # used in build string
+    )
+    meta = yaml.safe_load(rendered)
+    dev_labels = []
+    run_reqs = meta.get("requirements", {}).get("run", [])
+    for req in run_reqs:
+        # req can be a string like "pkgname version" or just "pkgname"
+        if isinstance(req, str):
+            parts = req.split()
+            pkg = parts[0]
+            version = " ".join(parts[1:]) if len(parts) > 1 else ""
+
+            # NCO is special: it has a dev label for alpha/beta versions
+            if pkg == "nco" and ('alpha' in version or 'beta' in version):
+                label = labels_dict[pkg]
+                if label not in dev_labels:
+                    dev_labels.append(label)
+
+            # Only match 'rc' in version, not in pkg name
+            if "rc" in version and pkg in labels_dict:
+                label = labels_dict[pkg]
+                if label not in dev_labels:
+                    dev_labels.append(label)
+    return dev_labels
+
+
+def get_version_from_meta(meta_yaml_path):
+    """Parse the version from the {% set version = ... %} line in meta.yaml."""
+    with open(meta_yaml_path) as f:
+        for line in f:
+            if line.strip().startswith("{% set version"):
+                # e.g., {% set version = "1.11.1rc1" %}
+                parts = line.split("=")
+                if len(parts) >= 2:
+                    version = (
+                        parts[1].strip().strip('%}').strip().strip(
+                            '"').strip("'")
+                    )
+                    return version
+    raise ValueError("Could not find version in meta.yaml")

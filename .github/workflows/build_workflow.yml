@@ -44,7 +44,10 @@ jobs:
       - name: Finalize Build Environment
         run: |
           conda install -y conda conda-build
-          conda build -m "recipes/e3sm-unified/configs/mpi_${{ matrix.mpi }}_python${{ matrix.python-version }}.yaml" "recipes/e3sm-unified"
+          cd recipes/e3sm-unified
+          ./build_packages.py --conda ${CONDA_PREFIX} \
+              --python ${{ matrix.python-version }} \
+              --mpi ${{ matrix.mpi }}
 
       - name: Install E3SM-Unified
         run: |
