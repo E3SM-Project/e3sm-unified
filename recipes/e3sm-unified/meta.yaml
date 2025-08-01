@@ -54,7 +54,7 @@ requirements:
     # - pcmdi_metrics 3.8.2
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
-    - tempest-extremes 2.2.3 {{ mpi_prefix }}_*  # [mpi != 'hpc']
+    - tempest-extremes 2.3.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - uxarray >=2024.12.0
     - xcdat 0.8.0
     - zppy 3.0.0
