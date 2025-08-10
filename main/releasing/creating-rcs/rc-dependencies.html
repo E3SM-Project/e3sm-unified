@@ -110,8 +110,14 @@ E3SM-developed dependencies.</p>
 <hr class="docutils" />
 <section id="step-by-step-creating-an-rc-for-e3sm-diags">
 <h2>Step-by-Step: Creating an RC for <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code><a class="headerlink" href="#step-by-step-creating-an-rc-for-e3sm-diags" title="Link to this heading"></a></h2>
+<section id="tag-a-release-candidate-or-make-a-github-release">
+<h3>1. Tag a Release Candidate or Make a GitHub Release<a class="headerlink" href="#tag-a-release-candidate-or-make-a-github-release" title="Link to this heading"></a></h3>
 <section id="tag-a-release-candidate-in-the-source-repo">
-<h3>1. Tag a Release Candidate in the Source Repo<a class="headerlink" href="#tag-a-release-candidate-in-the-source-repo" title="Link to this heading"></a></h3>
+<h4>1.1 Tag a Release Candidate in the Source Repo<a class="headerlink" href="#tag-a-release-candidate-in-the-source-repo" title="Link to this heading"></a></h4>
+<p>In some repos like MPAS-Analysis, it is desirable to tag a release candidate
+without making a GitHub release page.  This avoids clutter and confusion.</p>
+<p>We will use E3SM Diags in this example even though this is not the preferred
+workflow for that repository.</p>
 <p>Go to the source repository:
 <a class="reference external" href="https://github.com/E3SM-Project/e3sm_diags">E3SM Diags GitHub</a></p>
 <p>Create a release tag:</p>
@@ -130,6 +136,65 @@ of its established convention.</p></li>
 <a class="reference external" href="https://semver.org/">Semantic Versioning</a> and omit the <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix (i.e.,
 tag as <code class="docutils literal notranslate"><span class="pre">3.0.0rc1</span></code>).</p></li>
 </ul>
+</section>
+<hr class="docutils" />
+<section id="perform-at-github-release">
+<h4>1.2 Perform at GitHub Release<a class="headerlink" href="#perform-at-github-release" title="Link to this heading"></a></h4>
+<p>In other repositories like E3SM Diags and zppy, developers prefer that you
+create release pages for release candidates.  These pages provide clarity and
+provenance for the release candidate just like for a normal release.</p>
+<p>Follow these steps to create a release candidate via GitHub:</p>
+<ul>
+<li><p><strong>Pull the latest changes on <code class="docutils literal notranslate"><span class="pre">main</span></code>:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+</pre></div>
+</div>
+</li>
+<li><p><strong>Create a new branch from <code class="docutils literal notranslate"><span class="pre">main</span></code>:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>bump/0.1.0rc1
+</pre></div>
+</div>
+</li>
+<li><p><strong>Push the branch to your fork or upstream:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>--set-upstream<span class="w"> </span>origin<span class="w"> </span>bump/0.1.0rc1
+</pre></div>
+</div>
+</li>
+<li><p><strong>Bump the version in the Python files:</strong></p>
+<ul>
+<li><p>You can use the <code class="docutils literal notranslate"><span class="pre">tbump</span></code> tool (available in the conda development
+environments for <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code> and <code class="docutils literal notranslate"><span class="pre">e3sm_to_cmip</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tbump<span class="w"> </span><span class="m">0</span>.1.0rc1<span class="w"> </span>--no-tag
+</pre></div>
+</div>
+<p>This will automatically update version strings, add, commit, and push
+changes to remote.</p>
+</li>
+<li><p>Alternatively, manually update version strings in files such as
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;python_package&gt;/__init__.py</span></code>. Then
+add, commit, and push these changes.</p></li>
+</ul>
+</li>
+<li><p><strong>Open a pull request:</strong></p>
+<ul class="simple">
+<li><p>Use your <code class="docutils literal notranslate"><span class="pre">bump/0.1.0rc1</span></code> branch as the source and merge into <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>Example: <a class="reference external" href="https://github.com/E3SM-Project/e3sm_to_cmip/compare">Compare · E3SM-Project/e3sm_to_cmip</a></p></li>
+</ul>
+</li>
+<li><p><strong>Publish a new GitHub Release:</strong></p>
+<ul class="simple">
+<li><p>Go to the <a class="reference external" href="https://github.com/E3SM-Project/e3sm_to_cmip/releases/new">GitHub Releases page</a>.</p></li>
+<li><p>Click “Choose a tag” and enter <code class="docutils literal notranslate"><span class="pre">0.1.0rc1</span></code> (ideally without a <code class="docutils literal notranslate"><span class="pre">v</span></code>, but
+follow the repo’s conventions).</p></li>
+<li><p>For “Release title”, use <code class="docutils literal notranslate"><span class="pre">v0.1.0rc1</span></code> (with a <code class="docutils literal notranslate"><span class="pre">v</span></code>).</p></li>
+<li><p>Click “Generate release notes” and organize the changelog as needed.</p></li>
+<li><p>Check the box “Set as a pre-release”.</p></li>
+<li><p>Click “Publish release”.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 <hr class="docutils" />
 <section id="prepare-the-feedstock-pr">
@@ -211,7 +276,7 @@ repository)</p></li>
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <p>Creating an RC for a dependency involves:</p>
 <ol class="arabic simple">
-<li><p>Tagging the source repository</p></li>
+<li><p>Tagging a Release Candidate or making a GitHub release</p></li>
 <li><p>Opening a PR on the feedstock targeting the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch</p></li>
 <li><p>Waiting for CI to pass, then merging</p></li>
 </ol>

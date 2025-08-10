@@ -2,20 +2,19 @@
 
 The release process typically follows this progression:
 
-1. **[How Conda and Spack Work Together in E3SM-Unified](conda-vs-spack.md)**
-2. **[Planning Package Updates](planning-updates.md)**
-3. **[Creating Release Candidates](creating-rcs/overview.md)**
-4. **[Deployment and Testing](testing/overview.md)**
-5. **[Adding a New Machine](adding-new-machines.md)**
-6. **[Finalizing the Release](finalizing-release.md)**
-7. **[Maintaining Past Versionse](maintaining-past-versions.md)**
+1. **[Planning Package Updates](planning-updates.md)**
+2. **[Creating Release Candidates](creating-rcs/overview.md)**
+3. **[Deployment and Testing](testing/overview.md)**
+4. **[Adding a New Machine](adding-new-machines.md)**
+5. **[Finalizing the Release](finalizing-release.md)**
+6. **[Maintaining Past Versionse](maintaining-past-versions.md)**
 
-Each of these steps is detailed in its own page. See below for a high-level
-summary.
+We begin with some background information, then each of these steps is detailed
+in its own page. See below for a high-level summary.
 
 ---
 
-## 1. How Conda and Spack Work Together in E3SM-Unified
+## Backgraound: How Conda and Spack Work Together in Polaris
 
 Why does E3SM-Unified use both Conda and Spack? What roles do they each serve?
 Before you start, it's critical to understand how these two systems work
@@ -25,7 +24,7 @@ together.
 
 ---
 
-## 2. Planning Package Updates
+## 1. Planning Package Updates
 
 Updates are driven by the needs of the E3SM community, typically discussed via
 Confluence or GitHub. This step documents how to propose new packages or
@@ -35,7 +34,7 @@ changes to existing ones.
 
 ---
 
-## 3. Creating Release Candidates
+## 2. Creating Release Candidates
 
 This step covers:
 
@@ -46,13 +45,13 @@ This step covers:
 
 ---
 
-## 4. Deploying and Testing on HPCs
+## 3. Deploying and Testing on HPCs
 
 Before full deployment, release candidates are installed on a subset of HPC
 platforms for iterative testing and validation. This stage often requires
-extensive coordination and may involve debugging and extending the Spack build
-workflow, updating the E3SM Spack fork, and modifying `mache` to support new
-systems or changes in machine configurations.
+updating updating `mache` to support new systems or changes in machine
+configurations, adding package versions to E3SM's Spack fork, and
+troubleshooting deployment scripts.
 
 Testing includes everything from basic imports to full `zppy` workflows. This
 is a collaborative effort, with the full iterative process often spanning
@@ -62,7 +61,7 @@ several weeks to a few months.
 
 ---
 
-## 5. Adding a New Machine
+## 4. Adding a New Machine
 
 Most of the work for adding a new machine takes place in `mache`. Here we
 provide notes on adding new HPCs that are specific to E3SM-Unified.
@@ -71,7 +70,7 @@ provide notes on adding new HPCs that are specific to E3SM-Unified.
 
 ---
 
-## 6. Finalizing the Release
+## 5. Finalizing the Release
 
 Once all RCs pass testing:
 
@@ -84,7 +83,7 @@ Once all RCs pass testing:
 
 ---
 
-## 7. Maintaining Past Versions
+## 6. Maintaining Past Versions
 
 Older versions of E3SM-Unified sometimes require maintenance (repairs or
 deletion).

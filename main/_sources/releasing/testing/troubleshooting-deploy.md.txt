@@ -140,7 +140,7 @@ build.
 ## 📎 Related Tools & Tips
 
 * Use `screen`, `tmux`, or `nohup` for long deployments
-* Always log output: `... | tee deploy.log`
+* Always log output: `... 2>&1 | tee deploy.log`
 * Validate final symlinks and paths manually after deployment
 * Document which system + compiler + MPI variants have been tested
 

@@ -61,6 +61,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#making-suggestions">Making Suggestions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#final-selection">Final Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-meta-yaml">✍️ Updating <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#managing-version-pins-during-conda-forge-migrations">📦 Managing Version Pins During Conda-Forge Migrations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#what-happens-during-a-migration">🔀 What Happens During a Migration?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#why-this-matters">⚠ Why This Matters</a></li>
@@ -189,6 +190,26 @@ maintained</p></li>
 </ul>
 <p>Once the list is mostly settled, the team begins creating release candidates
 using the <a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Creating Release Candidates</span></a> workflow.</p>
+</section>
+<hr class="docutils" />
+<section id="updating-meta-yaml">
+<h2>✍️ Updating <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code><a class="headerlink" href="#updating-meta-yaml" title="Link to this heading"></a></h2>
+<p>Once the package list and versions are finalized, update the
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified/blob/main/recipes/e3sm-unified/meta.yaml"><code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code></a>
+file to reflect the new selections. This file is the authoritative source for
+the conda environment and must be kept in sync with the planned versions.</p>
+<ul class="simple">
+<li><p>Edit the <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> to add new packages, update versions, or remove
+deprecated packages as needed.</p></li>
+<li><p>Ensure that all changes are consistent with the decisions made during
+planning.</p></li>
+<li><p>Commit these changes to your release branch as part of preparing the
+release candidate.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Tip:</strong> Also update <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code> to match, unless
+there is a technical reason to diverge.</p>
+</div></blockquote>
 </section>
 <hr class="docutils" />
 <section id="managing-version-pins-during-conda-forge-migrations">

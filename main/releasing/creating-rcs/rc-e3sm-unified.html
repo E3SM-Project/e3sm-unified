@@ -58,12 +58,11 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Creating an RC for E3SM-Unified</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#create-a-branch-for-the-new-version">1. Create a Branch for the New Version</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#update-the-conda-recipe">2. Update the Conda Recipe</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#regenerate-the-build-matrix">3. Regenerate the Build Matrix</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#edit-build-package-bash">4. Edit <code class="docutils literal notranslate"><span class="pre">build_package.bash</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#build-and-troubleshoot">5. Build and Troubleshoot</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#make-a-draft-pr">6. Make a draft PR</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#keeping-updated-on-confluence">7. Keeping updated on Confluence</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tag-and-publish-the-rc">8. Tag and Publish the RC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-build-packages-py">3. Run <code class="docutils literal notranslate"><span class="pre">build_packages.py</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#troubleshoot">4. Troubleshoot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#make-a-draft-pr">5. Make a draft PR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#keeping-updated-on-confluence">6. Keeping updated on Confluence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tag-and-publish-the-rc">7. Tag and Publish the RC</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="rc-troubleshooting.html">Troubleshooting Conda Build Failures</a></li>
@@ -137,55 +136,27 @@ on those RC dependencies.</p>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="regenerate-the-build-matrix">
-<h2>3. Regenerate the Build Matrix<a class="headerlink" href="#regenerate-the-build-matrix" title="Link to this heading"></a></h2>
-<p>Run the matrix generator script to define combinations of Python and MPI:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>recipes/e3sm-unified/configs
-rm<span class="w"> </span>*.yaml
-python<span class="w"> </span>generate.py
+<section id="run-build-packages-py">
+<h2>3. Run <code class="docutils literal notranslate"><span class="pre">build_packages.py</span></code><a class="headerlink" href="#run-build-packages-py" title="Link to this heading"></a></h2>
+<p>If you are building packages for an RC version of E3SM-Unified, the script
+will build packages for Python 3.10 and the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> and <code class="docutils literal notranslate"><span class="pre">hpc</span></code> versions of MPI
+by default (those needed for login and compute nodes, respectively, on HPC).
+You may wish to use the <code class="docutils literal notranslate"><span class="pre">--python</span></code> and <code class="docutils literal notranslate"><span class="pre">--mpi</span></code> flags to override these.</p>
+<p>You should supply the <code class="docutils literal notranslate"><span class="pre">--conda</span></code> flag if not using <code class="docutils literal notranslate"><span class="pre">~/miniforge3</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build_packages.py<span class="w"> </span>--conda<span class="w"> </span>~/minforge3<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.10<span class="w"> </span>--mpi<span class="w"> </span>nompi<span class="w"> </span>hpc
 </pre></div>
 </div>
-<p>This produces matrix files like:</p>
+<p>The script will produce a matrix of files like:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mpi_mpich_python3.10.yaml</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mpi_hpc_python3.10.yaml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">configs/mpi_nompi_python3.10.yaml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">configs/mpi_hpc_python3.10.yaml</span></code></p></li>
 </ul>
+<p>These are then used by <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">build</span></code> to build the appropriate variant of
+the conda package.</p>
 </section>
 <hr class="docutils" />
-<section id="edit-build-package-bash">
-<h2>4. Edit <code class="docutils literal notranslate"><span class="pre">build_package.bash</span></code><a class="headerlink" href="#edit-build-package-bash" title="Link to this heading"></a></h2>
-<p>Update the channel list to include dev labels for any packages still in RC
-form. For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">channels</span><span class="o">=</span><span class="s2">&quot;-c conda-forge/label/chemdyg_dev \</span>
-<span class="s2">         -c conda-forge/label/e3sm_diags_dev \</span>
-<span class="s2">         -c conda-forge/label/mache_dev \</span>
-<span class="s2">         -c conda-forge/label/mpas_analysis_dev \</span>
-<span class="s2">         -c conda-forge/label/zppy_dev \</span>
-<span class="s2">         -c conda-forge/label/zstash_dev \</span>
-<span class="s2">         -c conda-forge&quot;</span>
-</pre></div>
-</div>
-<p>Then define which matrix files to test. For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>configs/mpi_mpich_python3.10.yaml<span class="w"> </span>configs/mpi_hpc_python3.10.yaml
-<span class="k">do</span>
-<span class="w">  </span>conda<span class="w"> </span>build<span class="w"> </span>-m<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>--override-channels<span class="w"> </span><span class="nv">$channels</span><span class="w"> </span>.
-<span class="k">done</span>
-</pre></div>
-</div>
-<p>Make sure:</p>
-<ul class="simple">
-<li><p>You use <code class="docutils literal notranslate"><span class="pre">--override-channels</span></code> to isolate testing to dev packages</p></li>
-<li><p>You only include dev labels for packages with RCs — use stable versions
-otherwise</p></li>
-</ul>
-</section>
-<hr class="docutils" />
-<section id="build-and-troubleshoot">
-<h2>5. Build and Troubleshoot<a class="headerlink" href="#build-and-troubleshoot" title="Link to this heading"></a></h2>
-<p>Run the script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>build_package.bash
-</pre></div>
-</div>
+<section id="troubleshoot">
+<h2>4. Troubleshoot<a class="headerlink" href="#troubleshoot" title="Link to this heading"></a></h2>
 <p>If builds fail, consult the
 <a class="reference internal" href="rc-troubleshooting.html"><span class="std std-doc">Troubleshooting Conda Build Failures</span></a> guide.
 This includes how to use <code class="docutils literal notranslate"><span class="pre">conda_first_failure.py</span></code> to debug dependency
@@ -193,7 +164,7 @@ resolution issues.</p>
 </section>
 <hr class="docutils" />
 <section id="make-a-draft-pr">
-<h2>6. Make a draft PR<a class="headerlink" href="#make-a-draft-pr" title="Link to this heading"></a></h2>
+<h2>5. Make a draft PR<a class="headerlink" href="#make-a-draft-pr" title="Link to this heading"></a></h2>
 <p>Push the branch to your fork of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> and make a draft PR to the
 main <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo.  Use that PR to document progress and highlight
 important version updates in this release for the public (those without
@@ -202,7 +173,7 @@ acces to E3SM’s Confluence pages). See
 </section>
 <hr class="docutils" />
 <section id="keeping-updated-on-confluence">
-<h2>7. Keeping updated on Confluence<a class="headerlink" href="#keeping-updated-on-confluence" title="Link to this heading"></a></h2>
+<h2>6. Keeping updated on Confluence<a class="headerlink" href="#keeping-updated-on-confluence" title="Link to this heading"></a></h2>
 <p>As deployment and testing progresses, you needs to make sure that the packages
 in your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch match the
 <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Next-versions">agreed-upon versions on Confluence</a>.
@@ -217,7 +188,7 @@ jargon</strong>) what is new in their package that would be of interest to users
 </section>
 <hr class="docutils" />
 <section id="tag-and-publish-the-rc">
-<h2>8. Tag and Publish the RC<a class="headerlink" href="#tag-and-publish-the-rc" title="Link to this heading"></a></h2>
+<h2>7. Tag and Publish the RC<a class="headerlink" href="#tag-and-publish-the-rc" title="Link to this heading"></a></h2>
 <p>After test builds are successful:</p>
 <section id="tag-a-release-candidate">
 <h3>Tag a Release Candidate<a class="headerlink" href="#tag-a-release-candidate" title="Link to this heading"></a></h3>

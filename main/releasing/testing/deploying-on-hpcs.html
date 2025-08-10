@@ -145,8 +145,9 @@ the release versions will be called <code class="docutils literal notranslate"><
 versions of some conda packages required in the installation environment
 (notably <code class="docutils literal notranslate"><span class="pre">mache</span></code>)</p></li>
 <li><p>Version numbers here should match <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> unless diverging for a reason</p></li>
-<li><p>A special case is <code class="docutils literal notranslate"><span class="pre">esmpy</span> <span class="pre">=</span> <span class="pre">None</span></code>, required so ESMPy comes from conda-forge,
-not Spack.</p></li>
+<li><p>Special case are <code class="docutils literal notranslate"><span class="pre">esmpy</span> <span class="pre">=</span> <span class="pre">None</span></code> and <code class="docutils literal notranslate"><span class="pre">xesmf</span> <span class="pre">=</span> <span class="pre">None</span></code>, required so ESMPy and
+xESMF come from conda-forge, not Spack (for compatibility with xCDAT and
+E3SM Diags).</p></li>
 </ul>
 </section>
 <section id="shared-py">
@@ -229,7 +230,7 @@ only be set on compute nodes).</p></li>
 <p><strong>Note:</strong> This can take a lot of time. If the connection to the HPC machine
 is not stable, you should use <code class="docutils literal notranslate"><span class="pre">screen</span></code> or similar to preserve your
 connection and you should pipe the output to a log file, e.g.:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>deploy.log
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>deploy.log
 </pre></div>
 </div>
 <p><strong>Note:</strong> It is not recommended that you try to deploy E3SM-Unified

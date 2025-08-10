@@ -73,6 +73,25 @@ using the [Creating Release Candidates](creating-rcs/overview.md) workflow.
 
 ---
 
+## ✍️ Updating `meta.yaml`
+
+Once the package list and versions are finalized, update the
+[`recipes/e3sm-unified/meta.yaml`](https://github.com/E3SM-Project/e3sm-unified/blob/main/recipes/e3sm-unified/meta.yaml)
+file to reflect the new selections. This file is the authoritative source for
+the conda environment and must be kept in sync with the planned versions.
+
+- Edit the `meta.yaml` to add new packages, update versions, or remove
+  deprecated packages as needed.
+- Ensure that all changes are consistent with the decisions made during
+  planning.
+- Commit these changes to your release branch as part of preparing the
+  release candidate.
+
+> **Tip:** Also update `e3sm_supported_machines/default.cfg` to match, unless
+  there is a technical reason to diverge.
+
+---
+
 ## 📦 Managing Version Pins During Conda-Forge Migrations
 
 E3SM-Unified often needs to coordinate with conda-forge's centralized version

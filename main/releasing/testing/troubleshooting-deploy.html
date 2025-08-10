@@ -268,7 +268,7 @@ build.</p>
 <h2>📎 Related Tools &amp; Tips<a class="headerlink" href="#related-tools-tips" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">screen</span></code>, <code class="docutils literal notranslate"><span class="pre">tmux</span></code>, or <code class="docutils literal notranslate"><span class="pre">nohup</span></code> for long deployments</p></li>
-<li><p>Always log output: <code class="docutils literal notranslate"><span class="pre">...</span> <span class="pre">|</span> <span class="pre">tee</span> <span class="pre">deploy.log</span></code></p></li>
+<li><p>Always log output: <code class="docutils literal notranslate"><span class="pre">...</span> <span class="pre">2&gt;&amp;1</span> <span class="pre">|</span> <span class="pre">tee</span> <span class="pre">deploy.log</span></code></p></li>
 <li><p>Validate final symlinks and paths manually after deployment</p></li>
 <li><p>Document which system + compiler + MPI variants have been tested</p></li>
 </ul>

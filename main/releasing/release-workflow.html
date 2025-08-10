@@ -50,13 +50,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Overview of the Workflow</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#how-conda-and-spack-work-together-in-e3sm-unified">1. How Conda and Spack Work Together in E3SM-Unified</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#planning-package-updates">2. Planning Package Updates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-release-candidates">3. Creating Release Candidates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#deploying-and-testing-on-hpcs">4. Deploying and Testing on HPCs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-machine">5. Adding a New Machine</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#finalizing-the-release">6. Finalizing the Release</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#maintaining-past-versions">7. Maintaining Past Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backgraound-how-conda-and-spack-work-together-in-polaris">Backgraound: How Conda and Spack Work Together in Polaris</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#planning-package-updates">1. Planning Package Updates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-release-candidates">2. Creating Release Candidates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploying-and-testing-on-hpcs">3. Deploying and Testing on HPCs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-machine">4. Adding a New Machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finalizing-the-release">5. Finalizing the Release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintaining-past-versions">6. Maintaining Past Versions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
@@ -102,7 +102,6 @@
 <h1>Overview of the Workflow<a class="headerlink" href="#overview-of-the-workflow" title="Link to this heading"></a></h1>
 <p>The release process typically follows this progression:</p>
 <ol class="arabic simple">
-<li><p><strong><a class="reference internal" href="conda-vs-spack.html"><span class="std std-doc">How Conda and Spack Work Together in E3SM-Unified</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="planning-updates.html"><span class="std std-doc">Planning Package Updates</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Creating Release Candidates</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="testing/overview.html"><span class="std std-doc">Deployment and Testing</span></a></strong></p></li>
@@ -110,11 +109,11 @@
 <li><p><strong><a class="reference internal" href="finalizing-release.html"><span class="std std-doc">Finalizing the Release</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Maintaining Past Versionse</span></a></strong></p></li>
 </ol>
-<p>Each of these steps is detailed in its own page. See below for a high-level
-summary.</p>
+<p>We begin with some background information, then each of these steps is detailed
+in its own page. See below for a high-level summary.</p>
 <hr class="docutils" />
-<section id="how-conda-and-spack-work-together-in-e3sm-unified">
-<h2>1. How Conda and Spack Work Together in E3SM-Unified<a class="headerlink" href="#how-conda-and-spack-work-together-in-e3sm-unified" title="Link to this heading"></a></h2>
+<section id="backgraound-how-conda-and-spack-work-together-in-polaris">
+<h2>Backgraound: How Conda and Spack Work Together in Polaris<a class="headerlink" href="#backgraound-how-conda-and-spack-work-together-in-polaris" title="Link to this heading"></a></h2>
 <p>Why does E3SM-Unified use both Conda and Spack? What roles do they each serve?
 Before you start, it’s critical to understand how these two systems work
 together.</p>
@@ -122,7 +121,7 @@ together.</p>
 </section>
 <hr class="docutils" />
 <section id="planning-package-updates">
-<h2>2. Planning Package Updates<a class="headerlink" href="#planning-package-updates" title="Link to this heading"></a></h2>
+<h2>1. Planning Package Updates<a class="headerlink" href="#planning-package-updates" title="Link to this heading"></a></h2>
 <p>Updates are driven by the needs of the E3SM community, typically discussed via
 Confluence or GitHub. This step documents how to propose new packages or
 changes to existing ones.</p>
@@ -130,7 +129,7 @@ changes to existing ones.</p>
 </section>
 <hr class="docutils" />
 <section id="creating-release-candidates">
-<h2>3. Creating Release Candidates<a class="headerlink" href="#creating-release-candidates" title="Link to this heading"></a></h2>
+<h2>2. Creating Release Candidates<a class="headerlink" href="#creating-release-candidates" title="Link to this heading"></a></h2>
 <p>This step covers:</p>
 <ul class="simple">
 <li><p>Making RCs for core tools (e.g., E3SM Diags, MPAS-Analysis, zppy)</p></li>
@@ -140,12 +139,12 @@ changes to existing ones.</p>
 </section>
 <hr class="docutils" />
 <section id="deploying-and-testing-on-hpcs">
-<h2>4. Deploying and Testing on HPCs<a class="headerlink" href="#deploying-and-testing-on-hpcs" title="Link to this heading"></a></h2>
+<h2>3. Deploying and Testing on HPCs<a class="headerlink" href="#deploying-and-testing-on-hpcs" title="Link to this heading"></a></h2>
 <p>Before full deployment, release candidates are installed on a subset of HPC
 platforms for iterative testing and validation. This stage often requires
-extensive coordination and may involve debugging and extending the Spack build
-workflow, updating the E3SM Spack fork, and modifying <code class="docutils literal notranslate"><span class="pre">mache</span></code> to support new
-systems or changes in machine configurations.</p>
+updating updating <code class="docutils literal notranslate"><span class="pre">mache</span></code> to support new systems or changes in machine
+configurations, adding package versions to E3SM’s Spack fork, and
+troubleshooting deployment scripts.</p>
 <p>Testing includes everything from basic imports to full <code class="docutils literal notranslate"><span class="pre">zppy</span></code> workflows. This
 is a collaborative effort, with the full iterative process often spanning
 several weeks to a few months.</p>
@@ -153,14 +152,14 @@ several weeks to a few months.</p>
 </section>
 <hr class="docutils" />
 <section id="adding-a-new-machine">
-<h2>5. Adding a New Machine<a class="headerlink" href="#adding-a-new-machine" title="Link to this heading"></a></h2>
+<h2>4. Adding a New Machine<a class="headerlink" href="#adding-a-new-machine" title="Link to this heading"></a></h2>
 <p>Most of the work for adding a new machine takes place in <code class="docutils literal notranslate"><span class="pre">mache</span></code>. Here we
 provide notes on adding new HPCs that are specific to E3SM-Unified.</p>
 <p>🔗 <a class="reference internal" href="adding-new-machines.html"><span class="std std-doc">Read more</span></a></p>
 </section>
 <hr class="docutils" />
 <section id="finalizing-the-release">
-<h2>6. Finalizing the Release<a class="headerlink" href="#finalizing-the-release" title="Link to this heading"></a></h2>
+<h2>5. Finalizing the Release<a class="headerlink" href="#finalizing-the-release" title="Link to this heading"></a></h2>
 <p>Once all RCs pass testing:</p>
 <ul class="simple">
 <li><p>Make final releases of all dependencies</p></li>
@@ -172,7 +171,7 @@ provide notes on adding new HPCs that are specific to E3SM-Unified.</p>
 </section>
 <hr class="docutils" />
 <section id="maintaining-past-versions">
-<h2>7. Maintaining Past Versions<a class="headerlink" href="#maintaining-past-versions" title="Link to this heading"></a></h2>
+<h2>6. Maintaining Past Versions<a class="headerlink" href="#maintaining-past-versions" title="Link to this heading"></a></h2>
 <p>Older versions of E3SM-Unified sometimes require maintenance (repairs or
 deletion).</p>
 <p>🔗 <a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Read more</span></a></p>
