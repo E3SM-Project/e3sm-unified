@@ -11,7 +11,15 @@ E3SM-developed dependencies.
 
 ## Step-by-Step: Creating an RC for `e3sm_diags`
 
-### 1. Tag a Release Candidate in the Source Repo
+### 1. Tag a Release Candidate or Make a GitHub Release
+
+#### 1.1 Tag a Release Candidate in the Source Repo
+
+In some repos like MPAS-Analysis, it is desirable to tag a release candidate
+without making a GitHub release page.  This avoids clutter and confusion.
+
+We will use E3SM Diags in this example even though this is not the preferred
+workflow for that repository.
 
 Go to the source repository:
 [E3SM Diags GitHub](https://github.com/E3SM-Project/e3sm_diags)
@@ -33,6 +41,57 @@ git push origin v3.0.0rc1
 * For new packages, it’s recommended to follow
   [Semantic Versioning](https://semver.org/) and omit the `v` prefix (i.e.,
   tag as `3.0.0rc1`).
+
+---
+
+#### 1.2 Perform at GitHub Release
+
+In other repositories like E3SM Diags and zppy, developers prefer that you
+create release pages for release candidates.  These pages provide clarity and
+provenance for the release candidate just like for a normal release.
+
+Follow these steps to create a release candidate via GitHub:
+
+- **Pull the latest changes on `main`:**
+  ```bash
+  git checkout main
+  git pull origin main
+  ```
+
+- **Create a new branch from `main`:**
+  ```bash
+  git checkout -b bump/0.1.0rc1
+  ```
+
+- **Push the branch to your fork or upstream:**
+  ```bash
+  git push --set-upstream origin bump/0.1.0rc1
+  ```
+
+- **Bump the version in the Python files:**
+  - You can use the `tbump` tool (available in the conda development
+    environments for `e3sm_diags` and `e3sm_to_cmip`):
+    ```bash
+    tbump 0.1.0rc1 --no-tag
+    ```
+    This will automatically update version strings, add, commit, and push
+    changes to remote.
+  - Alternatively, manually update version strings in files such as
+    `pyproject.toml`, `setup.py`, and `<python_package>/__init__.py`. Then
+    add, commit, and push these changes.
+
+- **Open a pull request:**
+  - Use your `bump/0.1.0rc1` branch as the source and merge into `main`.
+  - Example: [Compare · E3SM-Project/e3sm_to_cmip](https://github.com/E3SM-Project/e3sm_to_cmip/compare)
+
+- **Publish a new GitHub Release:**
+  - Go to the [GitHub Releases page](https://github.com/E3SM-Project/e3sm_to_cmip/releases/new).
+  - Click "Choose a tag" and enter `0.1.0rc1` (ideally without a `v`, but
+    follow the repo’s conventions).
+  - For "Release title", use `v0.1.0rc1` (with a `v`).
+  - Click "Generate release notes" and organize the changelog as needed.
+  - Check the box "Set as a pre-release".
+  - Click "Publish release".
 
 ---
 
@@ -117,7 +176,7 @@ conda install -c conda-forge/label/e3sm_diags_dev e3sm_diags
 
 Creating an RC for a dependency involves:
 
-1. Tagging the source repository
+1. Tagging a Release Candidate or making a GitHub release
 2. Opening a PR on the feedstock targeting the `dev` branch
 3. Waiting for CI to pass, then merging
 

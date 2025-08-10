@@ -35,63 +35,30 @@ Edit `recipes/e3sm-unified/meta.yaml`:
   `e3sm_diags`, `mpas-analysis`, etc.)
 
 ---
+## 3. Run `build_packages.py`
 
-## 3. Regenerate the Build Matrix
+If you are building packages for an RC version of E3SM-Unified, the script
+will build packages for Python 3.10 and the `nompi` and `hpc` versions of MPI
+by default (those needed for login and compute nodes, respectively, on HPC).
+You may wish to use the `--python` and `--mpi` flags to override these.
 
-Run the matrix generator script to define combinations of Python and MPI:
+You should supply the `--conda` flag if not using `~/miniforge3`.
 
 ```bash
-cd recipes/e3sm-unified/configs
-rm *.yaml
-python generate.py
+./build_packages.py --conda ~/minforge3 --python 3.10 --mpi nompi hpc
 ```
 
-This produces matrix files like:
+The script will produce a matrix of files like:
 
-* `mpi_mpich_python3.10.yaml`
-* `mpi_hpc_python3.10.yaml`
+* `configs/mpi_nompi_python3.10.yaml`
+* `configs/mpi_hpc_python3.10.yaml`
+
+These are then used by `conda build` to build the appropriate variant of
+the conda package.
 
 ---
 
-## 4. Edit `build_package.bash`
-
-Update the channel list to include dev labels for any packages still in RC
-form. For example:
-
-```bash
-channels="-c conda-forge/label/chemdyg_dev \
-         -c conda-forge/label/e3sm_diags_dev \
-         -c conda-forge/label/mache_dev \
-         -c conda-forge/label/mpas_analysis_dev \
-         -c conda-forge/label/zppy_dev \
-         -c conda-forge/label/zstash_dev \
-         -c conda-forge"
-```
-
-Then define which matrix files to test. For example:
-
-```bash
-for file in configs/mpi_mpich_python3.10.yaml configs/mpi_hpc_python3.10.yaml
-do
-  conda build -m $file --override-channels $channels .
-done
-```
-
-Make sure:
-
-* You use `--override-channels` to isolate testing to dev packages
-* You only include dev labels for packages with RCs — use stable versions
-  otherwise
-
----
-
-## 5. Build and Troubleshoot
-
-Run the script:
-
-```bash
-bash build_package.bash
-```
+## 4. Troubleshoot
 
 If builds fail, consult the
 [Troubleshooting Conda Build Failures](rc-troubleshooting.md) guide.
@@ -100,7 +67,7 @@ resolution issues.
 
 ---
 
-## 6. Make a draft PR
+## 5. Make a draft PR
 
 Push the branch to your fork of `e3sm-unified` and make a draft PR to the
 main `e3sm-unified` repo.  Use that PR to document progress and highlight
@@ -110,7 +77,7 @@ acces to E3SM's Confluence pages). See
 
 ---
 
-## 7. Keeping updated on Confluence
+## 6. Keeping updated on Confluence
 
 As deployment and testing progresses, you needs to make sure that the packages
 in your `update-to-<version>` branch match the
@@ -127,7 +94,7 @@ jargon**) what is new in their package that would be of interest to users.
 
 ---
 
-## 8. Tag and Publish the RC
+## 7. Tag and Publish the RC
 
 After test builds are successful:
 
