@@ -54,7 +54,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#verifying-installation">Verifying Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#running-on-compute-nodes-optional-but-recommended">Running on Compute Nodes (Optional but Recommended)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-e3sm-unified-on-an-unsupported-system">Installing E3SM-Unified on an Unsupported System</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#step-by-step-linux-macos">Step-by-Step (Linux/macOS):</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-by-step-linux">Step-by-Step (Linux):</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-by-step-macos-with-apple-silicon">Step-by-Step (macOS with Apple Silicon)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#related-pages">Related Pages</a></li>
@@ -155,8 +156,8 @@ from running on compute nodes using MPI-enabled system builds.</p>
 <h2>Installing E3SM-Unified on an Unsupported System<a class="headerlink" href="#installing-e3sm-unified-on-an-unsupported-system" title="Link to this heading"></a></h2>
 <p>E3SM-Unified is not officially supported on Linux or Mac laptops or
 workstations, but users can install it using <code class="docutils literal notranslate"><span class="pre">miniforge3</span></code>.</p>
-<section id="step-by-step-linux-macos">
-<h3>Step-by-Step (Linux/macOS):<a class="headerlink" href="#step-by-step-linux-macos" title="Link to this heading"></a></h3>
+<section id="step-by-step-linux">
+<h3>Step-by-Step (Linux):<a class="headerlink" href="#step-by-step-linux" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install miniforge3</span>
 wget<span class="w"> </span><span class="s2">&quot;https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-</span><span class="k">$(</span>uname<span class="k">)</span><span class="s2">-</span><span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="s2">.sh&quot;</span>
 bash<span class="w"> </span><span class="s2">&quot;Miniforge3-</span><span class="k">$(</span>uname<span class="k">)</span><span class="s2">-</span><span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="s2">.sh&quot;</span>
@@ -168,8 +169,40 @@ conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </
 conda<span class="w"> </span>activate<span class="w"> </span>e3sm-unified
 </pre></div>
 </div>
-<p>Note: On macOS with M1/M2 chips, install the x86_64 version and use Rosetta 2
-for compatibility.</p>
+<p><strong>Note</strong>: The above instructions also work for macOS machines with intel hardware.</p>
+</section>
+<section id="step-by-step-macos-with-apple-silicon">
+<h3>Step-by-Step (macOS with Apple Silicon)<a class="headerlink" href="#step-by-step-macos-with-apple-silicon" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># starts a shell in &quot;Rosetta&quot; mode</span>
+arch<span class="w"> </span>-x86_64<span class="w"> </span>/bin/bash<span class="w"> </span>--login
+
+<span class="c1"># create the conda-environment to install e3sm-unified within</span>
+<span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
+
+<span class="c1"># activate the environment and set an environmental variable</span>
+conda<span class="w"> </span>activate<span class="w"> </span>e3sm-unified
+conda<span class="w"> </span>env<span class="w"> </span>config<span class="w"> </span>vars<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64
+
+<span class="c1"># deactivate and re-activate the environment for the above command to propagate</span>
+conda<span class="w"> </span>deactivate
+conda<span class="w"> </span>activate<span class="w"> </span>e3sm-unified
+
+<span class="c1"># now you can actually install e3sm-unified</span>
+conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>e3sm-unified
+
+<span class="c1"># exit the &quot;Rosetta&quot; mode shell</span>
+<span class="nb">exit</span>
+</pre></div>
+</div>
+<p><strong>Checking if you macOS machine has Apple Silicon</strong>:</p>
+<ol class="arabic simple">
+<li><p>Click the Apple menu at the top-left of your screen.</p></li>
+<li><p>Select “About This Mac”: from the dropdown menu.</p>
+<ul class="simple">
+<li><p>If you see “Chip” followed by M1, M2, M3, or M4, your Mac has Apple silicon.</p></li>
+</ul>
+</li>
+</ol>
 </section>
 </section>
 <hr class="docutils" />
