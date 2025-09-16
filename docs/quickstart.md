@@ -66,7 +66,7 @@ Check your system documentation for how to launch interactive compute sessions
 E3SM-Unified is not officially supported on Linux or Mac laptops or
 workstations, but users can install it using `miniforge3`.
 
-### Step-by-Step (Linux/macOS):
+### Step-by-Step (Linux):
 
 ```bash
 # Install miniforge3
@@ -79,10 +79,36 @@ conda create -n esm-unified -c conda-forge e3sm-unified
 # Activate it
 conda activate e3sm-unified
 ```
+**Note**: The above instructions also work for macOS machines with intel hardware.
 
-Note: On macOS with M1/M2 chips, install the x86\_64 version and use Rosetta 2
-for compatibility.
+### Step-by-Step (macOS with Apple Silicon)
 
+```bash
+# starts a shell in "Rosetta" mode
+arch -x86_64 /bin/bash --login
+
+# create the conda-environment to install e3sm-unified within
+CONDA_SUBDIR=osx-64 conda create -n e3sm-unified python=3.10
+
+# activate the environment and set an environmental variable
+conda activate e3sm-unified
+conda env config vars set CONDA_SUBDIR=osx-64
+
+# deactivate and re-activate the environment for the above command to propagate
+conda deactivate
+conda activate e3sm-unified
+
+# now you can actually install e3sm-unified
+conda install -c conda-forge e3sm-unified
+
+# exit the "Rosetta" mode shell
+exit
+```
+
+**Checking if you macOS machine has Apple Silicon**:
+1. Click the Apple menu at the top-left of your screen.
+2. Select "About This Mac": from the dropdown menu.
+    - If you see "Chip" followed by M1, M2, M3, or M4, your Mac has Apple silicon.
 ---
 
 ## Related Pages
