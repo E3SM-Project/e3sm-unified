@@ -75,7 +75,7 @@ def get_env_setup(args, config, machine):
 
     if machine is not None and compiler is not None:
         conda_mpi = 'hpc'
-        env_suffix = f'_{machine}'
+        env_suffix = '_compute'
     else:
         conda_mpi = mpi
         env_suffix = '_login'
@@ -110,12 +110,6 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         os.chdir(build_dir)
 
     env_name = f'e3sm_unified_{version}{env_suffix}'
-
-    # add the compiler and MPI library to the spack env name
-    spack_env = f'{env_name}_{compiler}_{mpi}'
-    # spack doesn't like dots
-    spack_env = spack_env.replace('.', '_')
-
     env_path = os.path.join(conda_base, 'envs', env_name)
 
     if conda_mpi in ['nompi', 'hpc']:
@@ -183,7 +177,7 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
     else:
         print(f'{env_name} already exists')
 
-    return env_path, env_name, activate_env, channels, spack_env
+    return env_path, env_name, activate_env, channels
 
 
 def install_mache_from_branch(activate_env, fork, branch):
@@ -196,7 +190,7 @@ def install_mache_from_branch(activate_env, fork, branch):
 
 
 def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
-                          activate_env, channels, spack_base, spack_env):
+                          activate_env, channels, spack_base):
 
     mpi4py_version = config.get('e3sm_unified', 'mpi4py')
     ilamb_version = config.get('e3sm_unified', 'ilamb')
@@ -224,7 +218,7 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     modules = f'{activate_env_lines}\n{modules}'
 
     spack_view = f'{spack_base}/var/spack/environments/' \
-                 f'{spack_env}/.spack-env/view'
+                 f'e3sm_spack_env/.spack-env/view'
     script = template.render(
         mpicc=mpicc, modules=modules, template_path=template_path,
         mpi4py_version=mpi4py_version, build_mpi4py=str(build_mpi4py),
@@ -248,10 +242,10 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     return esmf_mk
 
 
-def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
+def build_spack_env(config, machine, compiler, mpi, env_name, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
-    spack_base = f'{base_path}/spack/{spack_env}'
+    spack_base = f'{base_path}/{env_name}/{machine}/'
 
     if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
         use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
@@ -276,7 +270,7 @@ def build_spack_env(config, machine, compiler, mpi, spack_env, tmpdir):
         if value != '':
             specs.append(f'{value}')
 
-    make_spack_env(spack_path=spack_base, env_name=spack_env,
+    make_spack_env(base_path=spack_base, env_name='e3sm_spack_env',
                    spack_specs=specs, compiler=compiler, mpi=mpi,
                    machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
                    include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf,
@@ -398,6 +392,7 @@ def main():
     template_path = f'{source_path}/templates'
 
     version = args.version
+    env_name = f'e3sm_unified_{version}'.replace('.', '_')
 
     machine = args.machine
     print(f'arg: {machine}')
@@ -414,7 +409,9 @@ def main():
     else:
         is_test = not config.getboolean('e3sm_unified', 'release')
 
-    conda_base = get_conda_base(args.conda_base, config, shared=True)
+    conda_base = get_conda_base(
+        args.conda_base, config, machine, env_name, shared=True
+    )
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
@@ -435,7 +432,7 @@ def main():
     nompi_suffix = '_login'
     # first, make environment for login nodes.  We're using no-MPI from
     # conda-forge for now
-    env_path, env_nompi, activate_env, _, _ = build_env(
+    conda_env_path, env_nompi, activate_env, _ = build_env(
         is_test, recreate, nompi_compiler, mpi, 'nompi', version,
         python, conda_base, nompi_suffix, nompi_suffix, activate_base,
         args.local_conda_build, config)
@@ -448,9 +445,14 @@ def main():
     if not is_test:
         # make a symlink to the environment
         link = os.path.join(conda_base, 'envs', 'e3sm_unified_latest')
-        check_call(f'ln -sfn {env_path} {link}')
+        check_call(f'ln -sfn {conda_env_path} {link}')
 
-    env_path, env_name, activate_env, channels, spack_env = build_env(
+    (
+        conda_env_path,
+        conda_env_name,
+        activate_env,
+        channels
+    ) = build_env(
         is_test, recreate, compiler, mpi, conda_mpi, version,
         python, conda_base, activ_suffix, env_suffix, activate_base,
         args.local_conda_build, config)
@@ -459,11 +461,11 @@ def main():
                     env_vars=['export HDF5_USE_FILE_LOCKING=FALSE'])
 
     if compiler is not None:
-        spack_base = build_spack_env(config, machine, compiler, mpi, spack_env,
+        spack_base = build_spack_env(config, machine, compiler, mpi, env_name,
                                      args.tmpdir)
         esmf_mk = build_sys_ilamb_esmpy(config, machine, compiler, mpi,
                                         template_path, activate_env, channels,
-                                        spack_base, spack_env)
+                                        spack_base)
         sys_info['env_vars'].append(esmf_mk)
     else:
         spack_base = None
@@ -472,14 +474,14 @@ def main():
     for ext in ['sh', 'csh']:
         if compiler is not None:
             spack_script = get_spack_script(
-                spack_path=spack_base, env_name=spack_env, compiler=compiler,
-                mpi=mpi, shell=ext, machine=machine)
+                spack_path=spack_base, env_name="e3sm_spack_env",
+                compiler=compiler, mpi=mpi, shell=ext, machine=machine)
         else:
             spack_script = ''
 
         script_filename = write_load_e3sm_unified(
             template_path, activ_path, conda_base, is_test, version,
-            activ_suffix, env_name, env_nompi, sys_info, ext, machine,
+            activ_suffix, conda_env_name, env_nompi, sys_info, ext, machine,
             spack_script)
         if ext == 'sh':
             test_script_filename = script_filename
@@ -489,7 +491,7 @@ def main():
             link = os.path.join(activ_path, link)
             check_call(f'ln -sfn {script_filename} {link}')
 
-    check_env(test_script_filename, env_name, conda_mpi, machine)
+    check_env(test_script_filename, conda_env_name, conda_mpi, machine)
 
     commands = f'{activate_base} && conda clean -y -p -t'
     check_call(commands)
@@ -498,8 +500,8 @@ def main():
     if spack_base is not None:
         paths.append(spack_base)
     group = config.get('e3sm_unified', 'group')
-    update_permissions(paths, group, show_progress=True,
-                       group_writable=False, other_readable=True)
+    #update_permissions(paths, group, show_progress=True,
+    #                   group_writable=False, other_readable=True)
 
 
 if __name__ == '__main__':

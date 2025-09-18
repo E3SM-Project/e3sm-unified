@@ -127,14 +127,14 @@ def install_miniforge3(conda_base, activate_base):
     check_call(commands)
 
 
-def get_conda_base(conda_base, config, shared):
+def get_conda_base(conda_base, config, machine, env_name, shared):
     if shared:
-        conda_base = os.path.join(
-            config.get('e3sm_unified', 'base_path'), 'base')
+        base_path = config.get('e3sm_unified', 'base_path')
+        conda_base = os.path.join(base_path, env_name, machine, 'conda')
     elif conda_base is None:
         if config.has_option('e3sm_unified', 'base_path'):
-            conda_base = os.path.abspath(os.path.join(
-                config.get('e3sm_unified', 'base_path'), 'base'))
+            base_path = config.get('e3sm_unified', 'base_path')
+            conda_base = os.path.join(base_path, env_name, machine, 'conda')
         elif 'CONDA_EXE' in os.environ:
             # if this is a test, assume we're the same base as the
             # environment currently active
