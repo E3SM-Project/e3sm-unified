@@ -245,7 +245,9 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
 def build_spack_env(config, machine, compiler, mpi, env_name, tmpdir):
 
     base_path = config.get('e3sm_unified', 'base_path')
-    spack_base = f'{base_path}/{env_name}/{machine}/'
+    spack_base_path = (
+        f'{base_path}/{env_name}/{machine}/spack/spack_for_{compiler}_{mpi}'
+    )
 
     if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
         use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
@@ -270,7 +272,7 @@ def build_spack_env(config, machine, compiler, mpi, env_name, tmpdir):
         if value != '':
             specs.append(f'{value}')
 
-    make_spack_env(base_path=spack_base, env_name='e3sm_spack_env',
+    make_spack_env(spack_path=spack_base_path, env_name='e3sm_spack_env',
                    spack_specs=specs, compiler=compiler, mpi=mpi,
                    machine=machine, tmpdir=tmpdir, include_e3sm_lapack=True,
                    include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf,
