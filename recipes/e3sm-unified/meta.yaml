@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.12.0rc2" %}
+{% set version = "1.12.0rc1" %}
 {% set build = 0 %}
 
 package:
@@ -47,14 +47,14 @@ requirements:
     - mache 1.31.0
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mosaic 1.1.0
-    - mpas-analysis 1.14.0rc01
-    - mpas_tools 1.2.2
-    - nco 5.3.4  # [mpi != 'hpc']
+    - mpas-analysis 1.14.0rc2
+    - mpas_tools 1.4.0rc1
+    - nco 5.3.5  # [mpi != 'hpc']
     # can not be installed until dependency on genutils, cdutil, cdms2, cdp
     # - pcmdi_metrics 3.8.2
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
-    - tempest-extremes 2.3.1 {{ mpi_prefix }}_*  # [mpi != 'hpc']
+    - tempest-extremes 2.4 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - uxarray >=2024.12.0
     - xcdat 0.8.0
     - zppy 3.0.0
@@ -76,11 +76,11 @@ requirements:
     - bottleneck
     - cartopy >=0.17.0
     - cmocean
-    - dask 2024.11.2
+    - dask 2025.9.1
     - dogpile.cache
     - eofs
-    - esmf 8.8.1 {{ mpi_prefix }}_*
-    - esmpy 8.8.1
+    - esmf 8.9.0 {{ mpi_prefix }}_*
+    - esmpy 8.9.0
     - f90nml
     - ffmpeg
     - globus-sdk
@@ -105,9 +105,9 @@ requirements:
     - pillow
     - plotly
     - progressbar2
-    - proj 9.5.1
+    - proj 9.6.2
     - pyevtk
-    - pyproj 3.7.0
+    - pyproj 3.7.2
     - pyremap
     - pytest
     - pywavelets
@@ -120,7 +120,7 @@ requirements:
     - sympy >=0.7.6
     - tabulate
     - windspharm
-    - xarray 2025.1.1
+    - xarray 2025.9.0
     - xesmf 0.8.8
 
     # addition ilamb 2.7 dependencies, for system MPI builds
