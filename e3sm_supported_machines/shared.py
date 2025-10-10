@@ -22,6 +22,7 @@ LABELS = {
      "nco": "nco_dev",
      "xcdat": "xcdat_dev",
      "zppy": "zppy_dev",
+     "zppy-interfaces": "zppy_interfaces_dev",
      "zstash": "zstash_dev",
 }
 
