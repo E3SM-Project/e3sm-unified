@@ -94,7 +94,7 @@ requirements:
     - ncvis-climate 2024.01.26
     - nc-time-axis
     - netcdf4 1.7.2 nompi_*
-    - notebook <7.0.0
+    - notebook
     - numpy >=2.0.0
     - openssh  # [mpi == 'openmpi']
     - output_viewer 1.3.3
