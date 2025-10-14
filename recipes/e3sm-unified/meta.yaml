@@ -150,7 +150,6 @@ test:
     - ncks --help  # [mpi != 'hpc']
     - ncap2 --help  # [mpi != 'hpc']
     - jupyter --help
-    - jupyter nbextension list
     - ipython -h
     - ipython3 -h
     - globus --help
