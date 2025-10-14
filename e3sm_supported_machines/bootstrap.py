@@ -131,6 +131,9 @@ def build_env(is_test, recreate, compiler, mpi, conda_mpi, version,
         if local_conda_build is not None:
             channels = f'{channels} -c {local_conda_build}'
 
+        if 'rc' in version:
+            channels = f'{channels} -c conda-forge/label/e3sm_unified_dev'
+
         meta_yaml_path = os.path.join(
             os.path.dirname(__file__),
             "..",
