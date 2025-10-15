@@ -281,7 +281,7 @@ def build_spack_env(config, machine, compiler, mpi, env_name, tmpdir):
                    include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf,
                    spack_mirror=spack_mirror)
 
-    return spack_base
+    return spack_base_path
 
 
 def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
