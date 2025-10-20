@@ -505,8 +505,8 @@ def main():
     if spack_base is not None:
         paths.append(spack_base)
     group = config.get('e3sm_unified', 'group')
-    #update_permissions(paths, group, show_progress=True,
-    #                   group_writable=False, other_readable=True)
+    update_permissions(paths, group, show_progress=True,
+                       group_writable=False, other_readable=True)
 
 
 if __name__ == '__main__':
