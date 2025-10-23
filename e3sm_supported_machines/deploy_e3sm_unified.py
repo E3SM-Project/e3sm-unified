@@ -4,12 +4,12 @@ from __future__ import print_function
 
 import os
 import sys
+import warnings
 
 from configparser import ConfigParser
 
 from shared import (
     check_call,
-    get_conda_base,
     install_miniforge3,
     parse_args,
 )
@@ -25,6 +25,25 @@ def get_config(config_file):
         config.read(config_file)
 
     return config
+
+
+def get_conda_base(conda_base):
+    if conda_base is None:
+        if 'CONDA_EXE' in os.environ:
+            # if this is a test, assume we're the same base as the
+            # environment currently active
+            conda_exe = os.environ['CONDA_EXE']
+            conda_base = os.path.abspath(
+                os.path.join(conda_exe, '..', '..'))
+            warnings.warn(
+                f'--conda path not supplied.  Using conda installed at '
+                f'{conda_base}')
+        else:
+            raise ValueError('No conda base provided with --conda and '
+                             'none could be inferred.')
+    # handle "~" in the path
+    conda_base = os.path.abspath(os.path.expanduser(conda_base))
+    return conda_base
 
 
 def bootstrap(activate_install_env, source_path, local_conda_build):
@@ -84,9 +103,8 @@ def main():
     source_path = os.getcwd()
 
     config = get_config(args.config_file)
-    version = args.version
 
-    conda_base = get_conda_base(args.conda_base, config, version, shared=False)
+    conda_base = get_conda_base(args.conda_base)
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \

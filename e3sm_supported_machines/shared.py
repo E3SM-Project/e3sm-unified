@@ -3,7 +3,6 @@ import argparse
 import subprocess
 import os
 import platform
-import warnings
 
 try:
     from urllib.request import urlopen, Request
@@ -136,32 +135,6 @@ def get_base(config, version):
     subdir = f'e3smu_{version}'.replace('.', '_')
     base_path = os.path.join(base_path, subdir)
     return base_path
-
-
-def get_conda_base(conda_base, config, version, shared, machine=None):
-    if shared:
-        base_path = get_base(config, version)
-        if machine is None:
-            raise ValueError(
-                "Machine must be specified for shared conda base"
-            )
-        conda_base = os.path.join(base_path, machine, 'conda')
-    elif conda_base is None:
-        if 'CONDA_EXE' in os.environ:
-            # if this is a test, assume we're the same base as the
-            # environment currently active
-            conda_exe = os.environ['CONDA_EXE']
-            conda_base = os.path.abspath(
-                os.path.join(conda_exe, '..', '..'))
-            warnings.warn(
-                f'--conda path not supplied.  Using conda installed at '
-                f'{conda_base}')
-        else:
-            raise ValueError('No conda base provided with --conda and '
-                             'none could be inferred.')
-    # handle "~" in the path
-    conda_base = os.path.abspath(os.path.expanduser(conda_base))
-    return conda_base
 
 
 def get_rc_dev_labels(meta_yaml_path):

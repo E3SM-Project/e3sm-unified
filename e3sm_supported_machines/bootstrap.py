@@ -14,7 +14,6 @@ from mache.permissions import update_permissions
 from shared import (
     check_call,
     get_base,
-    get_conda_base,
     get_rc_dev_labels,
     install_miniforge3,
     parse_args,
@@ -412,9 +411,8 @@ def main():
     else:
         is_test = not config.getboolean('e3sm_unified', 'release')
 
-    conda_base = get_conda_base(
-        args.conda_base, config, version, shared=True, machine=machine
-    )
+    base_path = get_base(config, version)
+    conda_base = os.path.join(base_path, machine, 'conda')
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
