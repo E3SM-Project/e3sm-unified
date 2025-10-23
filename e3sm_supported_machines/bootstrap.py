@@ -472,6 +472,7 @@ def main():
     else:
         spack_base = None
 
+    paths_to_update = [base_path]
     test_script_filename = None
     for ext in ['sh', 'csh']:
         if compiler is not None:
@@ -493,16 +494,16 @@ def main():
             link = os.path.join(activ_path, link)
             check_call(f'ln -sfn {script_filename} {link}')
 
+        # update files before directories, since they are quicker to do
+        paths_to_update.insert(0, script_filename)
+
     check_env(test_script_filename, conda_env_name, conda_mpi, machine)
 
     commands = f'{activate_base} && conda clean -y -p -t'
     check_call(commands)
 
-    paths = [activ_path, conda_base]
-    if spack_base is not None:
-        paths.append(spack_base)
     group = config.get('e3sm_unified', 'group')
-    update_permissions(paths, group, show_progress=True,
+    update_permissions(paths_to_update, group, show_progress=True,
                        group_writable=False, other_readable=True)
 
 
