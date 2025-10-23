@@ -472,7 +472,8 @@ def main():
     else:
         spack_base = None
 
-    paths_to_update = [base_path]
+    # start restricted permissions at machine level
+    paths_to_update = [os.path.join(base_path, machine)]
     test_script_filename = None
     for ext in ['sh', 'csh']:
         if compiler is not None:
