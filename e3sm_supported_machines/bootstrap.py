@@ -13,6 +13,7 @@ from mache.spack import make_spack_env, get_spack_script, \
 from mache.permissions import update_permissions
 from shared import (
     check_call,
+    get_base,
     get_conda_base,
     get_rc_dev_labels,
     install_miniforge3,
@@ -245,12 +246,10 @@ def build_sys_ilamb_esmpy(config, machine, compiler, mpi, template_path,
     return esmf_mk
 
 
-def build_spack_env(config, machine, compiler, mpi, env_name, tmpdir):
+def build_spack_env(config, machine, compiler, mpi, version, tmpdir):
 
-    base_path = config.get('e3sm_unified', 'base_path')
-    spack_base_path = (
-        f'{base_path}/{env_name}/{machine}/spack/spack_for_{compiler}_{mpi}'
-    )
+    base_path = get_base(config, version)
+    spack_base_path = f'{base_path}/{machine}/spack/{compiler}_{mpi}'
 
     if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
         use_e3sm_hdf5_netcdf = config.getboolean('e3sm_unified',
@@ -397,7 +396,6 @@ def main():
     template_path = f'{source_path}/templates'
 
     version = args.version
-    env_name = f'e3sm_unified_{version}'.replace('.', '_')
 
     machine = args.machine
     print(f'arg: {machine}')
@@ -415,7 +413,7 @@ def main():
         is_test = not config.getboolean('e3sm_unified', 'release')
 
     conda_base = get_conda_base(
-        args.conda_base, config, machine, env_name, shared=True
+        args.conda_base, config, version, shared=True, machine=machine
     )
     conda_base = os.path.abspath(conda_base)
 
@@ -466,8 +464,9 @@ def main():
                     env_vars=['export HDF5_USE_FILE_LOCKING=FALSE'])
 
     if compiler is not None:
-        spack_base = build_spack_env(config, machine, compiler, mpi, env_name,
-                                     args.tmpdir)
+        spack_base = build_spack_env(
+            config, machine, compiler, mpi, version, args.tmpdir
+        )
         esmf_mk = build_sys_ilamb_esmpy(config, machine, compiler, mpi,
                                         template_path, activate_env, channels,
                                         spack_base)

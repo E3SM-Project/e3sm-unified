@@ -128,15 +128,26 @@ def install_miniforge3(conda_base, activate_base):
     check_call(commands)
 
 
-def get_conda_base(conda_base, config, machine, env_name, shared):
+def get_base(config, version):
+    """
+    Get the base path for E3SM-Unified conda and spack installation
+    """
+    base_path = config.get('e3sm_unified', 'base_path')
+    subdir = f'e3smu_{version}'.replace('.', '_')
+    base_path = os.path.join(base_path, subdir)
+    return base_path
+
+
+def get_conda_base(conda_base, config, version, shared, machine=None):
     if shared:
-        base_path = config.get('e3sm_unified', 'base_path')
-        conda_base = os.path.join(base_path, env_name, machine, 'conda')
+        base_path = get_base(config, version)
+        if machine is None:
+            raise ValueError(
+                "Machine must be specified for shared conda base"
+            )
+        conda_base = os.path.join(base_path, machine, 'conda')
     elif conda_base is None:
-        if config.has_option('e3sm_unified', 'base_path'):
-            base_path = config.get('e3sm_unified', 'base_path')
-            conda_base = os.path.join(base_path, env_name, machine, 'conda')
-        elif 'CONDA_EXE' in os.environ:
+        if 'CONDA_EXE' in os.environ:
             # if this is a test, assume we're the same base as the
             # environment currently active
             conda_exe = os.environ['CONDA_EXE']

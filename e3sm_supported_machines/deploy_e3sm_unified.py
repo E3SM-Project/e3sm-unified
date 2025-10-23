@@ -86,14 +86,7 @@ def main():
     config = get_config(args.config_file)
     version = args.version
 
-    env_name = f'e3sm_unified_{version}'.replace('.', '_')
-
-    if args.machine is None:
-        raise ValueError("Please specify what machine you are deploying on")
-
-    conda_base = get_conda_base(
-        args.conda_base, config, args.machine, env_name, shared=False
-    )
+    conda_base = get_conda_base(args.conda_base, config, version, shared=False)
     conda_base = os.path.abspath(conda_base)
 
     source_activation_scripts = \
