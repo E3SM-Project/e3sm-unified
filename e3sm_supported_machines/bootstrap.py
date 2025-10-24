@@ -8,8 +8,12 @@ from importlib import resources
 from configparser import ConfigParser
 
 from mache import discover_machine
-from mache.spack import make_spack_env, get_spack_script, \
-    get_modules_env_vars_and_mpi_compilers
+from mache.machines.pre_conda import load_pre_conda_script
+from mache.spack import (
+    make_spack_env,
+    get_spack_script,
+    get_modules_env_vars_and_mpi_compilers,
+)
 from mache.permissions import update_permissions
 from shared import (
     check_call,
@@ -282,9 +286,26 @@ def build_spack_env(config, machine, compiler, mpi, version, tmpdir):
     return spack_base_path
 
 
-def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
-                            version, activ_suffix, env_name, env_nompi,
-                            sys_info, ext, machine, spack_script):
+def write_load_e3sm_unified(
+    template_path,
+    activ_path,
+    conda_base,
+    is_test,
+    version,
+    activ_suffix,
+    env_name,
+    env_nompi,
+    sys_info,
+    ext,
+    machine,
+    spack_script,
+):
+
+    pre_conda_script = load_pre_conda_script(machine=machine, ext=ext)
+
+    print(f'Pre-conda script for {machine} ({ext}):')
+    print(pre_conda_script)
+    print('---')
 
     try:
         os.makedirs(activ_path)
@@ -318,14 +339,17 @@ def write_load_e3sm_unified(template_path, activ_path, conda_base, is_test,
     else:
         env_type = 'SYSTEM'
 
-    script = template.render(conda_base=conda_base, env_name=env_name,
-                             env_type=env_type,
-                             script_filename=script_filename,
-                             env_nompi=env_nompi,
-                             spack='\n  '.join(spack_script.split('\n')),
-                             modules='\n  '.join(sys_info['modules']),
-                             env_vars=env_vars,
-                             machine=machine)
+    script = template.render(
+        pre_conda_script=pre_conda_script,
+        conda_base=conda_base,
+        env_name=env_name,
+        env_type=env_type,
+        script_filename=script_filename,
+        env_nompi=env_nompi,
+        spack='\n  '.join(spack_script.split('\n')),
+        modules='\n  '.join(sys_info['modules']),
+        env_vars=env_vars,
+        machine=machine)
 
     # strip out redundant blank lines
     lines = list()
@@ -484,8 +508,17 @@ def main():
             spack_script = ''
 
         script_filename = write_load_e3sm_unified(
-            template_path, activ_path, conda_base, is_test, version,
-            activ_suffix, conda_env_name, env_nompi, sys_info, ext, machine,
+            template_path,
+            activ_path,
+            conda_base,
+            is_test,
+            version,
+            activ_suffix,
+            conda_env_name,
+            env_nompi,
+            sys_info,
+            ext,
+            machine,
             spack_script)
         if ext == 'sh':
             test_script_filename = script_filename

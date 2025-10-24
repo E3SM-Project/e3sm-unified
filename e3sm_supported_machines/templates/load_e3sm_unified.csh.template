@@ -1,3 +1,5 @@
+{{ pre_conda_script }}
+
 source {{ conda_base }}/etc/profile.d/conda.csh
 
 setenv E3SMU_SCRIPT "{{ script_filename }}"

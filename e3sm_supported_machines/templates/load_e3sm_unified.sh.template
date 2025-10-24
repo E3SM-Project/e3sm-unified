@@ -1,3 +1,5 @@
+{{ pre_conda_script }}
+
 source {{ conda_base }}/etc/profile.d/conda.sh
 
 export E3SMU_SCRIPT="{{ script_filename }}"
