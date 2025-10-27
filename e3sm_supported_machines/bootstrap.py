@@ -3,6 +3,7 @@
 import os
 import subprocess
 import shutil
+from pathlib import Path
 from jinja2 import Template
 from importlib import resources
 from configparser import ConfigParser
@@ -468,8 +469,14 @@ def main():
                                   branch=args.mache_branch)
 
     if not is_test:
-        # make a symlink to the environment
-        link = os.path.join(conda_base, 'envs', 'e3sm_unified_latest')
+        top_dir = Path(config.get('e3sm_unified', 'base_path'))
+        nco_dir = (top_dir / "e3smu_latest_for_nco").mkdir(exist_ok=True)
+
+        # copy readme into directory for nco symlinks
+        readme = Path(template_path) / "e3sm_unified_nco.readme"
+        shutil.copy(readme, nco_dir / "README")
+
+        link = nco_dir / machine
         check_call(f'ln -sfn {conda_env_path} {link}')
 
     (
