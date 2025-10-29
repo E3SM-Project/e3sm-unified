@@ -33,8 +33,8 @@ requirements:
     - r
     - cdo
     - chemdyg 1.1.1rc1
-    - e3sm_diags 3.1.0rc1
-    - e3sm_to_cmip 1.13.0rc1
+    - e3sm_diags 3.1.0rc2
+    - e3sm_to_cmip 1.13.0rc3
     - e3sm-tools 3.0.2  # [linux]
     - geometric_features 1.6.1
     # fixes an issues with cryptography <37 constraint
@@ -43,21 +43,21 @@ requirements:
     - ipython
     - jupyter
     - livvkit 3.2.0
-    - mache 1.32.0
+    - mache 2.0.0rc2
     - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mosaic 1.1.0
+    - mosaic 1.2.0
     - mpas-analysis 1.14.0rc2
     - mpas_tools 1.4.0rc1
-    - nco 5.3.5  # [mpi != 'hpc']
+    - nco 5.3.6  # [mpi != 'hpc']
     - pcmdi_metrics 4.0.1
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
     - tempest-extremes 2.4 {{ mpi_prefix }}_*  # [mpi != 'hpc']
     - uxarray >=2024.12.0
     - xcdat 0.10.1
-    - zppy 3.1.0rc2
+    - zppy 3.1.0rc3
     - zppy-interfaces 0.2.0rc2
-    - zstash 1.5.0rc3  # [linux]
+    - zstash 1.5.0rc4  # [linux]
 
     ### mkdocs
     - mkdocs-material
