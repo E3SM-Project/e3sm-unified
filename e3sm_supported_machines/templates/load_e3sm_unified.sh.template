@@ -8,7 +8,7 @@ export E3SMU_MACHINE="{{ machine }}"
 # prevent any attempts to build E3SM with E3SM-Unified loaded
 export CIME_MODEL="ENVIRONMENT_RUNNING_E3SM_UNIFIED_USE_ANOTHER_TERMINAL"
 
-if [ -z ${SLURM_JOB_ID+x} ] && [ -z ${COBALT_JOBID+x} ]
+if [ -z ${SLURM_JOB_ID+x} ] && [ -z ${COBALT_JOBID+x} ] && [ -z ${PBS_JOBID+x} ]
 then
   # we seem to be on a login node, so load the no-MPI environment
 
