@@ -544,8 +544,14 @@ def main():
     check_call(commands)
 
     group = config.get('e3sm_unified', 'group')
-    update_permissions(paths_to_update, group, show_progress=True,
-                       group_writable=False, other_readable=True)
+    update_permissions(
+        base_path, group, group_writable=True,
+        other_readable=True, recursive=False
+    )
+    update_permissions(
+        paths_to_update, group, show_progress=True,
+        group_writable=False, other_readable=True, recursive=True
+    )
 
 
 if __name__ == '__main__':
