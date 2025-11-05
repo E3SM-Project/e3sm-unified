@@ -44,7 +44,7 @@ requirements:
     - jupyter
     - livvkit 3.2.0
     - mache 2.0.0rc2
-    - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
+    - moab 5.6.0rc2 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
     - mosaic 1.2.0
     - mpas-analysis 1.14.0rc2
     - mpas_tools 1.4.0rc1
