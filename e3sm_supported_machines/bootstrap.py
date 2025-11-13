@@ -503,14 +503,25 @@ def main():
     else:
         spack_base = None
 
+    use_e3sm_hdf5_netcdf = config.getboolean(
+        'e3sm_unified', 'use_e3sm_hdf5_netcdf'
+    )
+
     # start restricted permissions at machine level
     paths_to_update = [os.path.join(base_path, machine)]
     test_script_filename = None
     for ext in ['sh', 'csh']:
         if compiler is not None:
             spack_script = get_spack_script(
-                spack_path=spack_base, env_name="e3sm_spack_env",
-                compiler=compiler, mpi=mpi, shell=ext, machine=machine)
+                spack_path=spack_base,
+                env_name="e3sm_spack_env",
+                compiler=compiler,
+                mpi=mpi,
+                shell=ext,
+                machine=machine,
+                include_e3sm_lapack=True,
+                include_e3sm_hdf5_netcdf=use_e3sm_hdf5_netcdf,
+                )
         else:
             spack_script = ''
 
