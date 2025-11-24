@@ -8,7 +8,11 @@ set -e
 
 
 if [ "{{ build_mpi4py }}" == "True" ]; then
-    MPICC="{{ mpicc }} -shared" python -m pip install --no-cache-dir "mpi4py=={{ mpi4py_version }}"
+    MPICC="{{ mpicc }} -shared" python -m pip install \
+        --no-cache-dir \
+        --no-binary=mpi4py \
+        --no-build-isolation \
+        "mpi4py=={{ mpi4py_version }}"
 fi
 
 

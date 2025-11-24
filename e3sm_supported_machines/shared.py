@@ -3,7 +3,6 @@ import argparse
 import subprocess
 import os
 import platform
-import warnings
 
 try:
     from urllib.request import urlopen, Request
@@ -22,6 +21,7 @@ LABELS = {
      "nco": "nco_dev",
      "xcdat": "xcdat_dev",
      "zppy": "zppy_dev",
+     "zppy-interfaces": "zppy_interfaces_dev",
      "zstash": "zstash_dev",
 }
 
@@ -127,29 +127,14 @@ def install_miniforge3(conda_base, activate_base):
     check_call(commands)
 
 
-def get_conda_base(conda_base, config, shared):
-    if shared:
-        conda_base = os.path.join(
-            config.get('e3sm_unified', 'base_path'), 'base')
-    elif conda_base is None:
-        if config.has_option('e3sm_unified', 'base_path'):
-            conda_base = os.path.abspath(os.path.join(
-                config.get('e3sm_unified', 'base_path'), 'base'))
-        elif 'CONDA_EXE' in os.environ:
-            # if this is a test, assume we're the same base as the
-            # environment currently active
-            conda_exe = os.environ['CONDA_EXE']
-            conda_base = os.path.abspath(
-                os.path.join(conda_exe, '..', '..'))
-            warnings.warn(
-                f'--conda path not supplied.  Using conda installed at '
-                f'{conda_base}')
-        else:
-            raise ValueError('No conda base provided with --conda and '
-                             'none could be inferred.')
-    # handle "~" in the path
-    conda_base = os.path.abspath(os.path.expanduser(conda_base))
-    return conda_base
+def get_base(config, version):
+    """
+    Get the base path for E3SM-Unified conda and spack installation
+    """
+    base_path = config.get('e3sm_unified', 'base_path')
+    subdir = f'e3smu_{version}'.replace('.', '_')
+    base_path = os.path.join(base_path, subdir)
+    return base_path
 
 
 def get_rc_dev_labels(meta_yaml_path):

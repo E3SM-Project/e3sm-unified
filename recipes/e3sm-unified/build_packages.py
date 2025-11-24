@@ -8,10 +8,10 @@ from jinja2 import Template
 
 from shared import get_rc_dev_labels, get_version_from_meta
 
-DEV_PYTHON_VERSIONS = ["3.10"]
+DEV_PYTHON_VERSIONS = ["3.13"]
 DEV_MPI_VERSIONS = ["nompi", "hpc"]
 
-RELEASE_PYTHON_VERSIONS = ["3.9", "3.10"]
+RELEASE_PYTHON_VERSIONS = ["3.11", "3.12", "3.13"]
 RELEASE_MPI_VERSIONS = ["nompi", "mpich", "openmpi", "hpc"]
 
 
@@ -31,8 +31,12 @@ def generate_matrix_files(dev, python_versions, mpi_versions):
             mpi_versions = RELEASE_MPI_VERSIONS
     matrix_files = []
     for python in python_versions:
+        if float(python) >= 3.13:
+            python_build_str = f"{python}.* *_cp{''.join(python.split('.'))}"
+        else:
+            python_build_str = f"{python}.* *_cpython"
         for mpi in mpi_versions:
-            script = template.render(python=python, mpi=mpi)
+            script = template.render(python=python_build_str, mpi=mpi)
             filename = f"configs/mpi_{mpi}_python{python}.yaml"
             with open(filename, "w") as handle:
                 handle.write(script)

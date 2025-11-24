@@ -1,5 +1,5 @@
 {% set name = "E3SM-Unified" %}
-{% set version = "1.11.1" %}
+{% set version = "1.12.0" %}
 {% set build = 0 %}
 
 package:
@@ -32,10 +32,9 @@ requirements:
     - python
     - r
     - cdo
-    - cime_gen_domain 6.1.59  # [linux]
-    - chemdyg 1.1.0
-    - e3sm_diags 3.0.0
-    - e3sm_to_cmip 1.11.3
+    - chemdyg 1.1.1
+    - e3sm_diags 3.1.0
+    - e3sm_to_cmip 1.13.0
     - e3sm-tools 3.0.2  # [linux]
     - geometric_features 1.6.1
     # fixes an issues with cryptography <37 constraint
@@ -43,23 +42,22 @@ requirements:
     - ilamb 2.7.2  # [mpi != 'nompi' and mpi != 'hpc']
     - ipython
     - jupyter
-    - livvkit 3.1.0
-    - mache 1.28.0
-    - moab 5.5.1 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
-    - mosaic 1.1.0  # [py>=310]
-    - mpas-analysis 1.13.0
-    - mpas_tools 0.36.0
-    - nco 5.3.2  # [mpi != 'hpc']
-    - pcmdi_metrics 3.8.2
+    - livvkit 3.2.0
+    - mache 2.0.0
+    - moab 5.6.0 {{ mpi_prefix }}_tempest_*  # [mpi != 'hpc']
+    - mosaic 1.2.1
+    - mpas-analysis 1.14.0
+    - mpas_tools 1.4.0
+    - nco 5.3.6  # [mpi != 'hpc']
+    - pcmdi_metrics 4.0.1
     - squadgen 1.2.2  # [linux]
     - tempest-remap 2.2.0  # [mpi != 'hpc']
-    - tempest-extremes 2.2.3 {{ mpi_prefix }}_*  # [mpi != 'hpc']
-    - uxarray 2024.11.1  # [py<310]
-    - uxarray >=2024.12.0  # [py>=310]
-    - xcdat 0.8.0
-    - zppy 3.0.0
-    - zppy-interfaces 0.1.2
-    - zstash 1.4.4  # [linux]
+    - tempest-extremes 2.4 {{ mpi_prefix }}_*  # [mpi != 'hpc']
+    - uxarray >=2024.12.0
+    - xcdat 0.10.1
+    - zppy 3.1.0
+    - zppy-interfaces 0.2.0
+    - zstash 1.5.0  # [linux]
 
     ### mkdocs
     - mkdocs-material
@@ -75,48 +73,37 @@ requirements:
     - blas
     - bottleneck
     - cartopy >=0.17.0
-    - cdat_info 8.2.1
-    - cdms2 3.1.5
-    - cdtime 3.1.4
-    - cdutil 8.2.1
     - cmocean
-    # the last version before python 3.9 support was dropped
-    - dask 2024.8.0  # [py<310]
-    - dask 2024.11.2  # [py>=310]
+    - dask 2025.9.1
     - dogpile.cache
     - eofs
-    - esmf 8.8.0 {{ mpi_prefix }}_*
-    - esmpy 8.8.0
+    - esmf 8.9.0 {{ mpi_prefix }}_*
+    - esmpy 8.9.0
     - f90nml
     - ffmpeg
-    - genutil 8.2.1
     - globus-sdk
     - gsw
-    - hdf5 1.14.3 {{ mpi_prefix }}_*
+    - hdf5 1.14.6 {{ mpi_prefix }}_*
     - ipygany
-    - libnetcdf 4.9.2 {{ mpi_prefix }}_*
+    - libnetcdf 4.9.3 {{ mpi_prefix }}_*
     - lxml
-    - matplotlib-base 3.9.4
+    - matplotlib-base 3.10.6
     - metpy
     - mpi4py  # [mpi != 'nompi' and mpi != 'hpc']
-    - nb_conda
-    - nb_conda_kernels
     - ncview 2.1.8
     - ncvis-climate 2024.01.26
     - nc-time-axis
     - netcdf4 1.7.2 nompi_*
-    - notebook <7.0.0
+    - notebook
     - numpy >=2.0.0
     - openssh  # [mpi == 'openmpi']
     - output_viewer 1.3.3
     - pillow
     - plotly
     - progressbar2
-    - proj 9.5.1
+    - proj 9.6.2
     - pyevtk
-    # the last version before python 3.9 support was dropped
-    - pyproj 3.6.1  # [py<310]
-    - pyproj 3.7.0  # [py>=310]
+    - pyproj 3.7.2
     - pyremap
     - pytest
     - pywavelets
@@ -128,10 +115,8 @@ requirements:
     - shapely
     - sympy >=0.7.6
     - tabulate
-    - windspharm  # [py<=310]
-    # the last version before python 3.9 support was dropped
-    - xarray 2024.7.0  # [py<310]
-    - xarray 2025.1.1  # [py>=310]
+    - windspharm
+    - xarray 2025.9.0
     - xesmf 0.8.8
 
     # addition ilamb 2.7 dependencies, for system MPI builds
@@ -165,7 +150,6 @@ test:
     - ncks --help  # [mpi != 'hpc']
     - ncap2 --help  # [mpi != 'hpc']
     - jupyter --help
-    - jupyter nbextension list
     - ipython -h
     - ipython3 -h
     - globus --help
