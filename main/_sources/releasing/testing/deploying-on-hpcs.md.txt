@@ -142,12 +142,79 @@ used during deployment.
    * Permissions have been updated successfully (read only for everyone
      except the E3SM-Unified maintainer)
 
-4. **Manually test** tools in the installed environment
+4. **Verify compute-node activation**
+
+   The activation scripts are designed to load a no-MPI environment on login
+   nodes and the MPI-enabled environment on compute nodes (detected via
+   scheduler variables like `$SLURM_JOB_ID` or `$COBALT_JOBID`). Before manual
+   testing, confirm that sourcing the script on a compute node loads the MPI
+   environment as expected.
+
+   Steps:
+
+   * Start an interactive job on a compute node, for example:
+
+     - Slurm:
+
+       ```bash
+       salloc -N 1 -t 10:00
+       ```
+
+     - Cobalt:
+
+       ```bash
+       qsub -I -n 1 -t 10
+       ```
+
+     - PBS (example):
+
+       ```bash
+       qsub -I -l select=1:ncpus=1:mpiprocs=1,walltime=00:10:00
+       ```
+
+   * On the compute node, source the activation script:
+
+     - Bash/zsh:
+
+       ```bash
+       source test_e3sm_unified_<version>_<machine>.sh
+       ```
+
+     - csh/tcsh:
+
+       ```bash
+       source test_e3sm_unified_<version>_<machine>.csh
+       ```
+
+     For release builds, use the corresponding `load_e3sm_unified_<version>_<machine>.*`
+     or `load_latest_e3sm_unified_<machine>.*` script names.
+
+   * Verify that the MPI environment is active (not the no-MPI one):
+
+     ```bash
+     echo "$E3SMU_MPI"   # should NOT be "NOMPI" on a compute node
+     which python        # should point to the E3SM-Unified conda env
+     python -c "import mpi4py, xarray; print('mpi4py:', mpi4py.__version__)"
+     ```
+
+     Optional quick MPI sanity check (if mpirun/srun is available on the node):
+
+     ```bash
+     mpirun -n 2 python -c "from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())"
+     # or, for Slurm
+     srun -n 2 python -c "from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())"
+     ```
+
+   If the script loads the no-MPI environment (`E3SMU_MPI=NOMPI`) on a compute
+   node, check that the scheduler environment variables are present on compute
+   nodes for this machine and update the activation templates if needed.
+
+5. **Manually test** tools in the installed environment
 
    * Load via: `source test_e3sm_unified_<version>_<machine>.sh`
    * Run tools like `zppy`, `e3sm_diags`, `mpas_analysis`
 
-5. **Deploy more broadly** once core systems pass testing
+6. **Deploy more broadly** once core systems pass testing
 
 ---
 

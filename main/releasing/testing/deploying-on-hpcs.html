@@ -247,6 +247,67 @@ each other’s toes.</p>
 except the E3SM-Unified maintainer)</p></li>
 </ul>
 </li>
+<li><p><strong>Verify compute-node activation</strong></p>
+<p>The activation scripts are designed to load a no-MPI environment on login
+nodes and the MPI-enabled environment on compute nodes (detected via
+scheduler variables like <code class="docutils literal notranslate"><span class="pre">$SLURM_JOB_ID</span></code> or <code class="docutils literal notranslate"><span class="pre">$COBALT_JOBID</span></code>). Before manual
+testing, confirm that sourcing the script on a compute node loads the MPI
+environment as expected.</p>
+<p>Steps:</p>
+<ul>
+<li><p>Start an interactive job on a compute node, for example:</p>
+<ul>
+<li><p>Slurm:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>salloc<span class="w"> </span>-N<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>:00
+</pre></div>
+</div>
+</li>
+<li><p>Cobalt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+</li>
+<li><p>PBS (example):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-l<span class="w"> </span><span class="k">select</span><span class="o">=</span><span class="m">1</span>:ncpus<span class="o">=</span><span class="m">1</span>:mpiprocs<span class="o">=</span><span class="m">1</span>,walltime<span class="o">=</span><span class="m">00</span>:10:00
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>On the compute node, source the activation script:</p>
+<ul>
+<li><p>Bash/zsh:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>test_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.sh
+</pre></div>
+</div>
+</li>
+<li><p>csh/tcsh:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>test_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.csh
+</pre></div>
+</div>
+</li>
+</ul>
+<p>For release builds, use the corresponding <code class="docutils literal notranslate"><span class="pre">load_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.*</span></code>
+or <code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_&lt;machine&gt;.*</span></code> script names.</p>
+</li>
+<li><p>Verify that the MPI environment is active (not the no-MPI one):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$E3SMU_MPI</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># should NOT be &quot;NOMPI&quot; on a compute node</span>
+which<span class="w"> </span>python<span class="w">        </span><span class="c1"># should point to the E3SM-Unified conda env</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mpi4py, xarray; print(&#39;mpi4py:&#39;, mpi4py.__version__)&quot;</span>
+</pre></div>
+</div>
+<p>Optional quick MPI sanity check (if mpirun/srun is available on the node):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())&quot;</span>
+<span class="c1"># or, for Slurm</span>
+srun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>If the script loads the no-MPI environment (<code class="docutils literal notranslate"><span class="pre">E3SMU_MPI=NOMPI</span></code>) on a compute
+node, check that the scheduler environment variables are present on compute
+nodes for this machine and update the activation templates if needed.</p>
+</li>
 <li><p><strong>Manually test</strong> tools in the installed environment</p>
 <ul class="simple">
 <li><p>Load via: <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">test_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.sh</span></code></p></li>
