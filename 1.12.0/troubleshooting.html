@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting &amp; FAQs</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fe8e256b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing &amp; Community" href="contributing.html" />
+    <link rel="prev" title="Package Catalog" href="packages.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using-tools.html">Using Tools in E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing/index.html">Release Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages.html">Package Catalog</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting &amp; FAQs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#common-issues">Common Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#permission-denied-when-installing-e3sm-unified">“Permission Denied” When Installing E3SM-Unified</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-not-found-when-importing-packages">“Module Not Found” When Importing Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mpi-based-tools-fail-on-login-nodes">MPI-based Tools Fail on Login Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tips-best-practices">Tips &amp; Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#still-need-help">Still Need Help?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing &amp; Community</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting &amp; FAQs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/troubleshooting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting-faqs">
+<h1>Troubleshooting &amp; FAQs<a class="headerlink" href="#troubleshooting-faqs" title="Link to this heading"></a></h1>
+<p>This page collects common problems users encounter when working with
+E3SM-Unified and how to resolve them. If you encounter an issue not listed
+here, please reach out via Slack or GitHub.</p>
+<hr class="docutils" />
+<section id="common-issues">
+<h2>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading"></a></h2>
+<section id="permission-denied-when-installing-e3sm-unified">
+<h3>“Permission Denied” When Installing E3SM-Unified<a class="headerlink" href="#permission-denied-when-installing-e3sm-unified" title="Link to this heading"></a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">OSError</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="s1">&#39;Permission denied&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Cause:</strong> You’re likely trying to install E3SM-Unified into a system-wide
+Python or Conda environment you don’t have write access to.</p>
+<p><strong>Solution:</strong>
+Install Miniforge3 in your home directory and create an environment locally,
+see <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart Guide</span></a>.</p>
+</section>
+<hr class="docutils" />
+<section id="module-not-found-when-importing-packages">
+<h3>“Module Not Found” When Importing Packages<a class="headerlink" href="#module-not-found-when-importing-packages" title="Link to this heading"></a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">ModuleNotFoundError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="s1">&#39;e3sm_diags&#39;</span>
+</pre></div>
+</div>
+<p><strong>Cause:</strong> E3SM-Unified may not be activated correctly, or you’re in a
+different shell/session.</p>
+<p><strong>Solution:</strong>
+Re-source the appropriate <code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_&lt;machine&gt;.sh</span></code> script and
+retry.</p>
+</section>
+<hr class="docutils" />
+<section id="mpi-based-tools-fail-on-login-nodes">
+<h3>MPI-based Tools Fail on Login Nodes<a class="headerlink" href="#mpi-based-tools-fail-on-login-nodes" title="Link to this heading"></a></h3>
+<p><strong>Symptom:</strong> Tools like <code class="docutils literal notranslate"><span class="pre">mpas_analysis</span></code> or <code class="docutils literal notranslate"><span class="pre">nco</span></code> crash with MPI errors.</p>
+<p><strong>Cause:</strong> These tools are compiled with system MPI (or launch other tools
+that use system MPI) and require execution on compute nodes.</p>
+<p><strong>Solution:</strong> Launch a batch job or an interactive compute session with
+<code class="docutils literal notranslate"><span class="pre">srun</span></code>, <code class="docutils literal notranslate"><span class="pre">salloc</span></code> or <code class="docutils literal notranslate"><span class="pre">qsub</span></code>, depending on your machine.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tips-best-practices">
+<h2>Tips &amp; Best Practices<a class="headerlink" href="#tips-best-practices" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Always check you’re in the correct conda environment.</p></li>
+<li><p>On HPC systems, prefer running MPI-enabled tools on compute nodes.</p></li>
+<li><p>If installing locally, make sure have create a clean environment with the
+latest version of E3SM-Unified.</p></li>
+<li><p>Refer to the <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart Guide</span></a> for environment setup
+instructions.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="still-need-help">
+<h2>Still Need Help?<a class="headerlink" href="#still-need-help" title="Link to this heading"></a></h2>
+<div class="admonition-support admonition">
+<p class="admonition-title">Support</p>
+<ul class="simple">
+<li><p>Slack: #e3sm-help-postproc</p></li>
+<li><p>GitHub Issues: <a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified/issues">E3SM-Unified on GitHub</a></p></li>
+<li><p>Email: xylar&#64;lanl.gov</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="packages.html" class="btn btn-neutral float-left" title="Package Catalog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing &amp; Community" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="1.12.0">
+  <meta name="doc-site-root" content="./">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publishing the Final Release</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe8e256b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Maintaining Past Versions" href="maintaining-past-versions.html" />
+    <link rel="prev" title="Adding a New Machine" href="adding-new-machines.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Publishing the Final Release</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pre-release-checklist">✅ Pre-Release Checklist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-by-step-finalization">Step-by-Step Finalization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#remove-rc-labels">1. Remove RC Labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tag-final-release-in-source-repo">2. Tag Final Release in Source Repo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submit-final-feedstock-pr">3. Submit Final Feedstock PR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-final-release-on-hpc-systems">4. Deploy Final Release on HPC Systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#announce-the-release">5. Announce the Release</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#post-release-maintenance">🔁 Post-Release Maintenance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../packages.html">Package Catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing &amp; Community</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Release Workflow</a></li>
+      <li class="breadcrumb-item active">Publishing the Final Release</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/releasing/finalizing-release.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="publishing-the-final-release">
+<h1>Publishing the Final Release<a class="headerlink" href="#publishing-the-final-release" title="Link to this heading"></a></h1>
+<p>Once all dependencies have been tested and validated, and the E3SM-Unified
+release candidate (RC) has passed testing across the relevant HPC systems, the
+final release can be published. This page outlines the process of finalizing
+and distributing an official E3SM-Unified release.</p>
+<hr class="docutils" />
+<section id="pre-release-checklist">
+<h2>✅ Pre-Release Checklist<a class="headerlink" href="#pre-release-checklist" title="Link to this heading"></a></h2>
+<p>Before publishing:</p>
+<ul class="simple">
+<li><p>[ ] All RC versions of dependencies (e.g., <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">zppy</span></code>, <code class="docutils literal notranslate"><span class="pre">mache</span></code>)
+have been released with final version tags and conda-forge packages</p></li>
+<li><p>[ ] Final version of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> has been created and built on conda-forge</p></li>
+<li><p>[ ] Final deployments have been completed on all target HPC machines</p></li>
+<li><p>[ ] Smoke testing and key workflows (e.g., <code class="docutils literal notranslate"><span class="pre">zppy</span></code>, <code class="docutils literal notranslate"><span class="pre">mpas_analysis</span></code>) have
+been validated</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="step-by-step-finalization">
+<h2>Step-by-Step Finalization<a class="headerlink" href="#step-by-step-finalization" title="Link to this heading"></a></h2>
+<section id="remove-rc-labels">
+<h3>1. Remove RC Labels<a class="headerlink" href="#remove-rc-labels" title="Link to this heading"></a></h3>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code> and:</p>
+<ul class="simple">
+<li><p>Replace RC versions of dependencies (e.g., <code class="docutils literal notranslate"><span class="pre">3.0.0rc2</span></code>) with final versions
+(e.g., <code class="docutils literal notranslate"><span class="pre">3.0.0</span></code>) in both <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code></p></li>
+<li><p>Bump the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> version accordingly (e.g., from <code class="docutils literal notranslate"><span class="pre">1.12.0rc3</span></code> to
+<code class="docutils literal notranslate"><span class="pre">1.12.0</span></code>) in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code></p></li>
+</ul>
+<p>Commit the changes to your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch.</p>
+</section>
+<section id="tag-final-release-in-source-repo">
+<h3>2. Tag Final Release in Source Repo<a class="headerlink" href="#tag-final-release-in-source-repo" title="Link to this heading"></a></h3>
+<p>If you followed the suggested workflow under
+<a class="reference internal" href="creating-rcs/rc-e3sm-unified.html"><span class="std std-doc">Creating an RC for E3SM-Unified</span></a>, you should
+have a draft PR from your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch that documents the
+changes. Merge this PR into <code class="docutils literal notranslate"><span class="pre">main</span></code> so the release history and testing context
+are preserved.</p>
+<p>Then, go to <code class="docutils literal notranslate"><span class="pre">Releases</span></code> on the right on the
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified">main page</a> of the repo and
+click <code class="docutils literal notranslate"><span class="pre">Draft</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">release</span></code> at the top.</p>
+<p>Document the changes in this version (hopefully just copy-paste from the
+description of your recently merged PR), similar to
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified/releases/tag/1.11.0">this example</a>.</p>
+</section>
+<section id="submit-final-feedstock-pr">
+<h3>3. Submit Final Feedstock PR<a class="headerlink" href="#submit-final-feedstock-pr" title="Link to this heading"></a></h3>
+<p>Go to the <a class="reference external" href="https://github.com/conda-forge/e3sm-unified-feedstock">e3sm-unified-feedstock</a>:</p>
+<ul class="simple">
+<li><p>Open a pull request from your fork</p></li>
+<li><p>Update the version number and <code class="docutils literal notranslate"><span class="pre">sha256</span></code> hash.</p></li>
+<li><p>Target the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch (not <code class="docutils literal notranslate"><span class="pre">dev</span></code>)</p></li>
+<li><p>Ensure final versions of all dependencies are listed</p></li>
+</ul>
+<p>Once CI passes, merge the PR.</p>
+<p>This will trigger CI to publish the new release to the standard conda-forge
+channel.  You typically need to wait as long as an hour after packages have
+built for them to become available for installation.  You can watch
+<a class="reference external" href="https://anaconda.org/conda-forge/e3sm-unified/files">this page</a>
+to see when files appear and how many downloads they have.  Once all files have
+been built and show 2 or more downloads, you should be good to proceed with
+final deployment.</p>
+</section>
+<section id="deploy-final-release-on-hpc-systems">
+<h3>4. Deploy Final Release on HPC Systems<a class="headerlink" href="#deploy-final-release-on-hpc-systems" title="Link to this heading"></a></h3>
+<p>Use the same process as during RC testing, but now with the <code class="docutils literal notranslate"><span class="pre">--release</span></code> flag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span>--release
+</pre></div>
+</div>
+<p>This creates new activation scripts like:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.sh</span></code></p></li>
+</ul>
+<p>Also generates symlinks like:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_&lt;machine&gt;.sh</span></code></p></li>
+</ul>
+</section>
+<section id="announce-the-release">
+<h3>5. Announce the Release<a class="headerlink" href="#announce-the-release" title="Link to this heading"></a></h3>
+<p>Share the release:</p>
+<ul class="simple">
+<li><p>📝 <strong>Confluence</strong> <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/4908515329/E3SM-Unified+1.11.0+release+notes">Like this example</a></p></li>
+<li><p><strong>Email</strong> to <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/ED/pages/818381294/Email+Lists">E3SM All-hands</a> list (same contents as Confluence page)</p></li>
+<li><p>📣 <strong>Slack</strong> (<code class="docutils literal notranslate"><span class="pre">#e3sm-help-postproc</span></code>) with release highlights</p></li>
+</ul>
+<p>Be sure to include:</p>
+<ul class="simple">
+<li><p>Final versions of core E3SM-developed packages (e.g., <code class="docutils literal notranslate"><span class="pre">mpas_analysis</span></code>,
+<code class="docutils literal notranslate"><span class="pre">zppy</span></code>)</p></li>
+<li><p>List of supported HPC machines and activation instructions</p></li>
+<li><p>Summary of major changes, fixes, and new features</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="post-release-maintenance">
+<h2>🔁 Post-Release Maintenance<a class="headerlink" href="#post-release-maintenance" title="Link to this heading"></a></h2>
+<p>On each supported machine:</p>
+<ul class="simple">
+<li><p>Clean up outdated <code class="docutils literal notranslate"><span class="pre">test_...</span></code> activation scripts</p></li>
+<li><p>Remove conda and spack environments for E3SM-Unified RCs</p></li>
+<li><p>Delete the <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch</p></li>
+<li><p>Move the contents on Confluence describing the
+<a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Current-Version">current version</a>
+to the top of the
+<a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/3236233332/Packages+in+previous+versions+E3SM+Unified+conda+environment">previous versions</a> page</p></li>
+<li><p>Copy the contents of the next version to be the new current version</p></li>
+<li><p>Update the the version under “next version” and remove all bold (to indicate
+that, as a starting point, no updates have been made to any packages in the
+next version)</p></li>
+<li><p>Move any release notes for older E3SM-Unified versions into the Confluence
+subdirectory for <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/3236233332/Packages+in+previous+versions+E3SM+Unified+conda+environment">previous versions</a>.</p></li>
+</ul>
+<hr class="docutils" />
+<p>➡ Next: <a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Maintaining Past Versions</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="adding-new-machines.html" class="btn btn-neutral float-left" title="Adding a New Machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="maintaining-past-versions.html" class="btn btn-neutral float-right" title="Maintaining Past Versions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="1.12.0">
+  <meta name="doc-site-root" content="../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,232 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview of the Workflow</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe8e256b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How Conda and Spack Work Together in E3SM-Unified" href="conda-vs-spack.html" />
+    <link rel="prev" title="Release Workflow" href="index.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Overview of the Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#backgraound-how-conda-and-spack-work-together-in-polaris">Backgraound: How Conda and Spack Work Together in Polaris</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#planning-package-updates">1. Planning Package Updates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-release-candidates">2. Creating Release Candidates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploying-and-testing-on-hpcs">3. Deploying and Testing on HPCs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-machine">4. Adding a New Machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finalizing-the-release">5. Finalizing the Release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintaining-past-versions">6. Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing/index.html">Deployment and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../packages.html">Package Catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing &amp; Community</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Release Workflow</a></li>
+      <li class="breadcrumb-item active">Overview of the Workflow</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/releasing/release-workflow.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-the-workflow">
+<h1>Overview of the Workflow<a class="headerlink" href="#overview-of-the-workflow" title="Link to this heading"></a></h1>
+<p>The release process typically follows this progression:</p>
+<ol class="arabic simple">
+<li><p><strong><a class="reference internal" href="planning-updates.html"><span class="std std-doc">Planning Package Updates</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Creating Release Candidates</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="testing/overview.html"><span class="std std-doc">Deployment and Testing</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="adding-new-machines.html"><span class="std std-doc">Adding a New Machine</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="finalizing-release.html"><span class="std std-doc">Finalizing the Release</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Maintaining Past Versionse</span></a></strong></p></li>
+</ol>
+<p>We begin with some background information, then each of these steps is detailed
+in its own page. See below for a high-level summary.</p>
+<hr class="docutils" />
+<section id="backgraound-how-conda-and-spack-work-together-in-polaris">
+<h2>Backgraound: How Conda and Spack Work Together in Polaris<a class="headerlink" href="#backgraound-how-conda-and-spack-work-together-in-polaris" title="Link to this heading"></a></h2>
+<p>Why does E3SM-Unified use both Conda and Spack? What roles do they each serve?
+Before you start, it’s critical to understand how these two systems work
+together.</p>
+<p>🔗 <a class="reference internal" href="conda-vs-spack.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="planning-package-updates">
+<h2>1. Planning Package Updates<a class="headerlink" href="#planning-package-updates" title="Link to this heading"></a></h2>
+<p>Updates are driven by the needs of the E3SM community, typically discussed via
+Confluence or GitHub. This step documents how to propose new packages or
+changes to existing ones.</p>
+<p>🔗 <a class="reference internal" href="planning-updates.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="creating-release-candidates">
+<h2>2. Creating Release Candidates<a class="headerlink" href="#creating-release-candidates" title="Link to this heading"></a></h2>
+<p>This step covers:</p>
+<ul class="simple">
+<li><p>Making RCs for core tools (e.g., E3SM Diags, MPAS-Analysis, zppy)</p></li>
+<li><p>Building an <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> RC</p></li>
+</ul>
+<p>🔗 <a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="deploying-and-testing-on-hpcs">
+<h2>3. Deploying and Testing on HPCs<a class="headerlink" href="#deploying-and-testing-on-hpcs" title="Link to this heading"></a></h2>
+<p>Before full deployment, release candidates are installed on a subset of HPC
+platforms for iterative testing and validation. This stage often requires
+updating updating <code class="docutils literal notranslate"><span class="pre">mache</span></code> to support new systems or changes in machine
+configurations, adding package versions to E3SM’s Spack fork, and
+troubleshooting deployment scripts.</p>
+<p>Testing includes everything from basic imports to full <code class="docutils literal notranslate"><span class="pre">zppy</span></code> workflows. This
+is a collaborative effort, with the full iterative process often spanning
+several weeks to a few months.</p>
+<p>🔗 <a class="reference internal" href="testing/overview.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="adding-a-new-machine">
+<h2>4. Adding a New Machine<a class="headerlink" href="#adding-a-new-machine" title="Link to this heading"></a></h2>
+<p>Most of the work for adding a new machine takes place in <code class="docutils literal notranslate"><span class="pre">mache</span></code>. Here we
+provide notes on adding new HPCs that are specific to E3SM-Unified.</p>
+<p>🔗 <a class="reference internal" href="adding-new-machines.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="finalizing-the-release">
+<h2>5. Finalizing the Release<a class="headerlink" href="#finalizing-the-release" title="Link to this heading"></a></h2>
+<p>Once all RCs pass testing:</p>
+<ul class="simple">
+<li><p>Make final releases of all dependencies</p></li>
+<li><p>Publish the final E3SM-Unified conda package</p></li>
+<li><p>Deploy across all supported HPC machines</p></li>
+<li><p>Announce the release to the community</p></li>
+</ul>
+<p>🔗 <a class="reference internal" href="finalizing-release.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="maintaining-past-versions">
+<h2>6. Maintaining Past Versions<a class="headerlink" href="#maintaining-past-versions" title="Link to this heading"></a></h2>
+<p>Older versions of E3SM-Unified sometimes require maintenance (repairs or
+deletion).</p>
+<p>🔗 <a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Read more</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Release Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="conda-vs-spack.html" class="btn btn-neutral float-right" title="How Conda and Spack Work Together in E3SM-Unified" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="1.12.0">
+  <meta name="doc-site-root" content="../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

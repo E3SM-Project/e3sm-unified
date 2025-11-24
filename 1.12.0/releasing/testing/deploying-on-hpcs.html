@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deploying on HPCs</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fe8e256b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Troubleshooting Deployment" href="troubleshooting-deploy.html" />
+    <link rel="prev" title="Updating mache" href="mache-updates.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using-tools.html">Using Tools in E3SM-Unified</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Deployment and Testing</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Deployment and Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating the E3SM Spack Fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Deploying on HPCs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#deployment-components">Deployment Components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#typical-deployment-steps">Typical Deployment Steps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional-flags-to-deploy-e3sm-unified-py">Optional flags to <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notes-for-maintainers">Notes for Maintainers</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting-deploy.html">Troubleshooting Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages.html">Package Catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing &amp; Community</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Deployment and Testing</a></li>
+      <li class="breadcrumb-item active">Deploying on HPCs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/testing/deploying-on-hpcs.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="deploying-on-hpcs">
+<h1>Deploying on HPCs<a class="headerlink" href="#deploying-on-hpcs" title="Link to this heading"></a></h1>
+<p>Once a release candidate of E3SM-Unified is ready, it must be deployed and
+tested on HPC systems using a combination of Spack and Conda-based tools.
+Deployment scripts and configurations live within the <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines</span></code>
+directory of the E3SM-Unified repo.</p>
+<p>This document explains the deployment workflow, what needs to be updated, and
+how to test and validate the install.</p>
+<hr class="docutils" />
+<section id="deployment-components">
+<h2>Deployment Components<a class="headerlink" href="#deployment-components" title="Link to this heading"></a></h2>
+<p>Deployment happens via the following components:</p>
+<section id="deploy-e3sm-unified-py">
+<h3>🔧 <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code><a class="headerlink" href="#deploy-e3sm-unified-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The main entry point for deploying E3SM-Unified</p></li>
+<li><p>Installs the combined Conda + Spack environment on supported systems</p></li>
+<li><p>Reads deployment config from <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> and shared logic in <code class="docutils literal notranslate"><span class="pre">shared.py</span></code></p></li>
+</ul>
+<p>You can find the full list of command-line flags with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--help
+</pre></div>
+</div>
+<p>You must supply <code class="docutils literal notranslate"><span class="pre">--conda</span></code> at a minimum. This is the path to a conda
+installation (typically in your home directory) where the deployment tool
+can create a conda environment (<code class="docutils literal notranslate"><span class="pre">temp_e3sm_unified_install</span></code>) used to install
+E3SM-Unified. This environment includes the <code class="docutils literal notranslate"><span class="pre">mache</span></code> package, which can
+automatically recognize the machine you are on and configure accordingly.</p>
+<p>For release builds (but not release candidates), you should supply
+<code class="docutils literal notranslate"><span class="pre">--release</span></code>. If this flag is <strong>not</strong> supplied, the activation scripts
+created during deployment will start with <code class="docutils literal notranslate"><span class="pre">test_e3sm_unified_...</span></code> whereas
+the release versions will be called <code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_...</span></code> and
+<code class="docutils literal notranslate"><span class="pre">load_e3sm_unified_&lt;version&gt;...</span></code>.</p>
+<p>Other flags are optional and will be discussed below.</p>
+</section>
+<section id="default-cfg">
+<h3>📁 <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code><a class="headerlink" href="#default-cfg" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Specifies which packages and versions to install via Spack as well as the
+versions of some conda packages required in the installation environment
+(notably <code class="docutils literal notranslate"><span class="pre">mache</span></code>)</p></li>
+<li><p>Version numbers here should match <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> unless diverging for a reason</p></li>
+<li><p>Special case are <code class="docutils literal notranslate"><span class="pre">esmpy</span> <span class="pre">=</span> <span class="pre">None</span></code> and <code class="docutils literal notranslate"><span class="pre">xesmf</span> <span class="pre">=</span> <span class="pre">None</span></code>, required so ESMPy and
+xESMF come from conda-forge, not Spack (for compatibility with xCDAT and
+E3SM Diags).</p></li>
+</ul>
+</section>
+<section id="shared-py">
+<h3>⚙️ <code class="docutils literal notranslate"><span class="pre">shared.py</span></code><a class="headerlink" href="#shared-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Contains logic shared between <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code> and <code class="docutils literal notranslate"><span class="pre">bootstrap.py</span></code></p></li>
+<li><p>Defines the version of E3SM-Unified to deploy (hard-coded)</p></li>
+</ul>
+</section>
+<section id="bootstrap-py">
+<h3>🧰 <code class="docutils literal notranslate"><span class="pre">bootstrap.py</span></code><a class="headerlink" href="#bootstrap-py" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Used by <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code> to build and configure environments once
+the <code class="docutils literal notranslate"><span class="pre">temp_e3sm_unified_install</span></code> conda environment has been created.</p></li>
+</ul>
+</section>
+<section id="templates">
+<h3>🧪 Templates<a class="headerlink" href="#templates" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/templates</span></code> subdirectory contains jinja2 templates
+used during deployment.</p>
+<ul>
+<li><p>Build script template:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">build.template</span></code>: Used during deployment to build and install versions of
+the following packages using system compilers and MPI (if requested):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpi4py
+ilamb
+esmpy
+xesmf
+</pre></div>
+</div>
+</li>
+<li><p>Maintainers may need to add new packages to the template over time.
+Typically, the dependencies here are python-based but use system compilers
+and/or MPI. Spack must not install Python itself, as this would conflict
+with the Conda-managed Python environment. All Python packages need to be
+installed into the Conda environment.</p></li>
+</ul>
+</li>
+<li><p>Activation script templates:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_e3sm_unified.sh.template</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_e3sm_unified.csh.template</span></code></p></li>
+<li><p>Since E3SM itself cannot be built when E3SM-Unified is active, these
+scripts set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CIME_MODEL</span><span class="o">=</span><span class="s2">&quot;ENVIRONMENT_RUNNING_E3SM_UNIFIED_USE_ANOTHER_TERMINAL&quot;</span>
+</pre></div>
+</div>
+<p>This is supposed to tell users that they cannot build E3SM with this
+terminal window (because E3SM-Unified is loaded) and they should open
+a new one. Some users have not found this very intuitive but we don’t
+currently have a better way for E3SM to detect that E3SM-Unified is active.</p>
+</li>
+<li><p>These scripts also detect whether the user is on a compute or login node
+via <code class="docutils literal notranslate"><span class="pre">$SLURM_JOB_ID</span></code> or <code class="docutils literal notranslate"><span class="pre">$COBALT_JOBID</span></code> environment variables (which should
+only be set on compute nodes).</p></li>
+<li><p>Maintainers will need to edit these scripts to support new queuing systems
+(e.g. PBS).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="typical-deployment-steps">
+<h2>Typical Deployment Steps<a class="headerlink" href="#typical-deployment-steps" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>Update config files</strong>:</p>
+<ul class="simple">
+<li><p>Set the target version in <code class="docutils literal notranslate"><span class="pre">shared.py</span></code></p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> with package versions (Spack + Conda)</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">mache</span></code> config files (see <a class="reference internal" href="mache-updates.html"><span class="std std-doc">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></span></a>)</p></li>
+</ul>
+</li>
+<li><p><strong>Test the build</strong> on one or more HPC machines:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>e3sm_supported_machines
+./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3
+</pre></div>
+</div>
+<p><strong>Note:</strong> This can take a lot of time. If the connection to the HPC machine
+is not stable, you should use <code class="docutils literal notranslate"><span class="pre">screen</span></code> or similar to preserve your
+connection and you should pipe the output to a log file, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>deploy.log
+</pre></div>
+</div>
+<p><strong>Note:</strong> It is not recommended that you try to deploy E3SM-Unified
+simultaneously on two different machines that share the same base conda
+environment (e.g. Anvil and Chrysalis). The two deployments will step on
+each other’s toes.</p>
+</li>
+<li><p><strong>Check terminal output</strong> and validate that:</p>
+<ul class="simple">
+<li><p>Spack built the expected packages</p></li>
+<li><p>Conda environment was created and activated</p></li>
+<li><p>Activation scripts were generated and symlinked correctly</p></li>
+<li><p>Permissions have been updated successfully (read only for everyone
+except the E3SM-Unified maintainer)</p></li>
+</ul>
+</li>
+<li><p><strong>Verify compute-node activation</strong></p>
+<p>The activation scripts are designed to load a no-MPI environment on login
+nodes and the MPI-enabled environment on compute nodes (detected via
+scheduler variables like <code class="docutils literal notranslate"><span class="pre">$SLURM_JOB_ID</span></code> or <code class="docutils literal notranslate"><span class="pre">$COBALT_JOBID</span></code>). Before manual
+testing, confirm that sourcing the script on a compute node loads the MPI
+environment as expected.</p>
+<p>Steps:</p>
+<ul>
+<li><p>Start an interactive job on a compute node, for example:</p>
+<ul>
+<li><p>Slurm:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>salloc<span class="w"> </span>-N<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>:00
+</pre></div>
+</div>
+</li>
+<li><p>Cobalt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+</li>
+<li><p>PBS (example):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-l<span class="w"> </span><span class="k">select</span><span class="o">=</span><span class="m">1</span>:ncpus<span class="o">=</span><span class="m">1</span>:mpiprocs<span class="o">=</span><span class="m">1</span>,walltime<span class="o">=</span><span class="m">00</span>:10:00
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>On the compute node, source the activation script:</p>
+<ul>
+<li><p>Bash/zsh:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>test_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.sh
+</pre></div>
+</div>
+</li>
+<li><p>csh/tcsh:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>test_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.csh
+</pre></div>
+</div>
+</li>
+</ul>
+<p>For release builds, use the corresponding <code class="docutils literal notranslate"><span class="pre">load_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.*</span></code>
+or <code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_&lt;machine&gt;.*</span></code> script names.</p>
+</li>
+<li><p>Verify that the MPI environment is active (not the no-MPI one):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$E3SMU_MPI</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># should NOT be &quot;NOMPI&quot; on a compute node</span>
+which<span class="w"> </span>python<span class="w">        </span><span class="c1"># should point to the E3SM-Unified conda env</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mpi4py, xarray; print(&#39;mpi4py:&#39;, mpi4py.__version__)&quot;</span>
+</pre></div>
+</div>
+<p>Optional quick MPI sanity check (if mpirun/srun is available on the node):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())&quot;</span>
+<span class="c1"># or, for Slurm</span>
+srun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>If the script loads the no-MPI environment (<code class="docutils literal notranslate"><span class="pre">E3SMU_MPI=NOMPI</span></code>) on a compute
+node, check that the scheduler environment variables are present on compute
+nodes for this machine and update the activation templates if needed.</p>
+</li>
+<li><p><strong>Manually test</strong> tools in the installed environment</p>
+<ul class="simple">
+<li><p>Load via: <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">test_e3sm_unified_&lt;version&gt;_&lt;machine&gt;.sh</span></code></p></li>
+<li><p>Run tools like <code class="docutils literal notranslate"><span class="pre">zppy</span></code>, <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">mpas_analysis</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Deploy more broadly</strong> once core systems pass testing</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="optional-flags-to-deploy-e3sm-unified-py">
+<h2>Optional flags to <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code><a class="headerlink" href="#optional-flags-to-deploy-e3sm-unified-py" title="Link to this heading"></a></h2>
+<p>Here, we start with the flags that a mainainer is most likely to need, with
+less useful flags at the bottom.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">--recreate</span></code>: Rebuilds the Conda environment if it already exists. This will
+also recreate the installation environment <code class="docutils literal notranslate"><span class="pre">temp_e3sm_unified_install</span></code>.</p>
+<p>Note: This will <strong>not</strong> rebuild Spack packages from scratch. To do that,
+manually delete the corresponding Spack directory before running the
+deployment script again. These directories are typically located under:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spack</span><span class="o">/</span><span class="n">e3sm_unified_</span><span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="n">_</span><span class="o">&lt;</span><span class="n">machine</span><span class="o">&gt;</span><span class="n">_</span><span class="o">&lt;</span><span class="n">compiler</span><span class="o">&gt;</span><span class="n">_</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--mache_fork</span></code> and <code class="docutils literal notranslate"><span class="pre">--mache_branch</span></code>: It is common to need to co-develop
+E3SM-Unified and <code class="docutils literal notranslate"><span class="pre">mache</span></code>, and it is impractical to tag a release candidate
+and build the associated conda-forge package every time. Instead, use these
+flags to point to your fork and branch of <code class="docutils literal notranslate"><span class="pre">mache</span></code> to install into both
+the installation and testing <code class="docutils literal notranslate"><span class="pre">conda</span></code> environments. <strong>Do not use this
+for release deployments.</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--tmpdir</span></code>: Set the <code class="docutils literal notranslate"><span class="pre">$TMPDIR</span></code> environment variable for Spack to use in case
+<code class="docutils literal notranslate"><span class="pre">/tmp</span></code> is full or not a desirable place to install.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--version</span></code>: Typically you want to deploy the latest release candidate or
+release, which should be the hard-coded default. You can set this to
+a different value to perform a deployment of an earlier version if needed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--python</span></code>: Deploy with a different version of python than specified in
+<code class="docutils literal notranslate"><span class="pre">default.cfg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-m</span></code> or <code class="docutils literal notranslate"><span class="pre">--machine</span></code>: Specify the machine if <code class="docutils literal notranslate"><span class="pre">mache</span></code> did not detect it
+correctly for some reason.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-c</span></code> or <code class="docutils literal notranslate"><span class="pre">--compiler</span></code>: Specify a different compiler than the default. To
+determine the default compiler, find the machine under
+<a class="reference external" href="https://github.com/E3SM-Project/mache/tree/main/mache/machines">mache’s machine config files</a>.
+To determine which other compilers are supported, look at the list of
+<a class="reference external" href="https://github.com/E3SM-Project/mache/tree/main/mache/spack/templates">mache spack templates</a>
+(<code class="docutils literal notranslate"><span class="pre">yaml</span></code> files).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-i</span></code> or <code class="docutils literal notranslate"><span class="pre">--mpi</span></code>: Similar to compilers, use this flag to specify an MPI
+variant other than the default. As above, you can determine the defaults
+and supported alternatives by looking in the configs and templates in
+<code class="docutils literal notranslate"><span class="pre">mache</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-f</span></code> or <code class="docutils literal notranslate"><span class="pre">--config_file</span></code>: You can provide a config file to override defaults
+from <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> or the config file for the specific machine from <code class="docutils literal notranslate"><span class="pre">mache</span></code>.
+Use this with caution because this approach will be hard for other
+maintainers to reproduce in the future.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--use_local</span></code>: Typically not useful but can be used in a pinch if you have
+built conda package locally in the installation you pointed to with <code class="docutils literal notranslate"><span class="pre">--conda</span></code>
+and want to use them in the deployment.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="notes-for-maintainers">
+<h2>Notes for Maintainers<a class="headerlink" href="#notes-for-maintainers" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>A partial deployment is expected during RC testing; not all systems must be
+built initially. Chrysalis and Perlmutter are good places to start.</p></li>
+<li><p>Always ensure that the E3SM spack fork has a <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code>
+branch (e.g. <code class="docutils literal notranslate"><span class="pre">spack_for_mache_1.32.0</span></code>) for the version of <code class="docutils literal notranslate"><span class="pre">mache</span></code> you are
+testing (e.g. <code class="docutils literal notranslate"><span class="pre">mache</span></code> 1.32.0rc1).</p></li>
+<li><p>Be aware of potential permission or filesystem issues when writing to
+shared software locations.</p></li>
+</ul>
+<hr class="docutils" />
+<p>➡ Next: <a class="reference internal" href="troubleshooting-deploy.html"><span class="std std-doc">Troubleshooting Deployment</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mache-updates.html" class="btn btn-neutral float-left" title="Updating mache" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting-deploy.html" class="btn btn-neutral float-right" title="Troubleshooting Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="1.12.0">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>
