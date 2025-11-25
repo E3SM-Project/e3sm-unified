@@ -504,9 +504,12 @@ def main():
     else:
         spack_base = None
 
-    use_e3sm_hdf5_netcdf = config.getboolean(
-        'e3sm_unified', 'use_e3sm_hdf5_netcdf'
-    )
+    if config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
+        use_e3sm_hdf5_netcdf = config.getboolean(
+            'e3sm_unified', 'use_e3sm_hdf5_netcdf'
+        )
+    else:
+        use_e3sm_hdf5_netcdf = False
 
     # start restricted permissions at machine level
     paths_to_update = [os.path.join(base_path, machine)]
