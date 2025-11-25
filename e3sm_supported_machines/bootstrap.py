@@ -470,7 +470,8 @@ def main():
 
     if not is_test:
         top_dir = Path(config.get('e3sm_unified', 'base_path'))
-        nco_dir = (top_dir / "e3smu_latest_for_nco").mkdir(exist_ok=True)
+        nco_dir = top_dir / "e3smu_latest_for_nco"
+        nco_dir.mkdir(exist_ok=True)
 
         # copy readme into directory for nco symlinks
         readme = Path(template_path) / "e3sm_unified_nco.readme"
