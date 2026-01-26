@@ -1,0 +1,3 @@
+[submodule "recipes/e3sm-unified/e3sm-unified-feedstock"]
+	path = recipes/e3sm-unified/e3sm-unified-feedstock
+	url = git@github.com:conda-forge/e3sm-unified-feedstock.git
