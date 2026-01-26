@@ -1,5 +1,0 @@
-python:
-- {{ python }}
-
-mpi:
-- {{ mpi }}
