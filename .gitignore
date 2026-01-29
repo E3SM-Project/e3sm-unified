@@ -1,0 +1,4 @@
+# Local build outputs
+/recipes/e3sm-unified/outputs/
+
+**/__pycache__
