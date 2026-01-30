@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Creating an RC for E3SM-Unified</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -127,32 +127,41 @@ on those RC dependencies.</p>
 <hr class="docutils" />
 <section id="update-the-conda-recipe">
 <h2>2. Update the Conda Recipe<a class="headerlink" href="#update-the-conda-recipe" title="Link to this heading"></a></h2>
-<p>Edit <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code>:</p>
+<p>Edit the feedstock recipe in the submodule at
+<code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code>:</p>
 <ul class="simple">
 <li><p>Update the <code class="docutils literal notranslate"><span class="pre">version</span></code> field to match the RC version (e.g., <code class="docutils literal notranslate"><span class="pre">1.12.0rc1</span></code>)</p></li>
 <li><p>Update the list of dependencies and versions, including RCs</p></li>
 <li><p>Be sure to include the correct version for each core tool (e.g.,
 <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">mpas-analysis</span></code>, etc.)</p></li>
 </ul>
+<p>After a successful local test build, push these updates to a branch on your
+fork of the <code class="docutils literal notranslate"><span class="pre">e3sm-unified-feedstock</span></code> and open a pull request against either
+the <code class="docutils literal notranslate"><span class="pre">main</span></code> or <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch, depending on whether the version is a release or
+release candidate.</p>
 </section>
 <hr class="docutils" />
 <section id="run-build-packages-py">
 <h2>3. Run <code class="docutils literal notranslate"><span class="pre">build_packages.py</span></code><a class="headerlink" href="#run-build-packages-py" title="Link to this heading"></a></h2>
-<p>If you are building packages for an RC version of E3SM-Unified, the script
-will build packages for Python 3.10 and the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> and <code class="docutils literal notranslate"><span class="pre">hpc</span></code> versions of MPI
-by default (those needed for login and compute nodes, respectively, on HPC).
-You may wish to use the <code class="docutils literal notranslate"><span class="pre">--python</span></code> and <code class="docutils literal notranslate"><span class="pre">--mpi</span></code> flags to override these.</p>
-<p>You should supply the <code class="docutils literal notranslate"><span class="pre">--conda</span></code> flag if not using <code class="docutils literal notranslate"><span class="pre">~/miniforge3</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build_packages.py<span class="w"> </span>--conda<span class="w"> </span>~/minforge3<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.10<span class="w"> </span>--mpi<span class="w"> </span>nompi<span class="w"> </span>hpc
+<p>The script builds the full variant matrix defined in
+<code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/.ci_support</span></code> for the current
+platform. Use the <code class="docutils literal notranslate"><span class="pre">--python</span></code> and <code class="docutils literal notranslate"><span class="pre">--mpi</span></code> flags to filter that matrix.</p>
+<section id="build-test-packages-locally-maintainers">
+<h3>Build test packages locally (maintainers)<a class="headerlink" href="#build-test-packages-locally-maintainers" title="Link to this heading"></a></h3>
+<p>When maintainers need to produce test packages, use the feedstock submodule
+and the rattler-build workflow. From the root of the repo:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>e3sm-unified/recipes/e3sm-unified
+git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init
+conda<span class="w"> </span>install<span class="w"> </span>rattler-build
+./build_packages.py<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>--mpi<span class="w"> </span>hpc<span class="w"> </span>mpich<span class="w"> </span>nompi
 </pre></div>
 </div>
-<p>The script will produce a matrix of files like:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">configs/mpi_nompi_python3.10.yaml</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">configs/mpi_hpc_python3.10.yaml</span></code></p></li>
-</ul>
-<p>These are then used by <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">build</span></code> to build the appropriate variant of
-the conda package.</p>
+<p>This will produce a set of packages in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">outputs</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="mi">64</span><span class="o">/</span><span class="n">e3sm</span><span class="o">-</span><span class="n">unified</span><span class="o">-</span><span class="mf">1.12.0</span><span class="o">-</span><span class="n">hpc_py313hade9021_1</span><span class="o">.</span><span class="n">conda</span>
+<span class="n">outputs</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="mi">64</span><span class="o">/</span><span class="n">e3sm</span><span class="o">-</span><span class="n">unified</span><span class="o">-</span><span class="mf">1.12.0</span><span class="o">-</span><span class="n">nompi_py313h296f607_1</span><span class="o">.</span><span class="n">conda</span>
+</pre></div>
+</div>
+</section>
 </section>
 <hr class="docutils" />
 <section id="troubleshoot">
@@ -240,7 +249,7 @@ and provenance only.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Energy Exascale Earth System Model Project.</p>
+    <p>&#169; Copyright 2026, Energy Exascale Earth System Model Project.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
