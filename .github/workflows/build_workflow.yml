@@ -28,6 +28,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Create Build Environment
         uses: mamba-org/setup-micromamba@v2
@@ -43,24 +45,18 @@ jobs:
 
       - name: Finalize Build Environment
         run: |
-          conda install -y conda conda-build
+          conda install -y conda rattler-build pyyaml
           cd recipes/e3sm-unified
-          ./build_packages.py --conda ${CONDA_PREFIX} \
+          ./build_packages.py \
               --python ${{ matrix.python-version }} \
               --mpi ${{ matrix.mpi }}
 
       - name: Install E3SM-Unified
         run: |
-          conda install -y -c ${CONDA_PREFIX}/conda-bld/ e3sm-unified
+          conda install -y -c file://${GITHUB_WORKSPACE}/recipes/e3sm-unified/outputs e3sm-unified
           conda install -y --file dev-spec.txt
 
       - name: Build Sphinx Docs
         run: |
           cd docs
           DOCS_VERSION=test make versioned-html
-          condarc: |
-            channel_priority: strict
-            channels:
-                - conda-forge
-          create-args: >-
-            python=${{ matrix.python-version }}

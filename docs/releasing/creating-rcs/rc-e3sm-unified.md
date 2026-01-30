@@ -27,34 +27,43 @@ git checkout -b update-to-1.12.0
 
 ## 2. Update the Conda Recipe
 
-Edit `recipes/e3sm-unified/meta.yaml`:
+Edit the feedstock recipe in the submodule at
+`recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml`:
 
 * Update the `version` field to match the RC version (e.g., `1.12.0rc1`)
 * Update the list of dependencies and versions, including RCs
 * Be sure to include the correct version for each core tool (e.g.,
   `e3sm_diags`, `mpas-analysis`, etc.)
 
+After a successful local test build, push these updates to a branch on your
+fork of the `e3sm-unified-feedstock` and open a pull request against either
+the `main` or `dev` branch, depending on whether the version is a release or
+release candidate.
+
 ---
 ## 3. Run `build_packages.py`
 
-If you are building packages for an RC version of E3SM-Unified, the script
-will build packages for Python 3.10 and the `nompi` and `hpc` versions of MPI
-by default (those needed for login and compute nodes, respectively, on HPC).
-You may wish to use the `--python` and `--mpi` flags to override these.
+The script builds the full variant matrix defined in
+`recipes/e3sm-unified/e3sm-unified-feedstock/.ci_support` for the current
+platform. Use the `--python` and `--mpi` flags to filter that matrix.
 
-You should supply the `--conda` flag if not using `~/miniforge3`.
+### Build test packages locally (maintainers)
+
+When maintainers need to produce test packages, use the feedstock submodule
+and the rattler-build workflow. From the root of the repo:
 
 ```bash
-./build_packages.py --conda ~/minforge3 --python 3.10 --mpi nompi hpc
+cd e3sm-unified/recipes/e3sm-unified
+git submodule update --init
+conda install rattler-build
+./build_packages.py --python 3.13 --mpi hpc mpich nompi
 ```
 
-The script will produce a matrix of files like:
-
-* `configs/mpi_nompi_python3.10.yaml`
-* `configs/mpi_hpc_python3.10.yaml`
-
-These are then used by `conda build` to build the appropriate variant of
-the conda package.
+This will produce a set of packages in:
+```
+outputs/linux-64/e3sm-unified-1.12.0-hpc_py313hade9021_1.conda
+outputs/linux-64/e3sm-unified-1.12.0-nompi_py313h296f607_1.conda
+```
 
 ---
 
