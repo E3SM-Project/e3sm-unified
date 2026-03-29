@@ -120,7 +120,7 @@ If a `dev` branch does not already exist:
    before your updates have been properly tested or reviewed. (e.g.,
    `update-v3.0.0rc1`).
 
-3. Edit `recipe/meta.yaml`:
+3. Edit `recipe/recipe.yaml`:
 
 * Update the `version` field to match your RC tag (e.g., `v3.0.0rc1`)
 * Set the `sha256` hash.  To determine the hash, you need to download the

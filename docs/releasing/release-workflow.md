@@ -7,17 +7,18 @@ The release process typically follows this progression:
 3. **[Deployment and Testing](testing/overview.md)**
 4. **[Adding a New Machine](adding-new-machines.md)**
 5. **[Finalizing the Release](finalizing-release.md)**
-6. **[Maintaining Past Versionse](maintaining-past-versions.md)**
+6. **[Maintaining Past Versions](maintaining-past-versions.md)**
 
 We begin with some background information, then each of these steps is detailed
 in its own page. See below for a high-level summary.
 
 ---
 
-## Backgraound: How Conda and Spack Work Together in Polaris
+## Background: How Conda and Spack Work Together in Polaris
 
 Why does E3SM-Unified use both Conda and Spack? What roles do they each serve?
-Before you start, it's critical to understand how these two systems work
+Before you start, it's critical to understand how the `e3sm-unified` conda
+package, Pixi deployment, and optional Spack system-library integration work
 together.
 
 🔗 [Read more](conda-vs-spack.md)
@@ -49,9 +50,9 @@ This step covers:
 
 Before full deployment, release candidates are installed on a subset of HPC
 platforms for iterative testing and validation. This stage often requires
-updating updating `mache` to support new systems or changes in machine
-configurations, adding package versions to E3SM's Spack fork, and
-troubleshooting deployment scripts.
+updating `mache` to support new systems or changes in machine configurations,
+adding package versions to E3SM's Spack fork, and validating the repository's
+`deploy/` configuration and hooks.
 
 Testing includes everything from basic imports to full `zppy` workflows. This
 is a collaborative effort, with the full iterative process often spanning

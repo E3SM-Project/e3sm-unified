@@ -18,7 +18,7 @@ keeping past versions available and usable.
 
 ## 🔒 Avoid Breaking Changes
 
-### Don’t Delete Spack or Conda Environments
+### Don’t Delete Spack or Pixi Environments
 
 E3SM-Unified installs are isolated by version. Do not delete directories like:
 
@@ -52,7 +52,7 @@ You can safely delete environments or activation scripts for
 **release candidates**:
 
 * `test_e3sm_unified_1.11.0rc3_*.sh`
-* Conda environments like `test_e3sm_unified_install`
+* Temporary bootstrap or test Pixi environments under `deploy_tmp/`
 
 These were used only during internal testing and should be removed when they
 are no longer needed to free up disk space.
@@ -75,10 +75,11 @@ If a past version breaks due to:
 ...you may need to rebuild that version. Follow these steps:
 
 1. Checkout the appropriate tag in the `e3sm-unified` repo (e.g., `1.11.0`)
-3. Use `deploy_e3sm_unified.py` with the `--version` flag (as a precaution):
+2. Recreate the deployment using the same deploy workflow, overriding the
+   target version if needed:
 
 ```bash
-./deploy_e3sm_unified.py --conda ~/miniforge3 --version 1.11.0 --release --recreate
+./deploy.py --e3sm-unified-version 1.11.0 --release --recreate
 ```
 
 You may run into difficulty solving for older conda environments e.g. because

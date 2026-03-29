@@ -46,15 +46,16 @@ new release:
 
 ### 🚀 [Deploying on HPCs](deploying-on-hpcs.md)
 
-* Use the `deploy_e3sm_unified.py` script and template infrastructure in
-  `e3sm_supported_machines`
-* Build environments and activation scripts tailored to each system
+* Use the repository's `deploy/` configuration together with `mache deploy`
+* Build Pixi environments, optional Spack environments, and load scripts
+  tailored to each system
 
 ### 🧪 [Troubleshooting Deployment Issues](troubleshooting-deploy.md)
 
 * Resolve Spack build failures and MPI/compiler mismatches
 * Address problems with activation, modules, or symbolic links
-* Common pitfalls in `default.cfg` or `shared.py` configuration
+* Common pitfalls in `deploy/pins.cfg`, `deploy/config.yaml.j2`, or
+  machine-specific `mache` configuration
 
 ---
 
