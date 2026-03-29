@@ -1,0 +1,14 @@
+library:
+  - "esmf@{{ spack.esmf }}+mpi+netcdf~pnetcdf~external-parallelio"
+  - "moab@{{ spack.moab }}+eigen+fortran+hdf5+mpi+netcdf+pnetcdf+zoltan+tempest"
+  - "nco@{{ spack.nco }}+openmp"
+  - "tempestremap@{{ spack.tempest_remap }}"
+  - "tempestextremes@{{ spack.tempest_extremes }}+mpi"
+{%- if 'hdf5_netcdf' not in exclude_packages %}
+  - "hdf5@{{ spack.hdf5 }}+cxx+fortran+hl+mpi+shared"
+  - "netcdf-c@{{ spack.netcdf_c }}+mpi~parallel-netcdf"
+  - "netcdf-fortran@{{ spack.netcdf_fortran }}"
+  - "parallel-netcdf@{{ spack.parallel_netcdf }}+cxx+fortran"
+{%- endif %}
+
+software: []

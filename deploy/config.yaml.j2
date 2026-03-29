@@ -1,0 +1,220 @@
+project:
+  software: "e3sm-unified"
+  # A specific version string or "dynamic" if provided by the "pre_pixi" hook.
+  version: "dynamic"
+
+  # Optional: a command that prints the *runtime* version string for the
+  # deployed software.
+  #
+  # This command is run via `pixi run -m <pixi.toml> -- bash -c <cmd>` *before*
+  # the load script activates the environment, so it can safely `return` on
+  # mismatch without changing your shell environment.
+  #
+  # The command should print a single version string on stdout that matches
+  # `project.version` exactly.
+  #
+  # E3SM-Unified is a conda metapackage, so the runtime probe reads the
+  # installed conda package metadata rather than Python importlib metadata.
+  runtime_version_cmd: "python -c 'import json, sys; from pathlib import Path; matches = sorted(Path(sys.prefix, \"conda-meta\").glob(\"e3sm-unified-*.json\")); assert matches, \"No e3sm-unified package metadata found in conda-meta\"; print(json.loads(matches[-1].read_text())[\"version\"])'"
+
+  # Machine name selection.
+  # Priority order in `mache deploy run`:
+  #   1. CLI --machine
+  #   2. this value (project.machine)
+  #   3. automatic detection (if this is "dynamic")
+  machine: "dynamic"
+
+# machines:
+#   Optional path containing target-owned machine config files in ini format.
+#
+#   E3SM-Unified intentionally does not define its own deploy machine config
+#   files here. Instead, deploy/hooks.py reads machine metadata from
+#   mache.machines/[e3sm_unified] when E3SM-Unified-specific behavior is
+#   needed.
+#
+#   path: null
+
+pixi:
+  # Whether to deploy the pixi environment
+  deploy: true
+
+  # Where to install the pixi project (and its .pixi directory).
+  # Absolute path is recommended for shared deployments.
+  # Environment variables will be expanded at runtime (e.g. $SCRATCH).
+  #
+  # E3SM-Unified resolves this dynamically in deploy/hooks.py from --prefix or
+  # machine config values.
+  prefix: null
+
+  # Channels used by pixi for this environment.
+  channels:
+    - conda-forge
+
+  # MPI provider for conda packages.
+  # Supported values in `mache deploy run`:
+  #   - nompi
+  #   - mpich
+  #   - openmpi
+  #   - hpc (E3SM-Unified only)
+  #   - dynamic (determine by the "pre_pixi" hook)
+  mpi: dynamic
+
+  # E3SM-Unified can deploy separate login and compute pixi environments and
+  # select between them from a single load script.
+  login_mpi: nompi
+  login_prefix: null
+
+  # Whether to install the target software in editable/development mode.
+  install_dev_software: false
+
+# System toolchain selection (primarily for Spack-based dependencies).
+#
+# These values are resolved in `mache deploy run` with the following priority:
+#   1. CLI flags: --compiler / --mpi
+#   2. Values here
+#   3. Machine config defaults from [deploy] in merged machine config
+#   4. E3SM-Unified-specific hook overrides derived from [e3sm_unified]
+#
+# Use "dynamic" or [] to request defaults from hooks or machine config.
+toolchain:
+  # One or more compiler names. Examples:
+  #   compiler: [gnu]
+  #   compiler: [gnu, intel]
+  #
+  # If empty, defaults come from hook/runtime logic or merged machine config.
+  compiler: []
+
+  # One or more MPI libraries. Examples:
+  #   mpi: [openmpi]
+  #   mpi: [mpich, openmpi]
+  #
+  # Pairing rules in `mache deploy run`:
+  #   - If both lists have the same length, they are zipped.
+  #   - If one list has length 1, it is broadcast across the other.
+  #   - If mpi is empty, defaults come from hook/runtime logic or machine
+  #     config:
+  #       [deploy] mpi_<compiler> (preferred)
+  #       [deploy] mpi (fallback)
+  mpi: []
+
+# env_vars:
+#   Placeholder: env vars to export in the "load" script
+#   set: {}
+
+permissions:
+  # Optional shared-filesystem permission policy applied after a successful
+  # deployment.
+  #
+  # Priority order in `mache deploy run`:
+  #   1. Hook/runtime overrides:
+  #        ctx.runtime["permissions"]["group"]
+  #        ctx.runtime["permissions"]["world_readable"]
+  #   2. Values here
+  #   3. Machine config defaults from [deploy]:
+  #        group = <unix-group>
+  #        world_readable = true|false
+  #
+  # E3SM-Unified sets these from [e3sm_unified] in deploy/hooks.py.
+  #
+  # If no group is resolved, mache skips the permission update step.
+  group: null
+
+  # Whether deployed files should be readable by users outside the shared
+  # group. Directories keep execute permission when needed for traversal.
+  world_readable: true
+
+spack:
+  # Whether to deploy Spack environments at all.
+  #
+  # Behavior:
+  #   - If true, deploy ALL supported Spack environments.
+  #   - If false, deploy none.
+  #
+  # This can be forced on at runtime with the `mache deploy run` CLI flag:
+  #   --deploy-spack
+  #
+  # Passing --no-spack disables all Spack use for a single run, including
+  # reuse of pre-existing environments for load scripts.
+  deploy: false
+
+  # Whether this target repository supports a Spack *library* environment.
+  #
+  # E3SM-Unified enables this dynamically only for the hpc package variant.
+  supported: true
+
+  # Optional: deploy an additional "software" spack environment.
+  #
+  # E3SM-Unified does not currently use a separate software spack environment.
+  software:
+    supported: false
+    env_name: null
+
+  # Base path for the spack checkout used for deployment.
+  # If it does not exist, mache will clone the E3SM spack repo.
+  #
+  # In practice, E3SM-Unified sets this dynamically in `pre_spack()` based on
+  # machine config. This config value is a fallback.
+  #
+  # Required (either via hook/runtime or here) when spack.deploy (or
+  # --deploy-spack) is used and at least one supported spack environment is
+  # enabled, or when an existing Spack environment will be reused for load
+  # scripts.
+  # Can also be overridden temporarily via: --spack-path <path>
+  # To bypass Spack entirely for one run, pass: --no-spack
+  spack_path: null
+
+  # Prefix for spack environment names.
+  # Final env name is computed as: "<env_name_prefix>_<compiler>_<mpi>".
+  env_name_prefix: "e3sm_unified"
+
+  # Jinja2-templated YAML file in the target repo containing a YAML list of
+  # spack specs. This is inserted into the appropriate mache spack env
+  # template for the selected machine/compiler/mpi.
+  #
+  # Expected format: a YAML mapping with keys "library" and/or "software",
+  # each containing a list of spec strings.
+  specs_template: "deploy/spack.yaml.j2"
+
+  # Optional list of machine-provided Spack packages to suppress so Spack can
+  # build them instead.
+  #
+  # Typical examples:
+  #   exclude_packages:
+  #     - cmake
+  #
+  # To opt out of the machine-provided HDF5/NetCDF bundle, prefer:
+  #   exclude_packages:
+  #     - hdf5_netcdf
+  #
+  # E3SM-Unified sets this dynamically in `pre_spack()` based on
+  # [e3sm_unified] use_e3sm_hdf5_netcdf.
+  exclude_packages: []
+
+  # Optional spack build settings
+  tmpdir: null
+  mirror: null
+  custom_spack: ""
+
+jigsaw:
+  # If true, build/install JIGSAW + JIGSAW-Python into the pixi env
+  enabled: false
+
+  # Relative path in the target repo where JIGSAW-Python lives.
+  # If this is a submodule, `mache deploy run` will initialize it.
+  # If it is not, `mache deploy run` will clone it from the main JIGSAW-Python
+  # repo if missing.
+  jigsaw_python_path: jigsaw-python
+
+# Optional deployment hooks.
+#
+# Hooks run ONLY during `mache deploy run` and execute arbitrary Python code
+# from the target repository. Use only with trusted repositories.
+# Custom CLI flags from deploy/custom_cli_spec.json are available on ctx.args
+# inside hooks when routed to "run".
+hooks:
+  file: "deploy/hooks.py"
+  entrypoints:
+    pre_pixi: "pre_pixi"
+    pre_spack: "pre_spack"
+    post_spack: "post_spack"
+    post_deploy: "post_deploy"

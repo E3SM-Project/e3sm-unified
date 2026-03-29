@@ -1,0 +1,21 @@
+[workspace]
+name = "e3sm-unified"
+channels = [
+{%- for channel in pixi_channels %}
+  "{{ channel }}"{%- if not loop.last %},{% endif %}
+{%- endfor %}
+]
+platforms = ["{{ platform }}"]
+channel-priority = "strict"
+
+[dependencies]
+python = "{{ python }}.*"
+pip = "*"
+setuptools = ">=60"
+git = "*"
+
+{%- if include_mache %}
+mache = "{{ mache }}"
+{%- endif %}
+
+e3sm-unified = {version = "=={{ software_version }}", build = "{{ mpi_prefix }}_*"}

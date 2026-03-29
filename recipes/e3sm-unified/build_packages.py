@@ -1,12 +1,29 @@
 #!/usr/bin/env python3
 import argparse
+import importlib.util
 import os
 import subprocess
 from pathlib import Path
 
 import yaml
 
-from shared import get_rc_dev_labels, get_version_from_recipe
+
+def _load_shared_helpers():
+    repo_root = Path(__file__).resolve().parents[2]
+    shared_path = repo_root / "e3sm_unified_shared.py"
+    spec = importlib.util.spec_from_file_location(
+        "e3sm_unified_deploy_shared", shared_path
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load shared helpers from {shared_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_shared = _load_shared_helpers()
+get_base_channels = _shared.get_base_channels
+get_version_from_recipe = _shared.get_version_from_recipe
 
 
 def get_variant_configs(ci_support_dir, python_versions, mpi_versions):
@@ -31,17 +48,11 @@ def get_variant_configs(ci_support_dir, python_versions, mpi_versions):
     return filtered
 
 
-def apply_channel_overrides(variant_config_path, dev_labels, outputs_dir):
-    base_channel = "conda-forge"
+def apply_channel_overrides(variant_config_path, channels, outputs_dir):
     with open(variant_config_path) as handle:
         variant_config = yaml.safe_load(handle) or {}
 
-    channel_sources = []
-    for label in dev_labels:
-        channel_sources.append(f"{base_channel}/label/{label}")
-    channel_sources.append(base_channel)
-
-    variant_config["channel_sources"] = [",".join(channel_sources)]
+    variant_config["channel_sources"] = [",".join(channels)]
 
     override_dir = outputs_dir / "variant_overrides"
     override_dir.mkdir(parents=True, exist_ok=True)
@@ -65,6 +76,10 @@ def main():
         nargs="+",
         help="MPI variant(s) to build for (overrides default matrix)."
     )
+    parser.add_argument(
+        "--output-dir",
+        help="Directory where built packages and channel metadata are written.",
+    )
     args = parser.parse_args()
 
     recipe_root = Path(__file__).parent
@@ -73,12 +88,10 @@ def main():
     ci_support_dir = feedstock_dir / ".ci_support"
     recipe_dir = feedstock_dir / "recipe"
     recipe_yaml_path = recipe_dir / "recipe.yaml"
-    outputs_dir = recipe_root / "outputs"
+    outputs_dir = Path(args.output_dir) if args.output_dir else recipe_root / "outputs"
     outputs_dir.mkdir(parents=True, exist_ok=True)
 
     version = get_version_from_recipe(str(recipe_yaml_path))
-    dev = "rc" in version
-
     matrix_files = get_variant_configs(
         ci_support_dir=ci_support_dir,
         python_versions=args.python,
@@ -89,14 +102,12 @@ def main():
             "No variant config files matched the requested filters."
         )
 
-    dev_labels = []
-    if dev:
-        dev_labels = get_rc_dev_labels(str(recipe_yaml_path))
+    channels = get_base_channels(recipe_yaml_path, version)
 
     for file in matrix_files:
         override_file = apply_channel_overrides(
             variant_config_path=file,
-            dev_labels=dev_labels,
+            channels=channels,
             outputs_dir=outputs_dir,
         )
         cmd = [

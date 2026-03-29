@@ -1,0 +1,51 @@
+{
+  "arguments": [
+    {
+      "flags": ["--release"],
+      "dest": "release",
+      "action": "store_true",
+      "help": "Perform a shared release deployment. This forbids local package builds and forked mache sources.",
+      "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--e3sm-unified-version"],
+      "dest": "e3sm_unified_version",
+      "help": "E3SM-Unified version to deploy. If not provided, deploy/hooks.py will resolve it from the feedstock recipe.",
+      "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--package-source"],
+      "dest": "package_source",
+      "choices": ["conda-forge", "local-build"],
+      "default": "conda-forge",
+      "help": "Where to get the e3sm-unified package from. Default is conda-forge",
+      "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--package-mpi"],
+      "dest": "package_mpi",
+      "choices": ["nompi", "mpich", "openmpi", "hpc"],
+      "help": "The e3sm-unified package variant to deploy. Defaults to hpc on supported machines and nompi otherwise.",
+      "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--env-layout"],
+      "dest": "env_layout",
+      "choices": ["single", "dual"],
+      "help": "Whether to deploy a single pixi environment or separate login/compute environments. Defaults to dual on supported machines and single otherwise.",
+      "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--spack-tmpdir"],
+      "dest": "spack_tmpdir",
+      "help": "Temporary directory for Spack builds when deploying the hpc variant.",
+      "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--load-script-dir"],
+      "dest": "load_script_dir",
+      "help": "Directory where a copy of the generated load script should be written.",
+      "route": ["deploy", "run"]
+    }
+  ]
+}
