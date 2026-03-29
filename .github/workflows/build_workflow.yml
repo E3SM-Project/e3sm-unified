@@ -23,40 +23,72 @@ jobs:
         shell: bash -l {0}
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-        mpi: ["hpc", "nompi", "mpich", "openmpi"]
+        include:
+          - python-version: "3.11"
+            pixi-environment: py311
+            mpi: hpc
+          - python-version: "3.11"
+            pixi-environment: py311
+            mpi: nompi
+          - python-version: "3.11"
+            pixi-environment: py311
+            mpi: mpich
+          - python-version: "3.11"
+            pixi-environment: py311
+            mpi: openmpi
+          - python-version: "3.12"
+            pixi-environment: py312
+            mpi: hpc
+          - python-version: "3.12"
+            pixi-environment: py312
+            mpi: nompi
+          - python-version: "3.12"
+            pixi-environment: py312
+            mpi: mpich
+          - python-version: "3.12"
+            pixi-environment: py312
+            mpi: openmpi
+          - python-version: "3.13"
+            pixi-environment: py313
+            mpi: hpc
+          - python-version: "3.13"
+            pixi-environment: py313
+            mpi: nompi
+          - python-version: "3.13"
+            pixi-environment: py313
+            mpi: mpich
+          - python-version: "3.13"
+            pixi-environment: py313
+            mpi: openmpi
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Create Build Environment
-        uses: mamba-org/setup-micromamba@v2
+      - name: Set Up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          environment-name: e3sm_unified_dev
-          init-shell: bash
-          condarc: |
-            channel_priority: strict
-            channels:
-                - conda-forge
-          create-args: >-
-            python=${{ matrix.python-version }}
+          environments: ${{ matrix.pixi-environment }}
+          activate-environment: ${{ matrix.pixi-environment }}
+          cache: false
 
-      - name: Finalize Build Environment
+      - name: Build E3SM-Unified
         run: |
-          conda install -y conda rattler-build pyyaml
+          set -euo pipefail
           cd recipes/e3sm-unified
           ./build_packages.py \
               --python ${{ matrix.python-version }} \
-              --mpi ${{ matrix.mpi }}
+              --mpi ${{ matrix.mpi }} \
+              --output-dir ../../deploy_tmp/ci-local-channel
 
-      - name: Install E3SM-Unified
+      - name: Run Pytest
         run: |
-          conda install -y -c file://${GITHUB_WORKSPACE}/recipes/e3sm-unified/outputs e3sm-unified
-          conda install -y --file dev-spec.txt
+          set -euo pipefail
+          pytest tests -q
 
       - name: Build Sphinx Docs
         run: |
+          set -euo pipefail
           cd docs
           DOCS_VERSION=test make versioned-html

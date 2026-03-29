@@ -1,0 +1,6 @@
+# Keep conda-forge label channels on Anaconda because prefix.dev does not
+# currently mirror public conda-forge labels such as mache_dev.
+[mirrors]
+"https://conda.anaconda.org/conda-forge/label" = [
+  "https://conda.anaconda.org/conda-forge/label",
+]

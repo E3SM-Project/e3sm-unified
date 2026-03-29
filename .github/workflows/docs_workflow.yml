@@ -8,7 +8,7 @@ on:
     types: [published]
 
 env:
-  PYTHON_VERSION: "3.10"
+  PIXI_ENVIRONMENT: "py310"
 
 jobs:
   publish-docs:
@@ -23,31 +23,21 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Set up Conda Environment
-        uses: mamba-org/setup-micromamba@v2
+      - name: Set Up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          environment-name: e3sm_unified_dev
-          init-shell: bash
-          condarc: |
-            channel_priority: strict
-            channels:
-                - conda-forge
-          create-args: >-
-            python=${{ env.PYTHON_VERSION }}
-
-      - name: Install e3sm-unified
-        run: |
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          conda install -y --file dev-spec.txt
+          environments: ${{ env.PIXI_ENVIRONMENT }}
+          activate-environment: ${{ env.PIXI_ENVIRONMENT }}
+          cache: false
 
       - name: Build Sphinx Docs
         run: |
-          set -e
+          set -euo pipefail
           cd docs
           DOCS_VERSION=${{ github.ref_name }} make versioned-html
       - name: Copy Docs and Commit
         run: |
-          set -e
+          set -euo pipefail
           cd docs
           # gh-pages branch must already exist
           git clone https://github.com/E3SM-Project/e3sm-unified.git --branch gh-pages --single-branch gh-pages
