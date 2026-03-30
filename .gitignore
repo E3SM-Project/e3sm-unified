@@ -22,6 +22,7 @@ pixi-env/
 
 # mache
 .mache_cache/
+deploy_tmp/
 
 # load scripts
 load_*.sh
