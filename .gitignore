@@ -4,8 +4,8 @@
 **/__pycache__
 
 # pixi
-.pixi/
-!.pixi/
+.pixi/*
+.pixi/.*
 !.pixi/config.toml
 pixi.lock
 pixi-env/
