@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import platform
 import shlex
@@ -9,7 +10,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import yaml
-from e3sm_unified_shared import get_base_channels, get_version_from_recipe
 
 from mache.deploy.bootstrap import build_pixi_env, build_pixi_shell_hook_prefix
 from mache.deploy.bootstrap import check_call
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+SHARED_HELPERS = REPO_ROOT / 'e3sm_unified_shared.py'
 FEEDSTOCK_DIR = (
     REPO_ROOT / 'recipes' / 'e3sm-unified' / 'e3sm-unified-feedstock'
 )
@@ -27,6 +28,25 @@ CI_SUPPORT_DIR = FEEDSTOCK_DIR / '.ci_support'
 LOCAL_CHANNEL_DIR = REPO_ROOT / 'deploy_tmp' / 'local-channel'
 VARIANT_OVERRIDE_DIR = REPO_ROOT / 'deploy_tmp' / 'variant_overrides'
 SOURCE_BUILD_DIR = REPO_ROOT / 'deploy_tmp' / 'hpc-source-builds'
+
+
+def _load_shared_helpers():
+    spec = importlib.util.spec_from_file_location(
+        'e3sm_unified_deploy_shared',
+        SHARED_HELPERS,
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError(
+            f'Could not load shared helpers from {SHARED_HELPERS}'
+        )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_shared = _load_shared_helpers()
+get_base_channels = _shared.get_base_channels
+get_version_from_recipe = _shared.get_version_from_recipe
 
 
 def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
