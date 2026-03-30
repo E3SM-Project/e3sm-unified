@@ -165,6 +165,27 @@ def test_pre_pixi_local_build_rc_adds_local_and_dev_channels(
     assert updates['pixi']['channels'][-1] == 'conda-forge'
 
 
+def test_pre_pixi_explicit_rc_version_must_match_feedstock_recipe(
+    tmp_path: Path,
+):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='E3SMinput',
+        base_path='/lus/grand/projects/E3SMinput/soft/e3sm-unified',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='polaris',
+        machine_cfg_path=machine_cfg_path,
+    )
+    ctx.args.e3sm_unified_version = '1.13.0rc2'
+
+    with pytest.raises(
+        ValueError, match='does not match feedstock recipe version'
+    ):
+        deploy_hooks.pre_pixi(ctx)
+
+
 def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
     machine_cfg_path = _write_machine_cfg(
         tmp_path,

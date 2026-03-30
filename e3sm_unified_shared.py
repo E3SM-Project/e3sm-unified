@@ -22,8 +22,6 @@ DEV_LABELS = {
     'zppy-interfaces': 'zppy_interfaces_dev',
     'zstash': 'zstash_dev',
 }
-
-
 def get_version_from_recipe(recipe_yaml_path: str | Path) -> str:
     """Parse the version from the context or package section in recipe.yaml."""
     recipe = _load_recipe(recipe_yaml_path)
@@ -62,12 +60,19 @@ def get_base_channels(
     recipe_yaml_path: str | Path, version: str | None = None
 ) -> list[str]:
     """Return source channels needed to build or deploy a given recipe version."""
+    recipe_version = get_version_from_recipe(recipe_yaml_path)
     if version is None:
-        version = get_version_from_recipe(recipe_yaml_path)
+        version = recipe_version
+    elif 'rc' in version and version != recipe_version:
+        raise ValueError(
+            'Explicit RC version '
+            f'{version!r} does not match feedstock recipe version '
+            f'{recipe_version!r}. Update the e3sm-unified feedstock submodule '
+            'or omit --e3sm-unified-version.'
+        )
 
-    channels = ['conda-forge']
     if 'rc' not in version:
-        return channels
+        return ['conda-forge']
 
     ordered = ['conda-forge/label/e3sm_unified_dev']
     for label in get_rc_dev_labels(recipe_yaml_path):
