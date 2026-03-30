@@ -6,6 +6,7 @@ import importlib.util
 import os
 import platform
 import shlex
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -25,6 +26,7 @@ FEEDSTOCK_DIR = (
 )
 RECIPE_PATH = FEEDSTOCK_DIR / 'recipe' / 'recipe.yaml'
 CI_SUPPORT_DIR = FEEDSTOCK_DIR / '.ci_support'
+GITMODULES_PATH = REPO_ROOT / '.gitmodules'
 LOCAL_CHANNEL_DIR = REPO_ROOT / 'deploy_tmp' / 'local-channel'
 VARIANT_OVERRIDE_DIR = REPO_ROOT / 'deploy_tmp' / 'variant_overrides'
 SOURCE_BUILD_DIR = REPO_ROOT / 'deploy_tmp' / 'hpc-source-builds'
@@ -50,6 +52,7 @@ get_version_from_recipe = _shared.get_version_from_recipe
 
 
 def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
+    _ensure_feedstock_submodule(ctx)
     version = _get_version(ctx)
     if not version.strip():
         raise ValueError('Resolved an empty E3SM-Unified version.')
@@ -364,6 +367,39 @@ def _get_version(ctx: DeployContext | None = None) -> str:
             '--e3sm-unified-version to deploy without the feedstock submodule.'
         )
     return get_version_from_recipe(RECIPE_PATH)
+
+
+def _ensure_feedstock_submodule(ctx: DeployContext) -> None:
+    if RECIPE_PATH.exists():
+        return
+    if not GITMODULES_PATH.exists():
+        return
+
+    gitmodules_text = GITMODULES_PATH.read_text(encoding='utf-8')
+    if f'path = {FEEDSTOCK_DIR.relative_to(REPO_ROOT)}' not in gitmodules_text:
+        return
+
+    log_filename = _get_log_filename(ctx)
+    quiet = bool(getattr(ctx.args, 'quiet', False))
+    try:
+        check_call(
+            [
+                'git',
+                'submodule',
+                'update',
+                '--init',
+                str(FEEDSTOCK_DIR.relative_to(REPO_ROOT)),
+            ],
+            log_filename=log_filename,
+            quiet=quiet,
+            cwd=ctx.repo_root,
+            env=build_pixi_env(),
+        )
+    except subprocess.CalledProcessError as e:
+        raise ValueError(
+            'Failed to initialize the e3sm-unified feedstock submodule '
+            f'(exit code {e.returncode}).'
+        ) from e
 
 
 def _get_package_source(ctx: DeployContext) -> str:

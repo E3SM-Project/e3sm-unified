@@ -105,6 +105,60 @@ def test_pre_pixi_defaults_to_nompi_single_for_pixi_only_machine(tmp_path: Path)
     assert updates['toolchain'] == {}
 
 
+def test_ensure_feedstock_submodule_initializes_missing_recipe(
+    tmp_path: Path, monkeypatch
+):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='E3SMinput',
+        base_path='/lus/grand/projects/E3SMinput/soft/e3sm-unified',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='polaris',
+        machine_cfg_path=machine_cfg_path,
+    )
+
+    feedstock_dir = tmp_path / 'recipes' / 'e3sm-unified' / 'e3sm-unified-feedstock'
+    recipe_path = feedstock_dir / 'recipe' / 'recipe.yaml'
+    gitmodules_path = tmp_path / '.gitmodules'
+    gitmodules_path.write_text(
+        '[submodule "recipes/e3sm-unified/e3sm-unified-feedstock"]\n'
+        'path = recipes/e3sm-unified/e3sm-unified-feedstock\n',
+        encoding='utf-8',
+    )
+
+    monkeypatch.setattr(deploy_hooks, 'REPO_ROOT', tmp_path)
+    monkeypatch.setattr(deploy_hooks, 'FEEDSTOCK_DIR', feedstock_dir)
+    monkeypatch.setattr(deploy_hooks, 'RECIPE_PATH', recipe_path)
+    monkeypatch.setattr(deploy_hooks, 'GITMODULES_PATH', gitmodules_path)
+
+    called = {}
+
+    def fake_check_call(cmd, *, log_filename, quiet, cwd, env):
+        called['cmd'] = cmd
+        called['log_filename'] = log_filename
+        called['quiet'] = quiet
+        called['cwd'] = cwd
+        called['env'] = env
+        recipe_path.parent.mkdir(parents=True, exist_ok=True)
+        recipe_path.write_text('context:\n  version: "1.13.0rc1"\n', encoding='utf-8')
+
+    monkeypatch.setattr(deploy_hooks, 'check_call', fake_check_call)
+
+    deploy_hooks._ensure_feedstock_submodule(ctx)
+
+    assert called['cmd'] == [
+        'git',
+        'submodule',
+        'update',
+        '--init',
+        'recipes/e3sm-unified/e3sm-unified-feedstock',
+    ]
+    assert called['cwd'] == str(tmp_path)
+    assert recipe_path.exists()
+
+
 def test_pre_spack_skips_when_pixi_only_machine_defaults_to_nompi(
     tmp_path: Path,
 ):
