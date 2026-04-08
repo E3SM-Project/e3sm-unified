@@ -7,6 +7,7 @@ import sys
 
 import pytest
 from mache.deploy.hooks import DeployContext
+from mache.deploy.spack import _render_spack_specs
 
 
 def _load_deploy_hooks():
@@ -416,6 +417,7 @@ def test_pre_spack_prefers_cli_path_and_excludes_hdf5_bundle_by_default(
             'exclude_packages': ['foo', 'hdf5_netcdf'],
         }
     }
+    assert ctx.machine_config.getboolean('deploy', 'use_e3sm_hdf5_netcdf') is False
 
 
 def test_pre_spack_uses_prefix_root_when_no_override_path(tmp_path: Path):
@@ -554,3 +556,39 @@ def test_pre_spack_skips_hdf5_bundle_exclusion_when_machine_uses_bundle(
             ),
         }
     }
+    assert ctx.machine_config.getboolean('deploy', 'use_e3sm_hdf5_netcdf') is True
+
+
+def test_spack_specs_omit_hdf5_bundle_when_machine_uses_bundle(tmp_path: Path):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='e3sm',
+        base_path='/global/common/software/e3sm/anaconda_envs',
+        compiler='gnu',
+        mpi='mpich',
+        use_e3sm_hdf5_netcdf=True,
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='pm-cpu',
+        machine_cfg_path=machine_cfg_path,
+    )
+    ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
+    deploy_hooks.pre_spack(ctx)
+
+    specs = _render_spack_specs(
+        template_path=str(deploy_hooks.REPO_ROOT / 'deploy' / 'spack.yaml.j2'),
+        ctx=ctx,
+        compiler='gnu',
+        mpi='mpich',
+        section='library',
+        e3sm_hdf5_netcdf=True,
+        exclude_packages=set(),
+    )
+
+    spec_names = {spec.split('@', 1)[0] for spec in specs}
+
+    assert 'hdf5' not in spec_names
+    assert 'netcdf-c' not in spec_names
+    assert 'netcdf-fortran' not in spec_names
+    assert 'parallel-netcdf' not in spec_names

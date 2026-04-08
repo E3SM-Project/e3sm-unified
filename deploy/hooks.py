@@ -178,6 +178,8 @@ def pre_spack(ctx: DeployContext) -> dict[str, Any] | None:
             }
         }
 
+    _sync_e3sm_unified_spack_machine_options(machine_config=ctx.machine_config)
+
     spack_path = _resolve_spack_path(ctx)
     if spack_path is None:
         raise ValueError(
@@ -687,6 +689,25 @@ def _maybe_exclude_e3sm_hdf5_netcdf(
 
     if not use_bundle and 'hdf5_netcdf' not in exclude_packages:
         exclude_packages.append('hdf5_netcdf')
+
+
+def _sync_e3sm_unified_spack_machine_options(*, machine_config) -> None:
+    if not machine_config.has_section('e3sm_unified'):
+        return
+
+    if not machine_config.has_option(
+        'e3sm_unified', 'use_e3sm_hdf5_netcdf'
+    ):
+        return
+
+    if not machine_config.has_section('deploy'):
+        machine_config.add_section('deploy')
+
+    machine_config.set(
+        'deploy',
+        'use_e3sm_hdf5_netcdf',
+        machine_config.get('e3sm_unified', 'use_e3sm_hdf5_netcdf'),
+    )
 
 
 def _get_permissions_runtime(ctx: DeployContext) -> dict[str, Any]:
