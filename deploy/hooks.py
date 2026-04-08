@@ -60,6 +60,11 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     package_source = _get_package_source(ctx)
     package_mpi = _get_package_mpi(ctx)
     env_layout = _get_env_layout(ctx)
+    use_system_git = bool(
+        _get_machine_bool_option(
+            ctx=ctx, section='e3sm_unified', option='use_system_git'
+        )
+    )
     permissions = _get_permissions_runtime(ctx)
     toolchain = _get_toolchain_runtime(ctx)
 
@@ -119,6 +124,9 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
         package_mpi=package_mpi,
         env_layout=env_layout,
     )
+    omit_dependencies: list[str] = []
+    if use_system_git:
+        omit_dependencies.append('git')
 
     return {
         'project': {'version': version},
@@ -128,6 +136,7 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
             'login_mpi': 'nompi' if env_layout == 'dual' else None,
             'mpi': package_mpi,
             'channels': channels,
+            'omit_dependencies': omit_dependencies,
         },
         'permissions': permissions,
         'toolchain': toolchain,
@@ -705,6 +714,24 @@ def _get_machine_option(
     if value.lower() in ('', 'none', 'null'):
         return None
     return value
+
+
+def _get_machine_bool_option(
+    *, ctx: DeployContext, section: str, option: str
+) -> bool | None:
+    value = _get_machine_option(ctx=ctx, section=section, option=option)
+    if value is None:
+        return None
+
+    normalized = value.lower()
+    if normalized in ('true', 'yes', 'on', '1'):
+        return True
+    if normalized in ('false', 'no', 'off', '0'):
+        return False
+
+    raise ValueError(
+        f'Expected [{section}] {option} to be a boolean, got {value!r}.'
+    )
 
 
 def _copy_load_script(*, source_script: Path, dest_script: Path) -> None:

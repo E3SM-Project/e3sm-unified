@@ -33,6 +33,7 @@ def _write_machine_cfg(
     compiler: str | None = None,
     mpi: str | None = None,
     use_e3sm_hdf5_netcdf: bool | None = None,
+    use_system_git: bool | None = None,
 ) -> Path:
     lines = [
         '[e3sm_unified]',
@@ -47,6 +48,10 @@ def _write_machine_cfg(
         lines.append(
             'use_e3sm_hdf5_netcdf = '
             f'{"True" if use_e3sm_hdf5_netcdf else "False"}'
+        )
+    if use_system_git is not None:
+        lines.append(
+            f'use_system_git = {"True" if use_system_git else "False"}'
         )
     cfg_path = tmp_path / 'machine.cfg'
     cfg_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
@@ -102,6 +107,7 @@ def test_pre_pixi_defaults_to_nompi_single_for_pixi_only_machine(tmp_path: Path)
     assert updates['pixi']['mpi'] == 'nompi'
     assert updates['pixi']['login_prefix'] is None
     assert updates['pixi']['login_mpi'] is None
+    assert updates['pixi']['omit_dependencies'] == []
     assert updates['toolchain'] == {}
 
 
@@ -248,6 +254,7 @@ def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
         compiler='gnu',
         mpi='openmpi',
         use_e3sm_hdf5_netcdf=False,
+        use_system_git=True,
     )
     ctx = _ctx(
         tmp_path=tmp_path,
@@ -261,6 +268,7 @@ def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
     assert updates['pixi']['mpi'] == 'hpc'
     assert updates['pixi']['login_mpi'] == 'nompi'
     assert updates['pixi']['login_prefix'] is not None
+    assert updates['pixi']['omit_dependencies'] == ['git']
     assert updates['toolchain'] == {'compiler': ['gnu'], 'mpi': ['openmpi']}
     assert updates['permissions'] == {
         'group': 'users',

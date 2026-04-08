@@ -8,11 +8,18 @@ channels = [
 platforms = ["{{ platform }}"]
 channel-priority = "strict"
 
+{%- set omitted_dependencies = omit_dependencies | default([]) %}
+
 [dependencies]
 python = "{{ python }}.*"
 pip = "*"
 setuptools = ">=60"
+{%- if 'git' not in omitted_dependencies %}
 git = "*"
+{%- endif %}
+{%- for dependency in extra_dependencies | default([]) %}
+{{ dependency }}
+{%- endfor %}
 
 {%- if include_mache %}
 mache = "=={{ mache }}"
