@@ -23,6 +23,9 @@ def _load_deploy_hooks():
 
 
 deploy_hooks = _load_deploy_hooks()
+CURRENT_RECIPE_VERSION = deploy_hooks.get_version_from_recipe(
+    deploy_hooks.RECIPE_PATH
+)
 
 
 def _write_machine_cfg(
@@ -34,6 +37,7 @@ def _write_machine_cfg(
     mpi: str | None = None,
     use_e3sm_hdf5_netcdf: bool | None = None,
     use_system_git: bool | None = None,
+    use_legacy_glibc_pins: bool | None = None,
 ) -> Path:
     lines = [
         '[e3sm_unified]',
@@ -52,6 +56,11 @@ def _write_machine_cfg(
     if use_system_git is not None:
         lines.append(
             f'use_system_git = {"True" if use_system_git else "False"}'
+        )
+    if use_legacy_glibc_pins is not None:
+        lines.append(
+            'use_legacy_glibc_pins = '
+            f'{"True" if use_legacy_glibc_pins else "False"}'
         )
     cfg_path = tmp_path / 'machine.cfg'
     cfg_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
@@ -108,6 +117,7 @@ def test_pre_pixi_defaults_to_nompi_single_for_pixi_only_machine(tmp_path: Path)
     assert updates['pixi']['login_prefix'] is None
     assert updates['pixi']['login_mpi'] is None
     assert updates['pixi']['omit_dependencies'] == []
+    assert updates['pixi']['extra_dependencies'] == []
     assert updates['toolchain'] == {}
 
 
@@ -201,7 +211,7 @@ def test_pre_pixi_local_build_rc_adds_local_and_dev_channels(
         machine_cfg_path=machine_cfg_path,
     )
     ctx.args.package_source = 'local-build'
-    ctx.args.e3sm_unified_version = '1.13.0rc1'
+    ctx.args.e3sm_unified_version = CURRENT_RECIPE_VERSION
 
     built = {}
 
@@ -216,13 +226,13 @@ def test_pre_pixi_local_build_rc_adds_local_and_dev_channels(
     updates = deploy_hooks.pre_pixi(ctx)
 
     assert updates is not None
-    assert built == {'version': '1.13.0rc1', 'package_mpis': ['nompi']}
-    assert updates['pixi']['channels'][0] == (
-        deploy_hooks.LOCAL_CHANNEL_DIR.resolve().as_uri()
-    )
-    assert 'conda-forge/label/e3sm_unified_dev' in updates['pixi']['channels']
-    assert 'conda-forge/label/mache_dev' in updates['pixi']['channels']
-    assert updates['pixi']['channels'][-1] == 'conda-forge'
+    assert built == {'version': CURRENT_RECIPE_VERSION, 'package_mpis': ['nompi']}
+    assert updates['pixi']['channels'] == [
+        deploy_hooks.LOCAL_CHANNEL_DIR.resolve().as_uri(),
+        *deploy_hooks.get_base_channels(
+            deploy_hooks.RECIPE_PATH, CURRENT_RECIPE_VERSION
+        ),
+    ]
 
 
 def test_pre_pixi_explicit_rc_version_must_match_feedstock_recipe(
@@ -238,7 +248,7 @@ def test_pre_pixi_explicit_rc_version_must_match_feedstock_recipe(
         machine='polaris',
         machine_cfg_path=machine_cfg_path,
     )
-    ctx.args.e3sm_unified_version = '1.13.0rc2'
+    ctx.args.e3sm_unified_version = '999.0.0rc0'
 
     with pytest.raises(
         ValueError, match='does not match feedstock recipe version'
@@ -255,6 +265,7 @@ def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
         mpi='openmpi',
         use_e3sm_hdf5_netcdf=False,
         use_system_git=True,
+        use_legacy_glibc_pins=True,
     )
     ctx = _ctx(
         tmp_path=tmp_path,
@@ -269,6 +280,10 @@ def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
     assert updates['pixi']['login_mpi'] == 'nompi'
     assert updates['pixi']['login_prefix'] is not None
     assert updates['pixi']['omit_dependencies'] == ['git']
+    assert updates['pixi']['extra_dependencies'] == [
+        'nodejs = "<22"',
+        'sysroot_linux-64 = "2.17.*"',
+    ]
     assert updates['toolchain'] == {'compiler': ['gnu'], 'mpi': ['openmpi']}
     assert updates['permissions'] == {
         'group': 'users',

@@ -65,6 +65,13 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
             ctx=ctx, section='e3sm_unified', option='use_system_git'
         )
     )
+    use_legacy_glibc_pins = bool(
+        _get_machine_bool_option(
+            ctx=ctx,
+            section='e3sm_unified',
+            option='use_legacy_glibc_pins',
+        )
+    )
     permissions = _get_permissions_runtime(ctx)
     toolchain = _get_toolchain_runtime(ctx)
 
@@ -127,6 +134,17 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     omit_dependencies: list[str] = []
     if use_system_git:
         omit_dependencies.append('git')
+    extra_dependencies: list[str] = []
+    if use_legacy_glibc_pins:
+        # Compy runs an older OS stack with glibc 2.17, so we pin the
+        # transitive toolchain/sysroot and nodejs dependencies to compatible
+        # builds when solving the pixi environment.
+        extra_dependencies.extend(
+            [
+                'nodejs = "<22"',
+                'sysroot_linux-64 = "2.17.*"',
+            ]
+        )
 
     return {
         'project': {'version': version},
@@ -137,6 +155,7 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
             'mpi': package_mpi,
             'channels': channels,
             'omit_dependencies': omit_dependencies,
+            'extra_dependencies': extra_dependencies,
         },
         'permissions': permissions,
         'toolchain': toolchain,
