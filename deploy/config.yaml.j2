@@ -17,6 +17,10 @@ project:
   # installed conda package metadata rather than Python importlib metadata.
   runtime_version_cmd: "python -c 'import json, sys; from pathlib import Path; matches = sorted(Path(sys.prefix, \"conda-meta\").glob(\"e3sm-unified-*.json\")); assert matches, \"No e3sm-unified package metadata found in conda-meta\"; print(json.loads(matches[-1].read_text())[\"version\"])'"
 
+  # Shared E3SM-Unified environments should not expose the deployer's source
+  # checkout path in generated load scripts.
+  branch_path: null
+
   # Machine name selection.
   # Priority order in `mache deploy run`:
   #   1. CLI --machine
@@ -45,6 +49,10 @@ pixi:
   # E3SM-Unified resolves this dynamically in deploy/hooks.py from --prefix or
   # machine config values.
   prefix: null
+
+  # Shared E3SM-Unified deployments include their own pixi executable so
+  # users do not need a personal pixi install to source the load script.
+  load_script_exe: shared
 
   # Channels used by pixi for this environment.
   channels:
