@@ -247,14 +247,6 @@ def post_spack(ctx: DeployContext) -> None:
     SOURCE_BUILD_DIR.mkdir(parents=True, exist_ok=True)
 
     script_lines = ['#!/bin/bash', 'set -e']
-    manifest_q = shlex.quote(str(pixi_toml))
-    pixi_exe_q = shlex.quote(pixi_exe)
-
-    if ilamb_version is not None:
-        script_lines.append(
-            f'{pixi_exe_q} add --manifest-path {manifest_q} '
-            f'"ilamb=={ilamb_version}"'
-        )
 
     pixi_shell_hook_prefix = build_pixi_shell_hook_prefix(
         pixi_exe=pixi_exe, pixi_toml=str(pixi_toml)
@@ -267,6 +259,13 @@ def post_spack(ctx: DeployContext) -> None:
             'MPICC="mpicc -shared" python -m pip install '
             '--no-cache-dir --no-binary=mpi4py --no-build-isolation '
             f'"mpi4py=={mpi4py_version}"'
+        )
+    if ilamb_version is not None:
+        script_lines.append(
+            'python -m pip install '
+            '--no-cache-dir --no-deps --no-binary=ilamb '
+            '--no-build-isolation '
+            f'"ilamb=={ilamb_version}"'
         )
 
     view_path = Path(str(spack_result['view_path']))

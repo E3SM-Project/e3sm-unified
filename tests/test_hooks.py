@@ -397,6 +397,7 @@ def test_pre_spack_prefers_cli_path_and_excludes_hdf5_bundle_by_default(
         machine='compy',
         machine_cfg_path=machine_cfg_path,
     )
+    (tmp_path / 'deploy_tmp').mkdir(parents=True, exist_ok=True)
     ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
     ctx.args.spack_path = '~/custom-spack'
     ctx.config['spack'] = {
@@ -431,6 +432,7 @@ def test_pre_spack_uses_prefix_root_when_no_override_path(tmp_path: Path):
         machine='compy',
         machine_cfg_path=machine_cfg_path,
     )
+    (tmp_path / 'deploy_tmp').mkdir(parents=True, exist_ok=True)
     ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
 
     updates = deploy_hooks.pre_spack(ctx)
@@ -444,6 +446,81 @@ def test_pre_spack_uses_prefix_root_when_no_override_path(tmp_path: Path):
             'exclude_packages': ['hdf5_netcdf'],
         }
     }
+
+
+def test_post_spack_installs_mpi4py_and_ilamb_without_rewriting_pixi(
+    tmp_path: Path, monkeypatch
+):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path='/share/apps/E3SM/conda_envs',
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    (tmp_path / 'deploy_tmp').mkdir(parents=True, exist_ok=True)
+    ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
+    ctx.pins['hpc'] = {
+        'mpi4py': '4.1.1',
+        'ilamb': '2.7.3',
+        'esmpy': 'None',
+        'xesmf': 'None',
+    }
+
+    monkeypatch.setattr(
+        deploy_hooks,
+        '_get_primary_spack_result',
+        lambda _ctx: {
+            'activation': 'source /tmp/spack/setup-env.sh\nspack env activate test',
+            'view_path': '/tmp/spack/view',
+        },
+    )
+    monkeypatch.setattr(
+        deploy_hooks,
+        '_require_pixi_executable',
+        lambda _ctx: '/tmp/pixi',
+    )
+    monkeypatch.setattr(
+        deploy_hooks,
+        'build_pixi_shell_hook_prefix',
+        lambda *, pixi_exe, pixi_toml: (
+            f'eval "$({pixi_exe} shell-hook -s bash -m {pixi_toml})" &&'
+        ),
+    )
+
+    called: dict[str, object] = {}
+
+    def fake_check_call(cmd, *, log_filename, quiet, env, cwd):
+        called['cmd'] = cmd
+        called['log_filename'] = log_filename
+        called['quiet'] = quiet
+        called['env'] = env
+        called['cwd'] = cwd
+
+    monkeypatch.setattr(deploy_hooks, 'check_call', fake_check_call)
+
+    deploy_hooks.post_spack(ctx)
+
+    script_path = tmp_path / 'deploy_tmp' / 'post_spack_hpc.sh'
+    script_text = script_path.read_text(encoding='utf-8')
+
+    assert called['cmd'] == ['/bin/bash', str(script_path)]
+    assert called['cwd'] == str(tmp_path)
+    assert 'pixi add --manifest-path' not in script_text
+    assert (
+        'MPICC="mpicc -shared" python -m pip install '
+        '--no-cache-dir --no-binary=mpi4py --no-build-isolation '
+        '"mpi4py==4.1.1"'
+    ) in script_text
+    assert (
+        'python -m pip install --no-cache-dir --no-deps '
+        '--no-binary=ilamb --no-build-isolation "ilamb==2.7.3"'
+    ) in script_text
 
 
 def test_pre_spack_skips_hdf5_bundle_exclusion_when_machine_uses_bundle(
