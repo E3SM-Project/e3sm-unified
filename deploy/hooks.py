@@ -8,12 +8,15 @@ import platform
 import shlex
 import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
-from mache.deploy.bootstrap import build_pixi_env, build_pixi_shell_hook_prefix
-from mache.deploy.bootstrap import check_call
+from mache.deploy.bootstrap import (
+    build_pixi_env,
+    build_pixi_shell_hook_prefix,
+    check_call,
+)
 
 if TYPE_CHECKING:
     from mache.deploy.hooks import DeployContext
@@ -74,6 +77,11 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     )
     permissions = _get_permissions_runtime(ctx)
     toolchain = _get_toolchain_runtime(ctx)
+    shared = _get_shared_load_script_runtime(
+        ctx=ctx,
+        version=version,
+        release=release,
+    )
 
     ctx.logger.info(
         'Resolved e3sm-unified version=%s package_source=%s package_mpi=%s '
@@ -158,6 +166,7 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
             'extra_dependencies': extra_dependencies,
         },
         'permissions': permissions,
+        'shared': shared,
         'toolchain': toolchain,
         'e3sm_unified': {
             'release': release,
@@ -273,15 +282,18 @@ def post_spack(ctx: DeployContext) -> None:
     view_path = Path(str(spack_result['view_path']))
     if esmpy_version is not None:
         esmf_dir = SOURCE_BUILD_DIR / f'esmf-{esmpy_version}'
+        esmpy_dir = esmf_dir / 'src' / 'addon' / 'esmpy'
         if esmf_dir.exists():
             script_lines.append(f'rm -rf {shlex.quote(str(esmf_dir))}')
         script_lines.extend(
             [
                 f'git clone https://github.com/esmf-org/esmf.git '
                 f'-b v{esmpy_version} {shlex.quote(str(esmf_dir))}',
-                f'export ESMFMKFILE={shlex.quote(str(view_path / "lib/esmf.mk"))}',
+                'export ESMFMKFILE='
+                f'{shlex.quote(str(view_path / "lib/esmf.mk"))}',
                 (
-                    f'cd {shlex.quote(str(esmf_dir / "src" / "addon" / "esmpy"))} '
+                    'cd '
+                    f'{shlex.quote(str(esmpy_dir))} '
                     '&& rm -rf src/esmpy/fragments '
                     '&& python -m pip install --no-deps --no-build-isolation .'
                 ),
@@ -296,7 +308,8 @@ def post_spack(ctx: DeployContext) -> None:
             [
                 f'git clone https://github.com/pangeo-data/xESMF.git '
                 f'-b v{xesmf_version} {shlex.quote(str(xesmf_dir))}',
-                f'export ESMFMKFILE={shlex.quote(str(view_path / "lib/esmf.mk"))}',
+                'export ESMFMKFILE='
+                f'{shlex.quote(str(view_path / "lib/esmf.mk"))}',
                 (
                     f'cd {shlex.quote(str(xesmf_dir))} '
                     '&& python -m pip install --no-deps --no-build-isolation .'
@@ -315,69 +328,31 @@ def post_spack(ctx: DeployContext) -> None:
     )
 
 
-def post_deploy(ctx: DeployContext) -> None:
-    machine = ctx.machine
-    load_scripts = ctx.runtime.get('load_scripts', [])
-    if not isinstance(load_scripts, list) or not load_scripts:
-        return
-
-    if len(load_scripts) != 1:
-        raise ValueError(
-            'E3SM-Unified release/test aliases currently require exactly one '
-            'generated load script per deployment.'
-        )
-
-    source_script = Path(str(load_scripts[0])).resolve()
-    requested_load_script_dir = _get_requested_load_script_dir(ctx)
-
+def post_deploy(ctx: DeployContext) -> dict[str, Any] | None:
     prefix_root = _get_prefix_root(ctx)
     release = bool(ctx.runtime.get('e3sm_unified', {}).get('release', False))
-    version = str(ctx.runtime.get('project', {}).get('version', '')).strip()
-    if not version:
-        version = _get_version(ctx)
+    if not release or prefix_root is None:
+        return None
 
-    machine_tag = machine or 'local'
-    alias_name = _get_e3sm_unified_load_script_name(
-        version=version,
-        machine_tag=machine_tag,
-        release=release,
+    login_prefix = _normalize_optional_path(
+        _get_runtime_pixi_value(ctx, 'login_prefix')
     )
+    if login_prefix is None:
+        return None
 
-    if requested_load_script_dir is not None:
-        requested_load_script_dir.mkdir(parents=True, exist_ok=True)
-        dest_script = requested_load_script_dir / alias_name
-        _copy_load_script(source_script=source_script, dest_script=dest_script)
+    machine_tag = ctx.machine or 'local'
+    nco_root = prefix_root / 'e3smu_latest_for_nco'
+    nco_root.mkdir(parents=True, exist_ok=True)
+    machine_link = nco_root / machine_tag
+    if machine_link.exists() or machine_link.is_symlink():
+        machine_link.unlink()
+    machine_link.symlink_to(str(login_prefix))
 
-    if prefix_root is None:
-        ctx.logger.info(
-            'Skipping shared load-script aliases: no deploy prefix root was '
-            'configured for this machine.'
-        )
-        return
-
-    prefix_root.mkdir(parents=True, exist_ok=True)
-
-    if release:
-        versioned = prefix_root / alias_name
-        latest = prefix_root / f'load_latest_e3sm_unified_{machine_tag}.sh'
-        _copy_load_script(source_script=source_script, dest_script=versioned)
-        if latest.exists() or latest.is_symlink():
-            latest.unlink()
-        latest.symlink_to(versioned.name)
-
-        login_prefix = _normalize_optional_path(
-            _get_runtime_pixi_value(ctx, 'login_prefix')
-        )
-        if login_prefix is not None:
-            nco_root = prefix_root / 'e3smu_latest_for_nco'
-            nco_root.mkdir(parents=True, exist_ok=True)
-            machine_link = nco_root / machine_tag
-            if machine_link.exists() or machine_link.is_symlink():
-                machine_link.unlink()
-            machine_link.symlink_to(str(login_prefix))
-    else:
-        test_script = prefix_root / alias_name
-        _copy_load_script(source_script=source_script, dest_script=test_script)
+    return {
+        'shared': {
+            'managed_directories': [str(nco_root)],
+        }
+    }
 
 
 def _get_version(ctx: DeployContext | None = None) -> str:
@@ -470,9 +445,7 @@ def _machine_supports_hpc_package(ctx: DeployContext) -> bool:
     compiler = _get_machine_option(
         ctx=ctx, section='e3sm_unified', option='compiler'
     )
-    mpi = _get_machine_option(
-        ctx=ctx, section='e3sm_unified', option='mpi'
-    )
+    mpi = _get_machine_option(ctx=ctx, section='e3sm_unified', option='mpi')
     return compiler is not None and mpi is not None
 
 
@@ -553,10 +526,14 @@ def _get_conda_platform() -> str:
         if machine == 'arm64':
             return 'osx_arm64'
 
-    raise ValueError(f'Unsupported platform for deploy hook: {system}/{machine}')
+    raise ValueError(
+        f'Unsupported platform for deploy hook: {system}/{machine}'
+    )
 
 
-def _write_variant_override(*, variant_path: Path, channels: list[str]) -> Path:
+def _write_variant_override(
+    *, variant_path: Path, channels: list[str]
+) -> Path:
     with variant_path.open('r', encoding='utf-8') as handle:
         variant_cfg = yaml.safe_load(handle) or {}
 
@@ -593,14 +570,14 @@ def _get_pixi_prefixes(
     machine_tag = ctx.machine or 'local'
     install_root = prefix_root / version_dir / machine_tag
 
-    prefix = install_root / 'pixi'
+    prefix_path = install_root / 'pixi'
     if env_layout == 'single':
-        return str(prefix), None
+        return str(prefix_path), None
     if package_mpi == 'nompi':
-        return str(prefix), str(prefix)
+        return str(prefix_path), str(prefix_path)
 
     login_prefix = install_root / 'pixi_login'
-    return str(prefix), str(login_prefix)
+    return str(prefix_path), str(login_prefix)
 
 
 def _get_prefix_root(ctx: DeployContext) -> Path | None:
@@ -629,7 +606,9 @@ def _resolve_spack_path(ctx: DeployContext) -> str | None:
 
     prefix_root = _get_prefix_root(ctx)
     if prefix_root is not None:
-        version = str(ctx.runtime.get('project', {}).get('version', '')).strip()
+        version = str(
+            ctx.runtime.get('project', {}).get('version', '')
+        ).strip()
         if not version:
             version = _get_version(ctx)
         machine_tag = ctx.machine or 'local'
@@ -680,8 +659,11 @@ def _maybe_exclude_e3sm_hdf5_netcdf(
     *, exclude_packages: list[str], machine_config
 ) -> None:
     use_bundle = False
-    if machine_config.has_section('e3sm_unified') and machine_config.has_option(
-        'e3sm_unified', 'use_e3sm_hdf5_netcdf'
+    if machine_config.has_section(
+        'e3sm_unified'
+    ) and machine_config.has_option(
+        'e3sm_unified',
+        'use_e3sm_hdf5_netcdf',
     ):
         use_bundle = machine_config.getboolean(
             'e3sm_unified', 'use_e3sm_hdf5_netcdf'
@@ -695,9 +677,7 @@ def _sync_e3sm_unified_spack_machine_options(*, machine_config) -> None:
     if not machine_config.has_section('e3sm_unified'):
         return
 
-    if not machine_config.has_option(
-        'e3sm_unified', 'use_e3sm_hdf5_netcdf'
-    ):
+    if not machine_config.has_option('e3sm_unified', 'use_e3sm_hdf5_netcdf'):
         return
 
     if not machine_config.has_section('deploy'):
@@ -729,14 +709,61 @@ def _get_toolchain_runtime(ctx: DeployContext) -> dict[str, Any]:
     compiler = _get_machine_option(
         ctx=ctx, section='e3sm_unified', option='compiler'
     )
-    mpi = _get_machine_option(
-        ctx=ctx, section='e3sm_unified', option='mpi'
-    )
+    mpi = _get_machine_option(ctx=ctx, section='e3sm_unified', option='mpi')
 
     if compiler is not None:
         runtime['compiler'] = [compiler]
     if mpi is not None:
         runtime['mpi'] = [mpi]
+
+    return runtime
+
+
+def _get_shared_load_script_runtime(
+    *,
+    ctx: DeployContext,
+    version: str,
+    release: bool,
+) -> dict[str, Any]:
+    machine_tag = ctx.machine or 'local'
+    alias_name = _get_e3sm_unified_load_script_name(
+        version=version,
+        machine_tag=machine_tag,
+        release=release,
+    )
+
+    runtime: dict[str, Any] = {
+        'load_script_copies': [],
+        'load_script_symlinks': [],
+    }
+
+    requested_load_script_dir = _get_requested_load_script_dir(ctx)
+    if requested_load_script_dir is not None:
+        runtime['load_script_copies'].append(
+            str(requested_load_script_dir / alias_name)
+        )
+
+    prefix_root = _get_prefix_root(ctx)
+    if prefix_root is None:
+        ctx.logger.info(
+            'Skipping shared load-script aliases: no deploy prefix root was '
+            'configured for this machine.'
+        )
+        return runtime
+
+    if release:
+        versioned = prefix_root / alias_name
+        runtime['load_script_copies'].append(str(versioned))
+        runtime['load_script_symlinks'].append(
+            {
+                'path': str(
+                    prefix_root / f'load_latest_e3sm_unified_{machine_tag}.sh'
+                ),
+                'target': str(versioned),
+            }
+        )
+    else:
+        runtime['load_script_copies'].append(str(prefix_root / alias_name))
 
     return runtime
 
@@ -773,21 +800,21 @@ def _get_machine_bool_option(
     )
 
 
-def _copy_load_script(*, source_script: Path, dest_script: Path) -> None:
-    source_text = source_script.read_text(encoding='utf-8')
-    updated = source_text.replace(
-        str(source_script),
-        str(dest_script.resolve()),
-    )
-    dest_script.write_text(updated, encoding='utf-8')
-    dest_script.chmod(0o644)
-
-
 def _normalize_optional_pin(value: Any) -> str | None:
     if value is None:
         return None
     token = str(value).strip()
     if token.lower() in ('', 'none', 'null'):
+        return None
+    return token
+
+
+def _normalize_optional_token(value: Any) -> str | None:
+    if value is None:
+        return None
+
+    token = str(value).strip()
+    if token.lower() in ('', 'none', 'null', 'dynamic'):
         return None
     return token
 
