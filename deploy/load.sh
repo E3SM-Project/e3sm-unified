@@ -1,6 +1,6 @@
 # bash snippet for adding e3sm-unified-specific environment variables
 
-export E3SMU_SCRIPT="${BASH_SOURCE[0]}"
+export E3SMU_SCRIPT="${E3SM_UNIFIED_LOAD_SCRIPT}"
 export E3SMU_MACHINE="${E3SM_UNIFIED_MACHINE:-}"
 export CIME_MODEL="ENVIRONMENT_RUNNING_E3SM_UNIFIED_USE_ANOTHER_TERMINAL"
 export HDF5_USE_FILE_LOCKING=FALSE
