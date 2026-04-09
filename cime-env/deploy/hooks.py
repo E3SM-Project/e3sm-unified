@@ -16,59 +16,20 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     version = ctx.config['project']['version']
     if version is None or version.lower() == 'dynamic':
         raise ValueError(
-            "Version must be explicitly specified in config.yaml for cime-env."
+            'Version must be explicitly specified in config.yaml for cime-env.'
         )
     permissions = _get_permissions_runtime(ctx)
 
     prefix = _get_pixi_prefix(ctx=ctx, version=version)
+    shared = _get_shared_load_script_runtime(ctx)
 
     return {
         'pixi': {
             'prefix': prefix,
         },
         'permissions': permissions,
+        'shared': shared,
     }
-
-
-def post_deploy(ctx: DeployContext) -> None:
-    """Run after deployment completes successfully."""
-
-    load_scripts = ctx.runtime.get('load_scripts', [])
-    if not isinstance(load_scripts, list) or not load_scripts:
-        raise ValueError(
-            'cime-env should have generated a load script'
-        )
-
-    if len(load_scripts) != 1:
-        raise ValueError(
-            'cime-env should have generated a single load script'
-        )
-
-    source_script = Path(str(load_scripts[0])).resolve()
-    requested_load_script_dir = _get_requested_load_script_dir(ctx)
-
-    prefix_root = _get_prefix_root(ctx)
-    if prefix_root is None:
-        raise ValueError(
-            "Machine config 'e3sm_unified:base_path' is either unset or "
-            "empty. Please provide a valid path."
-        )
-    version = str(ctx.runtime.get('project', {}).get('version', '')).strip()
-    if version is None or version.lower() == 'dynamic':
-        raise ValueError(
-            "Version must be explicitly specified in config.yaml for cime-env."
-        )
-
-    alias_name = 'load_latest_cime_env.sh'
-
-    if requested_load_script_dir is not None:
-        requested_load_script_dir.mkdir(parents=True, exist_ok=True)
-        dest_script = requested_load_script_dir / alias_name
-    else:
-        prefix_root.mkdir(parents=True, exist_ok=True)
-        dest_script = prefix_root / alias_name
-
-    _copy_load_script(source_script=source_script, dest_script=dest_script)
 
 
 def _get_permissions_runtime(ctx: DeployContext) -> dict[str, Any]:
@@ -99,13 +60,34 @@ def _get_pixi_prefix(
     if prefix_root is None:
         raise ValueError(
             "Machine config 'e3sm_unified:base_path' is either unset or "
-            "empty. Please provide a valid path."
+            'empty. Please provide a valid path.'
         )
     version_dir = _get_version_dir_name(version)
     machine_tag = ctx.machine or 'local'
     install_root = prefix_root / version_dir / machine_tag
-    prefix = install_root / 'pixi'
-    return str(prefix)
+    prefix_path = install_root / 'pixi'
+    return str(prefix_path)
+
+
+def _get_shared_load_script_runtime(ctx: DeployContext) -> dict[str, Any]:
+    requested_load_script_dir = _get_requested_load_script_dir(ctx)
+    prefix_root = _get_prefix_root(ctx)
+
+    alias_name = 'load_latest_cime_env.sh'
+
+    if requested_load_script_dir is not None:
+        dest_script = requested_load_script_dir / alias_name
+    elif prefix_root is not None:
+        dest_script = prefix_root / alias_name
+    else:
+        raise ValueError(
+            "Machine config 'e3sm_unified:base_path' is either unset or "
+            'empty. Please provide a valid path.'
+        )
+
+    return {
+        'load_script_copies': [str(dest_script)],
+    }
 
 
 def _abs_path(path: str) -> str:
@@ -149,13 +131,3 @@ def _get_prefix_root(ctx: DeployContext) -> Path | None:
             ctx.machine_config.get('e3sm_unified', 'base_path')
         )
     return None
-
-
-def _copy_load_script(*, source_script: Path, dest_script: Path) -> None:
-    source_text = source_script.read_text(encoding='utf-8')
-    updated = source_text.replace(
-        str(source_script),
-        str(dest_script.resolve()),
-    )
-    dest_script.write_text(updated, encoding='utf-8')
-    dest_script.chmod(0o644)
