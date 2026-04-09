@@ -77,7 +77,7 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     )
     permissions = _get_permissions_runtime(ctx)
     toolchain = _get_toolchain_runtime(ctx)
-    shared = _get_shared_load_script_runtime(
+    shared = _get_shared_runtime(
         ctx=ctx,
         version=version,
         release=release,
@@ -719,7 +719,7 @@ def _get_toolchain_runtime(ctx: DeployContext) -> dict[str, Any]:
     return runtime
 
 
-def _get_shared_load_script_runtime(
+def _get_shared_runtime(
     *,
     ctx: DeployContext,
     version: str,
@@ -736,6 +736,9 @@ def _get_shared_load_script_runtime(
         'load_script_copies': [],
         'load_script_symlinks': [],
     }
+    prefix_root = _get_prefix_root(ctx)
+    if prefix_root is not None:
+        runtime['base_path'] = str(prefix_root / _get_version_dir_name(version))
 
     requested_load_script_dir = _get_requested_load_script_dir(ctx)
     if requested_load_script_dir is not None:
@@ -743,7 +746,6 @@ def _get_shared_load_script_runtime(
             str(requested_load_script_dir / alias_name)
         )
 
-    prefix_root = _get_prefix_root(ctx)
     if prefix_root is None:
         ctx.logger.info(
             'Skipping shared load-script aliases: no deploy prefix root was '

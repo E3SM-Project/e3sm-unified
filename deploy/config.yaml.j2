@@ -203,6 +203,22 @@ spack:
   mirror: null
   custom_spack: ""
 
+shared:
+  # Optional extra shared-deployment artifacts managed by `mache deploy run`.
+  #
+  # These are most useful for shared release/test installs that need copies of
+  # the generated load script in well-known shared locations.
+  #
+  # Priority order:
+  #   1. runtime["shared"] values returned from hooks
+  #   2. values here
+  #
+  # Optional shared base directory to update permissions on recursively before
+  # mache processes specific deployed prefixes, load scripts, Spack paths, and
+  # other managed shared artifacts. Set this to "dynamic" when hooks will
+  # decide the path at runtime.
+  base_path: "dynamic"
+
 jigsaw:
   # If true, build/install JIGSAW + JIGSAW-Python into the pixi env
   enabled: false

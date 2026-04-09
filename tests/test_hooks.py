@@ -290,6 +290,9 @@ def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
         'group': 'users',
         'world_readable': True,
     }
+    assert updates['shared']['base_path'] == (
+        '/share/apps/E3SM/conda_envs/e3smu_1_2_3'
+    )
     assert updates['e3sm_unified']['env_layout'] == 'dual'
 
 
