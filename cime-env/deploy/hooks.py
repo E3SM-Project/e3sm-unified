@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import os
+import shlex
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+from mache.deploy.bootstrap import build_pixi_env, check_call
 
 if TYPE_CHECKING:
     # This import is only for static type checking; at runtime, `mache` is
@@ -30,6 +33,42 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
         'permissions': permissions,
         'shared': shared,
     }
+
+
+def post_deploy(ctx: DeployContext) -> None:
+    shared_load_script = _get_shared_load_script_path(ctx)
+    if shared_load_script is None:
+        ctx.logger.info(
+            'Skipping cime-env post-deploy smoke test: no shared deployment '
+            'location was configured for this machine.'
+        )
+        return
+
+    if not shared_load_script.exists():
+        raise FileNotFoundError(
+            'Expected the shared cime-env load script at '
+            f'{shared_load_script}, but it does not exist.'
+        )
+
+    work_dir = Path(ctx.work_dir)
+    work_dir.mkdir(parents=True, exist_ok=True)
+    script_path = work_dir / 'post_deploy_smoke_test.sh'
+    script_lines = [
+        '#!/bin/bash',
+        'set -e',
+        f'source {shlex.quote(str(shared_load_script))}',
+        'python -c "import evv4esm"',
+        'evv --help',
+    ]
+    script_path.write_text('\n'.join(script_lines) + '\n', encoding='utf-8')
+
+    check_call(
+        ['/bin/bash', str(script_path)],
+        log_filename=_get_log_filename(ctx),
+        quiet=bool(getattr(ctx.args, 'quiet', False)),
+        cwd=ctx.repo_root,
+        env=build_pixi_env(),
+    )
 
 
 def _get_permissions_runtime(ctx: DeployContext) -> dict[str, Any]:
@@ -125,9 +164,24 @@ def _get_requested_load_script_dir(ctx: DeployContext) -> Path | None:
     return _normalize_optional_path(getattr(ctx.args, 'load_script_dir', None))
 
 
+def _get_shared_load_script_path(ctx: DeployContext) -> Path | None:
+    prefix_root = _get_prefix_root(ctx)
+    if prefix_root is None:
+        return None
+    return prefix_root / 'load_latest_cime_env.sh'
+
+
 def _get_prefix_root(ctx: DeployContext) -> Path | None:
     if ctx.machine_config.has_option('e3sm_unified', 'base_path'):
         return _normalize_optional_path(
             ctx.machine_config.get('e3sm_unified', 'base_path')
         )
     return None
+
+
+def _get_log_filename(ctx: DeployContext) -> str:
+    for handler in ctx.logger.handlers:
+        base_filename = getattr(handler, 'baseFilename', None)
+        if base_filename:
+            return str(base_filename)
+    return str(Path(ctx.work_dir) / 'logs' / 'mache_deploy_run.log')
