@@ -22,10 +22,6 @@ pixi:
   # machine config values.
   prefix: null
 
-  # MPI provider for conda packages.
-  # Not relevant for cime-env itself but it is required by mache.deploy
-  mpi: nompi
-
   # Shared cime-env deployments include their own pixi executable so
   # users do not need a personal pixi install to source the load script.
   load_script_exe: shared
@@ -60,6 +56,11 @@ permissions:
   # Whether deployed files should be readable by users outside the shared
   # group. Directories keep execute permission when needed for traversal.
   world_readable: true
+
+shared:
+  # Resolve this in deploy/hooks.py so mache updates permissions recursively
+  # from the version root instead of only from the pixi prefix.
+  base_path: "dynamic"
 
 
 # Optional deployment hooks.

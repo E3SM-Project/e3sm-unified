@@ -24,7 +24,7 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     permissions = _get_permissions_runtime(ctx)
 
     prefix = _get_pixi_prefix(ctx=ctx, version=version)
-    shared = _get_shared_load_script_runtime(ctx)
+    shared = _get_shared_runtime(ctx=ctx, version=version)
 
     return {
         'pixi': {
@@ -108,7 +108,9 @@ def _get_pixi_prefix(
     return str(prefix_path)
 
 
-def _get_shared_load_script_runtime(ctx: DeployContext) -> dict[str, Any]:
+def _get_shared_runtime(
+    *, ctx: DeployContext, version: str
+) -> dict[str, Any]:
     requested_load_script_dir = _get_requested_load_script_dir(ctx)
     prefix_root = _get_prefix_root(ctx)
 
@@ -124,9 +126,14 @@ def _get_shared_load_script_runtime(ctx: DeployContext) -> dict[str, Any]:
             'empty. Please provide a valid path.'
         )
 
-    return {
+    runtime = {
         'load_script_copies': [str(dest_script)],
     }
+    if prefix_root is not None:
+        version_dir = _get_version_dir_name(version)
+        runtime['base_path'] = str(prefix_root / version_dir)
+
+    return runtime
 
 
 def _abs_path(path: str) -> str:
