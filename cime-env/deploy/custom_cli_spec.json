@@ -1,0 +1,10 @@
+{
+  "arguments": [
+    {
+      "flags": ["--load-script-dir"],
+      "dest": "load_script_dir",
+      "help": "Directory where a copy of the generated load script should be written.",
+      "route": ["deploy", "run"]
+    }
+  ]
+}

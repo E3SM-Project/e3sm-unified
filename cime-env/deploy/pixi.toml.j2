@@ -1,0 +1,17 @@
+[workspace]
+name = "cime-env"
+channels = [
+{%- for channel in pixi_channels %}
+  "{{ channel }}"{%- if not loop.last %},{% endif %}
+{%- endfor %}
+]
+platforms = ["{{ platform }}"]
+channel-priority = "strict"
+
+[dependencies]
+python = "{{ python }}.*"
+evv4esm = "=={{ evv4esm }}"
+numpy = ">1.13"
+scipy = "*"
+pandas = "*"
+matplotlib = "*"
