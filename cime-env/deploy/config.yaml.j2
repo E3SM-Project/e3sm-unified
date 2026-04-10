@@ -10,6 +10,14 @@ project:
   #   3. automatic detection (if this is "dynamic")
   machine: "dynamic"
 
+  # Optional: a command that prints the *runtime* version string for the
+  # deployed software.
+  #
+  # Shared cime-env deployments intentionally disable the generated load
+  # script version probe. Unlike downstream developer workflows, these shared
+  # environments are not tied to a single source checkout.
+  runtime_version_cmd: ""
+
   # Shared cime-env environments should not expose the deployer's source
   # checkout path in generated load scripts.
   branch_path: null
