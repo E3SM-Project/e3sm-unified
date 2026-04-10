@@ -53,11 +53,11 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     }
 
 
-def post_deploy(ctx: DeployContext) -> None:
+def post_publish(ctx: DeployContext) -> None:
     shared_load_script = _get_shared_load_script_path(ctx)
     if shared_load_script is None:
         ctx.logger.info(
-            'Skipping cime-env post-deploy smoke test: no shared deployment '
+            'Skipping cime-env post-publish smoke test: no shared deployment '
             'location was configured for this machine.'
         )
         return
@@ -70,7 +70,7 @@ def post_deploy(ctx: DeployContext) -> None:
 
     work_dir = Path(ctx.work_dir)
     work_dir.mkdir(parents=True, exist_ok=True)
-    script_path = work_dir / 'post_deploy_smoke_test.sh'
+    script_path = work_dir / 'post_publish_smoke_test.sh'
     script_lines = [
         '#!/bin/bash',
         'set -e',

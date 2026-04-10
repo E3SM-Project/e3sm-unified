@@ -1,7 +1,7 @@
 {
   "meta": {
     "software": "cime-env",
-    "mache_version": "3.4.1",
+    "mache_version": "3.5.0",
     "description": "Deploy cime-env environment"
   },
   "arguments": [
