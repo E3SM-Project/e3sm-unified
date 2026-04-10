@@ -168,7 +168,7 @@ def _normalize_optional_path(value: Any) -> Path | None:
 
 
 def _get_version_dir_name(version: str) -> str:
-    return f'e3smu_{version.replace(".", "_")}'
+    return f'cime_env_{version.replace(".", "_")}'
 
 
 def _get_machine_option(
