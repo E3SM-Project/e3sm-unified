@@ -129,16 +129,10 @@ def _get_pixi_prefix(
 def _get_shared_runtime(
     *, ctx: DeployContext, version: str
 ) -> dict[str, Any]:
-    requested_load_script_dir = _get_requested_load_script_dir(ctx)
+    dest_script = _get_shared_load_script_path(ctx)
     prefix_root = _get_prefix_root(ctx)
 
-    alias_name = 'load_latest_cime_env.sh'
-
-    if requested_load_script_dir is not None:
-        dest_script = requested_load_script_dir / alias_name
-    elif prefix_root is not None:
-        dest_script = prefix_root / alias_name
-    else:
+    if dest_script is None:
         raise ValueError(
             "Machine config 'e3sm_unified:base_path' is either unset or "
             'empty. Please provide a valid path.'
@@ -208,10 +202,15 @@ def _get_requested_load_script_dir(ctx: DeployContext) -> Path | None:
 
 
 def _get_shared_load_script_path(ctx: DeployContext) -> Path | None:
+    requested_load_script_dir = _get_requested_load_script_dir(ctx)
+    alias_name = 'load_latest_cime_env.sh'
+    if requested_load_script_dir is not None:
+        return requested_load_script_dir / alias_name
+
     prefix_root = _get_prefix_root(ctx)
     if prefix_root is None:
         return None
-    return prefix_root / 'load_latest_cime_env.sh'
+    return prefix_root / alias_name
 
 
 def _get_prefix_root(ctx: DeployContext) -> Path | None:
