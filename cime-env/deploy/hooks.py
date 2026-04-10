@@ -25,10 +25,28 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
 
     prefix = _get_pixi_prefix(ctx=ctx, version=version)
     shared = _get_shared_runtime(ctx=ctx, version=version)
-
+    use_legacy_glibc_pins = bool(
+        _get_machine_bool_option(
+            ctx=ctx,
+            section='e3sm_unified',
+            option='use_legacy_glibc_pins',
+        )
+    )
+    extra_dependencies: list[str] = []
+    if use_legacy_glibc_pins:
+        # Compy runs an older OS stack with glibc 2.17, so we pin the
+        # transitive toolchain/sysroot dependencies to compatible
+        # builds when solving the pixi environment.
+        extra_dependencies.extend(
+            [
+                'nodejs = "<22"',
+                'sysroot_linux-64 = "2.17.*"',
+            ]
+        )
     return {
         'pixi': {
             'prefix': prefix,
+            'extra_dependencies': extra_dependencies,
         },
         'permissions': permissions,
         'shared': shared,
@@ -165,6 +183,24 @@ def _get_machine_option(
     if value.lower() in ('', 'none', 'null'):
         return None
     return value
+
+
+def _get_machine_bool_option(
+    *, ctx: DeployContext, section: str, option: str
+) -> bool | None:
+    value = _get_machine_option(ctx=ctx, section=section, option=option)
+    if value is None:
+        return None
+
+    normalized = value.lower()
+    if normalized in ('true', 'yes', 'on', '1'):
+        return True
+    if normalized in ('false', 'no', 'off', '0'):
+        return False
+
+    raise ValueError(
+        f'Expected [{section}] {option} to be a boolean, got {value!r}.'
+    )
 
 
 def _get_requested_load_script_dir(ctx: DeployContext) -> Path | None:

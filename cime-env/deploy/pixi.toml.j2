@@ -15,3 +15,6 @@ numpy = ">1.13"
 scipy = "*"
 pandas = "*"
 matplotlib = "*"
+{%- for dependency in extra_dependencies | default([]) %}
+{{ dependency }}
+{%- endfor %}
