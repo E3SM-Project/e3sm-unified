@@ -328,7 +328,7 @@ def post_spack(ctx: DeployContext) -> None:
     )
 
 
-def post_deploy(ctx: DeployContext) -> dict[str, Any] | None:
+def pre_publish(ctx: DeployContext) -> dict[str, Any] | None:
     prefix_root = _get_prefix_root(ctx)
     release = bool(ctx.runtime.get('e3sm_unified', {}).get('release', False))
     if not release or prefix_root is None:
