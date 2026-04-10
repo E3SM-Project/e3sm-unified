@@ -6,16 +6,11 @@ project:
   # Optional: a command that prints the *runtime* version string for the
   # deployed software.
   #
-  # This command is run via `pixi run -m <pixi.toml> -- bash -c <cmd>` *before*
-  # the load script activates the environment, so it can safely `return` on
-  # mismatch without changing your shell environment.
-  #
-  # The command should print a single version string on stdout that matches
-  # `project.version` exactly.
-  #
-  # E3SM-Unified is a conda metapackage, so the runtime probe reads the
-  # installed conda package metadata rather than Python importlib metadata.
-  runtime_version_cmd: "python -c 'import json, sys; from pathlib import Path; matches = sorted(Path(sys.prefix, \"conda-meta\").glob(\"e3sm-unified-*.json\")); assert matches, \"No e3sm-unified package metadata found in conda-meta\"; print(json.loads(matches[-1].read_text())[\"version\"])'"
+  # Shared E3SM-Unified deployments intentionally disable the generated load
+  # script version probe. Unlike downstream developer workflows, these shared
+  # environments are not tied to a single source checkout, and the probe can
+  # hang while users are simply trying to source the load script.
+  runtime_version_cmd: ""
 
   # Shared E3SM-Unified environments should not expose the deployer's source
   # checkout path in generated load scripts.
