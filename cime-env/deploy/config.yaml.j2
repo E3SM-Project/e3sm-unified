@@ -1,0 +1,85 @@
+project:
+  software: "cime-env"
+  # A specific version string
+  version: "1.10.0"
+
+  # Machine name selection.
+  # Priority order in `mache deploy run`:
+  #   1. CLI --machine
+  #   2. this value (project.machine)
+  #   3. automatic detection (if this is "dynamic")
+  machine: "dynamic"
+
+  # Optional: a command that prints the *runtime* version string for the
+  # deployed software.
+  #
+  # Shared cime-env deployments intentionally disable the generated load
+  # script version probe. Unlike downstream developer workflows, these shared
+  # environments are not tied to a single source checkout.
+  runtime_version_cmd: ""
+
+  # Shared cime-env environments should not expose the deployer's source
+  # checkout path in generated load scripts.
+  branch_path: null
+
+pixi:
+  # Whether to deploy the pixi environment
+  deploy: true
+
+  # cime-env resolves this dynamically in deploy/hooks.py from --pixi-path or
+  # machine config values.
+  prefix: null
+
+  # Shared cime-env deployments include their own pixi executable so
+  # users do not need a personal pixi install to source the load script.
+  load_script_exe: shared
+
+  # Channels used by pixi for this environment.
+  channels:
+    - conda-forge
+
+  # Whether to install the target software in editable/development mode.
+  install_dev_software: false
+
+env_vars:
+  # Placeholder: env vars to export in the "load" script
+  set: {}
+
+permissions:
+  # Optional shared-filesystem permission policy applied after a successful
+  # deployment.
+  #
+  # Priority order in `mache deploy run`:
+  #   1. Hook/runtime overrides:
+  #        ctx.runtime["permissions"]["group"]
+  #        ctx.runtime["permissions"]["world_readable"]
+  #   2. Values here
+  #   3. Machine config defaults from [deploy]:
+  #        group = <unix-group>
+  #        world_readable = true|false
+  #
+  # If no group is resolved, mache skips the permission update step.
+  group: null
+
+  # Whether deployed files should be readable by users outside the shared
+  # group. Directories keep execute permission when needed for traversal.
+  world_readable: true
+
+shared:
+  # Resolve this in deploy/hooks.py so mache updates permissions recursively
+  # from the version root instead of only from the pixi prefix.
+  base_path: "dynamic"
+
+
+# Optional deployment hooks.
+#
+# Hooks run ONLY during `mache deploy run` and execute arbitrary Python code
+# from the target repository. Use only with trusted repositories.
+# Custom CLI flags from deploy/custom_cli_spec.json are available on ctx.args
+# inside hooks when routed to "run".
+#
+hooks:
+  file: "deploy/hooks.py"
+  entrypoints:
+    pre_pixi: "pre_pixi"
+    post_publish: "post_publish"
