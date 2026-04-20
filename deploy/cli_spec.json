@@ -1,7 +1,7 @@
 {
   "meta": {
     "software": "e3sm-unified",
-    "mache_version": "3.5.0",
+    "mache_version": "3.6.0",
     "description": "Deploy e3sm-unified environment"
   },
   "arguments": [
