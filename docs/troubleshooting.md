@@ -40,17 +40,49 @@ different shell/session.
 Re-source the appropriate `load_latest_e3sm_unified_<machine>.sh` script and
 retry.
 
+If you installed E3SM-Unified locally, confirm that your active environment
+contains the package:
+
+```bash
+conda list e3sm-unified
+```
+
 ---
 
 ### MPI-based Tools Fail on Login Nodes
 
 **Symptom:** Tools like `mpas_analysis` or `nco` crash with MPI errors.
 
-**Cause:** These tools are compiled with system MPI (or launch other tools
-that use system MPI) and require execution on compute nodes.
+**Cause:** These tools may require the `hpc` package variant or another
+MPI-enabled stack that is intended for compute nodes.
 
 **Solution:** Launch a batch job or an interactive compute session with
 `srun`, `salloc` or `qsub`, depending on your machine.
+
+If you are on an HPC machine, confirm the active deployment mode:
+
+```bash
+echo "$E3SMU_MPI"
+```
+
+If this prints `NOMPI` on a compute node, the load script may have selected
+the login environment instead of the compute-node environment.
+
+---
+
+### Local Install Solves to the Wrong Package Variant
+
+**Symptom:** You expected MPI-enabled tools but installed the default package.
+
+**Cause:** `conda create -n e3sm-unified e3sm-unified` will typically resolve
+to the default `nompi` variant unless you constrain the build string.
+
+**Solution:** Create a fresh environment and request the desired variant
+explicitly, for example:
+
+```bash
+conda create -n e3sm-unified -c conda-forge python=3.13 "e3sm-unified=*=mpi_mpich_*"
+```
 
 ---
 

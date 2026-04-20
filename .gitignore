@@ -2,3 +2,27 @@
 /recipes/e3sm-unified/outputs/
 
 **/__pycache__
+
+# pixi
+.pixi/*
+.pixi/.*
+!.pixi/config.toml
+pixi.lock
+pixi-env/
+
+# vs code
+.vscode/
+.codex
+
+# mypy
+.mypy_cache/
+
+# ruff
+.ruff_cache/
+
+# mache
+.mache_cache/
+deploy_tmp/
+
+# load scripts
+load_*.sh

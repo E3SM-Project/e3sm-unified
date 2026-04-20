@@ -70,8 +70,8 @@ outputs/linux-64/e3sm-unified-1.12.0-nompi_py313h296f607_1.conda
 ## 4. Troubleshoot
 
 If builds fail, consult the
-[Troubleshooting Conda Build Failures](rc-troubleshooting.md) guide.
-This includes how to use `conda_first_failure.py` to debug dependency
+[Troubleshooting Pixi Solve Failures](rc-troubleshooting.md) guide.
+This includes how to use `pixi_first_failure.py` to debug dependency
 resolution issues.
 
 ---
@@ -125,13 +125,13 @@ git push E3SM-Project/e3sm-unified 1.12.0rc1
 
 2. Create a new branch in your fork (e.g., `update-1.12.0rc1`)
 
-3. Edit `recipe/meta.yaml`:
+3. Edit `recipe/recipe.yaml`:
 
    * Update the `version` field (e.g., `1.12.0rc1`)
    * Update all dependencies to match the versions in your
      `update-to-<version>` branch of `e3sm-unified` repo
 
-   ⚠️ **Reminder:** The feedstock’s `meta.yaml` is the authoritative source
+   ⚠️ **Reminder:** The feedstock’s `recipe.yaml` is the authoritative source
    for the Conda package. The one in the `e3sm-unified` repo is for testing
    and provenance only.
 
@@ -146,5 +146,16 @@ conda-forge/label/e3sm_unified_dev
 ```
 
 It’s ready to be tested and deployed on HPC systems.
+
+If E3SM-Unified testing depends on a `mache` release candidate rather than a
+final `mache` release, update the repository's `pixi.toml` so the CI/test
+environment includes:
+
+```toml
+channels = ["conda-forge/label/mache_dev", "conda-forge"]
+```
+
+This allows Pixi to resolve the RC build of `mache` during CI and local test
+workflows.
 
 ➡ Next: [Deploying on HPCs for Testing](../testing/deploying-on-hpcs.md)

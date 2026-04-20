@@ -21,8 +21,8 @@ community.
 * Propose version updates by:
   * Editing the E3SM Confluence pages defining the next E3SM-Unified version
     (if you have access)
-  * Or editing the `meta.yaml` (for conda package) or `defaults.cfg` (for spack
-    pacakges) and making a pull request (if you don't have access to E3SM's
+  * Or editing `recipe.yaml` for package changes and `deploy/pins.cfg` for
+    deployment-side pin changes, then making a pull request (if you don't have access to E3SM's
     Confluence pages).
 
 ### ⚙️ Development & Testing

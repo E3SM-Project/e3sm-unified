@@ -36,11 +36,11 @@ Go to: [Creating an E3SM-Unified RC](rc-e3sm-unified.md)
 
 ### 3. Troubleshooting Build Failures
 
-Solving Conda environments during builds can fail for complex or subtle
+Solving Pixi environments during builds can fail for complex or subtle
 reasons. This section provides detailed strategies for debugging, including
-use of `conda_first_failure.py`.
+use of `pixi_first_failure.py`.
 
-Go to: [Troubleshooting Conda Build Failures](rc-troubleshooting.md)
+Go to: [Troubleshooting Pixi Solve Failures](rc-troubleshooting.md)
 
 ---
 

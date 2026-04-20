@@ -1,4 +1,4 @@
-# Troubleshooting Conda Build Failures
+# Troubleshooting Pixi Solve Failures
 
 When building a release candidate (RC) of E3SM-Unified, it's common to
 encounter solver or build failures due to dependency conflicts, pinning
@@ -8,66 +8,59 @@ This page outlines common issues and how to debug them effectively.
 
 ---
 
-## Common Failure: Conda Solver Errors
+## Common Failure: Pixi Solver Errors
 
 The most frequent issue occurs during environment solving:
 
 ```bash
-ResolvePackageNotFound:
-  - some_package=1.2.3
+Error: failed to solve environment
 ```
 
-Or more subtly:
-
-```bash
-Found conflicts! Looking for incompatible packages.
-...UnsatisfiableError: The following specifications were found to be incompatible...
-```
+Or more subtly, a solve may fail only for a particular Python or MPI
+combination in the generated manifest.
 
 These often stem from:
 
 * Conflicting dependencies across packages
 * Incompatible versions due to partially-completed conda-forge migrations
-* Conda environment solver hitting internal limits
+* A mismatch between recipe selectors, variant expansion, and the final solve
 
 ---
 
-## Strategy: Use `conda_first_failure.py`
+## Strategy: Use `pixi_first_failure.py`
 
 To help identify the root cause, E3SM-Unified provides:
 
 ```
-recipes/e3sm-unified/conda_first_failure.py
+recipes/e3sm-unified/pixi_first_failure.py
 ```
 
-This utility performs a dry-run install using a list of dependencies, then
+This utility performs a Pixi-based solve using a list of dependencies, then
 uses bisection to find the first package that causes solver failure.
 
 ### Usage
 
-1. Copy the list of dependencies from `meta.yaml` → `build:` section into a
+1. Copy the list of dependencies from `recipe.yaml` into a
    text file (e.g., `specs.txt`)
 
 2. Constrain the python version to a single minor version, e.g.:
 
    ``` yaml
-     - python >=3.10,<3.11
+     - python ==3.13
    ```
 
-3. Remove or replace any jinja2 emplating or conflicthing selector comments,
+3. Remove or replace any jinja templating or conflicting selector logic,
    for example:
 
-   * replace `{{ mpi_prefix }}` with `mpi_mpich` or `nompi`
-   * depending on the python version you are testing, pick only one of:
-     ``` yaml
-       - pyproj 3.6.1  # [py<310]
-       - pyproj 3.7.0  # [py>=310]
-     ```
+   * replace `\${{ mpi_prefix }}` with `mpi_mpich` or `nompi`
+   * replace `\${{ mpi }}` with a concrete value when needed
+   * depending on the python version and variant you are testing, pick only
+     the applicable conditional requirements
 
 4. Run the script:
 
 ```bash
-python conda_first_failure.py specs.txt
+python3 recipes/e3sm-unified/pixi_first_failure.py specs.txt
 ```
 
 5. The script will print the **first package** that causes a conflict.
@@ -90,18 +83,18 @@ python conda_first_failure.py specs.txt
 * Compare dependency trees using:
 
 ```bash
-conda create --dry-run -n test-env <packages>
+pixi add --manifest-path /tmp/test-pixi.toml <packages>
 ```
 
-* Use `conda search <package>` with `--info` to inspect available versions
-  and build strings
+* Inspect the generated Pixi manifest or chosen constraints to make sure they
+  match the recipe branch you are testing
 
 ---
 
 ## When You’re Stuck
 
 As the E3SM-Unified maintainer, you're likely the most experienced person on
-the team when it comes to Conda packaging and dependency resolution.
+the team when it comes to conda-forge packaging and solver behavior.
 
 If the conflict is particularly subtle or deep within upstream packages:
 

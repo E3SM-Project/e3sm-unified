@@ -3,7 +3,7 @@
 Support for a new HPC machine in E3SM-Unified requires coordinated updates
 across multiple tools — primarily in
 [`mache`](https://github.com/E3SM-Project/mache), but also in the E3SM Spack
-fork and deployment scripts.
+fork and the repository's `deploy/` configuration.
 
 This page provides guidance for E3SM-Unified maintainers and infrastructure
 developers integrating new machines into the release and deployment workflow.
@@ -37,7 +37,7 @@ After updating `mache`, you'll need to:
 
 1. **Reference your `mache` branch in E3SM-Unified Deployment**
 
-   * Use the `--mache_fork` and `--mache_branch` flags to deploy using the
+   * Use the `--mache-fork` and `--mache-branch` flags to deploy using the
      updated branch
    * Confirm the new machine is recognized and templates are applied correctly
 
@@ -55,16 +55,14 @@ Use the standard test deployment approach from
 [Deploying on HPCs](testing/deploying-on-hpcs.md):
 
 ```bash
-cd e3sm_supported_machines
-./deploy_e3sm_unified.py --conda ~/miniforge3 \
-                         --mache_fork <your_fork> \
-                         --mache_branch <your_branch>
+./deploy.py --mache-fork <your_fork> \
+    --mache-branch <your_branch>
 ```
 You can also supply these flags:
 ```
-                         --machine <new_machine> \
-                         --compiler <compiler> \
-                         --mpi <mpi> \
+--machine <new_machine>
+--compiler <compiler>
+--mpi <mpi>
 ```
 but they should not be needed if you have set things up in `mache` correctly.
 
