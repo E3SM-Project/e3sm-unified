@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Troubleshooting Conda Build Failures</title>
+  <title>Troubleshooting Pixi Solve Failures</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
@@ -56,9 +56,9 @@
 <li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Release Candidate Workflows</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rc-dependencies.html">Creating RCs for Dependency Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rc-e3sm-unified.html">Creating an RC for E3SM-Unified</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Troubleshooting Conda Build Failures</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#common-failure-conda-solver-errors">Common Failure: Conda Solver Errors</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#strategy-use-conda-first-failure-py">Strategy: Use <code class="docutils literal notranslate"><span class="pre">conda_first_failure.py</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Troubleshooting Pixi Solve Failures</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#common-failure-pixi-solver-errors">Common Failure: Pixi Solver Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#strategy-use-pixi-first-failure-py">Strategy: Use <code class="docutils literal notranslate"><span class="pre">pixi_first_failure.py</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#advanced-debugging-tips">Advanced Debugging Tips</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#when-youre-stuck">When You’re Stuck</a></li>
 </ul>
@@ -92,7 +92,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
           <li class="breadcrumb-item"><a href="index.html">Creating Release Candidates</a></li>
-      <li class="breadcrumb-item active">Troubleshooting Conda Build Failures</li>
+      <li class="breadcrumb-item active">Troubleshooting Pixi Solve Failures</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/releasing/creating-rcs/rc-troubleshooting.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -102,66 +102,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting-conda-build-failures">
-<h1>Troubleshooting Conda Build Failures<a class="headerlink" href="#troubleshooting-conda-build-failures" title="Link to this heading"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting-pixi-solve-failures">
+<h1>Troubleshooting Pixi Solve Failures<a class="headerlink" href="#troubleshooting-pixi-solve-failures" title="Link to this heading"></a></h1>
 <p>When building a release candidate (RC) of E3SM-Unified, it’s common to
 encounter solver or build failures due to dependency conflicts, pinning
 mismatches, or version incompatibilities.</p>
 <p>This page outlines common issues and how to debug them effectively.</p>
 <hr class="docutils" />
-<section id="common-failure-conda-solver-errors">
-<h2>Common Failure: Conda Solver Errors<a class="headerlink" href="#common-failure-conda-solver-errors" title="Link to this heading"></a></h2>
+<section id="common-failure-pixi-solver-errors">
+<h2>Common Failure: Pixi Solver Errors<a class="headerlink" href="#common-failure-pixi-solver-errors" title="Link to this heading"></a></h2>
 <p>The most frequent issue occurs during environment solving:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ResolvePackageNotFound:
-<span class="w">  </span>-<span class="w"> </span><span class="nv">some_package</span><span class="o">=</span><span class="m">1</span>.2.3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Error:<span class="w"> </span>failed<span class="w"> </span>to<span class="w"> </span>solve<span class="w"> </span>environment
 </pre></div>
 </div>
-<p>Or more subtly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Found<span class="w"> </span>conflicts!<span class="w"> </span>Looking<span class="w"> </span><span class="k">for</span><span class="w"> </span>incompatible<span class="w"> </span>packages.
-...UnsatisfiableError:<span class="w"> </span>The<span class="w"> </span>following<span class="w"> </span>specifications<span class="w"> </span>were<span class="w"> </span>found<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>incompatible...
-</pre></div>
-</div>
+<p>Or more subtly, a solve may fail only for a particular Python or MPI
+combination in the generated manifest.</p>
 <p>These often stem from:</p>
 <ul class="simple">
 <li><p>Conflicting dependencies across packages</p></li>
 <li><p>Incompatible versions due to partially-completed conda-forge migrations</p></li>
-<li><p>Conda environment solver hitting internal limits</p></li>
+<li><p>A mismatch between recipe selectors, variant expansion, and the final solve</p></li>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="strategy-use-conda-first-failure-py">
-<h2>Strategy: Use <code class="docutils literal notranslate"><span class="pre">conda_first_failure.py</span></code><a class="headerlink" href="#strategy-use-conda-first-failure-py" title="Link to this heading"></a></h2>
+<section id="strategy-use-pixi-first-failure-py">
+<h2>Strategy: Use <code class="docutils literal notranslate"><span class="pre">pixi_first_failure.py</span></code><a class="headerlink" href="#strategy-use-pixi-first-failure-py" title="Link to this heading"></a></h2>
 <p>To help identify the root cause, E3SM-Unified provides:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recipes</span><span class="o">/</span><span class="n">e3sm</span><span class="o">-</span><span class="n">unified</span><span class="o">/</span><span class="n">conda_first_failure</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recipes</span><span class="o">/</span><span class="n">e3sm</span><span class="o">-</span><span class="n">unified</span><span class="o">/</span><span class="n">pixi_first_failure</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>This utility performs a dry-run install using a list of dependencies, then
+<p>This utility performs a Pixi-based solve using a list of dependencies, then
 uses bisection to find the first package that causes solver failure.</p>
 <section id="usage">
 <h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
 <ol class="arabic">
-<li><p>Copy the list of dependencies from <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> → <code class="docutils literal notranslate"><span class="pre">build:</span></code> section into a
+<li><p>Copy the list of dependencies from <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code> into a
 text file (e.g., <code class="docutils literal notranslate"><span class="pre">specs.txt</span></code>)</p></li>
 <li><p>Constrain the python version to a single minor version, e.g.:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python &gt;=3.10,&lt;3.11</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python ==3.13</span>
 </pre></div>
 </div>
 </li>
-<li><p>Remove or replace any jinja2 emplating or conflicthing selector comments,
+<li><p>Remove or replace any jinja templating or conflicting selector logic,
 for example:</p>
-<ul>
-<li><p>replace <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">mpi_prefix</span> <span class="pre">}}</span></code> with <code class="docutils literal notranslate"><span class="pre">mpi_mpich</span></code> or <code class="docutils literal notranslate"><span class="pre">nompi</span></code></p></li>
-<li><p>depending on the python version you are testing, pick only one of:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyproj 3.6.1</span><span class="w">  </span><span class="c1"># [py&lt;310]</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyproj 3.7.0</span><span class="w">  </span><span class="c1"># [py&gt;=310]</span>
-</pre></div>
-</div>
-</li>
+<ul class="simple">
+<li><p>replace <code class="docutils literal notranslate"><span class="pre">\${{</span> <span class="pre">mpi_prefix</span> <span class="pre">}}</span></code> with <code class="docutils literal notranslate"><span class="pre">mpi_mpich</span></code> or <code class="docutils literal notranslate"><span class="pre">nompi</span></code></p></li>
+<li><p>replace <code class="docutils literal notranslate"><span class="pre">\${{</span> <span class="pre">mpi</span> <span class="pre">}}</span></code> with a concrete value when needed</p></li>
+<li><p>depending on the python version and variant you are testing, pick only
+the applicable conditional requirements</p></li>
 </ul>
 </li>
 <li><p>Run the script:</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>conda_first_failure.py<span class="w"> </span>specs.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>recipes/e3sm-unified/pixi_first_failure.py<span class="w"> </span>specs.txt
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
@@ -188,19 +181,19 @@ the conflicting pair of packages to see if you can understand the conflict.</p><
 might involve <code class="docutils literal notranslate"><span class="pre">hdf5</span></code>, add <code class="docutils literal notranslate"><span class="pre">libnetcdf</span></code>, <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code>, etc.)</p></li>
 <li><p>Compare dependency trees using:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--dry-run<span class="w"> </span>-n<span class="w"> </span>test-env<span class="w"> </span>&lt;packages&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>add<span class="w"> </span>--manifest-path<span class="w"> </span>/tmp/test-pixi.toml<span class="w"> </span>&lt;packages&gt;
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">search</span> <span class="pre">&lt;package&gt;</span></code> with <code class="docutils literal notranslate"><span class="pre">--info</span></code> to inspect available versions
-and build strings</p></li>
+<li><p>Inspect the generated Pixi manifest or chosen constraints to make sure they
+match the recipe branch you are testing</p></li>
 </ul>
 </section>
 <hr class="docutils" />
 <section id="when-youre-stuck">
 <h2>When You’re Stuck<a class="headerlink" href="#when-youre-stuck" title="Link to this heading"></a></h2>
 <p>As the E3SM-Unified maintainer, you’re likely the most experienced person on
-the team when it comes to Conda packaging and dependency resolution.</p>
+the team when it comes to conda-forge packaging and solver behavior.</p>
 <p>If the conflict is particularly subtle or deep within upstream packages:</p>
 <ul class="simple">
 <li><p>Dig into transitive dependencies (e.g., <code class="docutils literal notranslate"><span class="pre">conda-tree</span></code> can be useful)</p></li>

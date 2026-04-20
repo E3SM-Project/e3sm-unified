@@ -210,9 +210,49 @@ the <code class="docutils literal notranslate"><span class="pre">dev</span></cod
 with a development branch of <code class="docutils literal notranslate"><span class="pre">mache</span></code> available on GitHub.  However, it is
 always cleaner to use a release candidate.</p>
 </section>
+<section id="refresh-mache-owned-assets-in-e3sm-unified">
+<h3>4. Refresh mache-owned assets in E3SM-Unified<a class="headerlink" href="#refresh-mache-owned-assets-in-e3sm-unified" title="Link to this heading"></a></h3>
+<p>After publishing a <code class="docutils literal notranslate"><span class="pre">mache</span></code> release candidate or final release, update the
+E3SM-Unified repository from the repository root with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy.py<span class="w"> </span>--bootstrap-only
+pixi<span class="w"> </span>shell<span class="w"> </span>-m<span class="w"> </span>deploy_tmp/bootstrap_pixi/pixi.toml
+mache<span class="w"> </span>deploy<span class="w"> </span>update<span class="w"> </span>--software<span class="w"> </span>e3sm-unified
+<span class="nb">exit</span>
+</pre></div>
+</div>
+<p>This refreshes the files that are owned by <code class="docutils literal notranslate"><span class="pre">mache</span></code> and copied into the target
+repository, including:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">deploy.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deploy/cli_spec.json</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deploy/pixi.toml.j2</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deploy/spack.yaml.j2</span></code></p></li>
+</ul>
+<p>If the repository contains <code class="docutils literal notranslate"><span class="pre">deploy/custom_cli_spec.json</span></code>, treat that file as
+repo-owned. Review it after the update and keep any E3SM-Unified-specific
+arguments or help text that should remain local.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mache</span> <span class="pre">deploy</span> <span class="pre">update</span></code> does <strong>not</strong> update every version reference in this
+repository. After running it, maintainers still need to update the following
+manually:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code>
+Set <code class="docutils literal notranslate"><span class="pre">[pixi]</span> <span class="pre">mache</span></code> to the new version and review the bootstrap, Spack, and
+post-install pins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>
+Update the <code class="docutils literal notranslate"><span class="pre">mache</span></code> dependency used by this repository’s CI/test environment.
+If <code class="docutils literal notranslate"><span class="pre">mache</span></code> is still a release candidate published only on the
+<code class="docutils literal notranslate"><span class="pre">conda-forge/label/mache_dev</span></code> label, <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> must include that label in
+<code class="docutils literal notranslate"><span class="pre">channels</span></code>. Once <code class="docutils literal notranslate"><span class="pre">mache</span></code> has a final release on the main <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code>
+channel, remove the <code class="docutils literal notranslate"><span class="pre">mache_dev</span></code> label from <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>.</p></li>
+</ul>
+<p>Review the diff carefully before committing. In particular, make sure the
+updated <code class="docutils literal notranslate"><span class="pre">deploy.py</span></code> and templated files still match any E3SM-Unified-specific
+workflow decisions in <code class="docutils literal notranslate"><span class="pre">deploy/hooks.py</span></code>.</p>
+</section>
 <hr class="docutils" />
 <section id="finalize-the-release">
-<h3>4. Finalize the Release<a class="headerlink" href="#finalize-the-release" title="Link to this heading"></a></h3>
+<h3>5. Finalize the Release<a class="headerlink" href="#finalize-the-release" title="Link to this heading"></a></h3>
 <p>Once testing across all platforms is complete:</p>
 <ul class="simple">
 <li><p>Create a final version tag (e.g., <code class="docutils literal notranslate"><span class="pre">1.32.0</span></code>)</p></li>

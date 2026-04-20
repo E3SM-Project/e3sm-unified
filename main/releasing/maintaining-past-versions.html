@@ -59,7 +59,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Maintaining Past Versions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#goals">🎯 Goals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#avoid-breaking-changes">🔒 Avoid Breaking Changes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dont-delete-spack-or-conda-environments">Don’t Delete Spack or Conda Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dont-delete-spack-or-pixi-environments">Don’t Delete Spack or Pixi Environments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dont-remove-activation-scripts">Don’t Remove Activation Scripts</a></li>
 </ul>
 </li>
@@ -123,8 +123,8 @@ keeping past versions available and usable.</p>
 <hr class="docutils" />
 <section id="avoid-breaking-changes">
 <h2>🔒 Avoid Breaking Changes<a class="headerlink" href="#avoid-breaking-changes" title="Link to this heading"></a></h2>
-<section id="dont-delete-spack-or-conda-environments">
-<h3>Don’t Delete Spack or Conda Environments<a class="headerlink" href="#dont-delete-spack-or-conda-environments" title="Link to this heading"></a></h3>
+<section id="dont-delete-spack-or-pixi-environments">
+<h3>Don’t Delete Spack or Pixi Environments<a class="headerlink" href="#dont-delete-spack-or-pixi-environments" title="Link to this heading"></a></h3>
 <p>E3SM-Unified installs are isolated by version. Do not delete directories like:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.11.0/
 /lcrc/soft/climate/e3sm-unified/spack/e3sm_unified_1.11.0_chrysalis_gnu_mpich/
@@ -153,7 +153,7 @@ associated activation scripts.</p>
 <strong>release candidates</strong>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">test_e3sm_unified_1.11.0rc3_*.sh</span></code></p></li>
-<li><p>Conda environments like <code class="docutils literal notranslate"><span class="pre">test_e3sm_unified_install</span></code></p></li>
+<li><p>Temporary bootstrap or test Pixi environments under <code class="docutils literal notranslate"><span class="pre">deploy_tmp/</span></code></p></li>
 </ul>
 <p>These were used only during internal testing and should be removed when they
 are no longer needed to free up disk space.</p>
@@ -176,9 +176,10 @@ save space.</p>
 <p>…you may need to rebuild that version. Follow these steps:</p>
 <ol class="arabic simple">
 <li><p>Checkout the appropriate tag in the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo (e.g., <code class="docutils literal notranslate"><span class="pre">1.11.0</span></code>)</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code> with the <code class="docutils literal notranslate"><span class="pre">--version</span></code> flag (as a precaution):</p></li>
+<li><p>Recreate the deployment using the same deploy workflow, overriding the
+target version if needed:</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.11.0<span class="w"> </span>--release<span class="w"> </span>--recreate
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy.py<span class="w"> </span>--e3sm-unified-version<span class="w"> </span><span class="m">1</span>.11.0<span class="w"> </span>--release<span class="w"> </span>--recreate
 </pre></div>
 </div>
 <p>You may run into difficulty solving for older conda environments e.g. because

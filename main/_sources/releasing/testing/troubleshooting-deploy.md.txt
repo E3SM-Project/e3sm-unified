@@ -50,18 +50,18 @@ you have encountered and solutions you have found.
 
 ---
 
-## 3. 🚫 Conda Environment Problems
+## 3. 🚫 Pixi / Conda Environment Problems
 
 ### Symptoms
 
-* Conda fails to resolve dependencies
+* Pixi fails to resolve dependencies
 * Environments install but are missing key packages
 
 ### Fixes
 
 * Run with `--recreate` to force a rebuild
 * Inspect logs carefully for root cause messages
-* Use `recipes/e3sm-unified/conda_first_failure.py` to bisect failing specs
+* Use `recipes/e3sm-unified/pixi_first_failure.py` to bisect failing specs
 * Check for channel mismatches or conflicting dev-label dependencies
 
 ---
@@ -129,7 +129,7 @@ When in doubt, remove and rebuild everything:
 
 ```bash
 rm -rf <base_path>/spack/e3sm_unified_<version>_<machine>_<compiler>_<mpi>
-./deploy_e3sm_unified.py --conda ~/miniforge3 --recreate
+./deploy.py --machine <machine> --recreate
 ```
 
 This often resolves cases where previous state is interfering with a clean

@@ -50,6 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#common-use-cases">Common Use Cases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#supported-platforms">Supported Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-the-deployment-model-works">How the Deployment Model Works</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
 </ul>
 </li>
@@ -91,21 +92,24 @@
 </a>
 <section id="what-is-e3sm-unified">
 <h2>What is E3SM-Unified?<a class="headerlink" href="#what-is-e3sm-unified" title="Link to this heading"></a></h2>
-<p>E3SM-Unified is a unified conda-based environment that provides pre- and
-post-processing tools for the Energy Exascale Earth System Model (E3SM). It is
-designed to streamline the analysis, visualization, and transformation of model
-output for scientists and developers.</p>
-<p>This environment bundles together a curated set of Python and compiled tools
-that work well across supported platforms, particularly on E3SM-managed
-high-performance computing (HPC) systems.</p>
+<p>E3SM-Unified is a curated analysis environment for the Energy Exascale Earth
+System Model (E3SM). It packages the tools most commonly used for analysis,
+diagnostics, visualization, and data transformation into a single install that
+can be used locally or deployed on shared HPC systems.</p>
+<p>The core product is the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> conda package. On laptops and
+workstations, users typically install that package directly from conda-forge.
+On supported HPC systems, maintainers deploy Pixi environments and optional
+Spack-backed system-library views with <code class="docutils literal notranslate"><span class="pre">mache</span> <span class="pre">deploy</span></code>, then publish load
+scripts for users.</p>
 </section>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Combines dozens of packages into one environment, eliminating setup friction.</p></li>
-<li><p>Maintains consistency across HPC platforms (Anvil, Chrysalis, Compy, etc.).</p></li>
-<li><p>Offers both Conda and Spack-installed components for MPI performance.</p></li>
-<li><p>Fully open source and community-maintained via GitHub.</p></li>
+<li><p>Combines analysis, diagnostics, and workflow tools into one install.</p></li>
+<li><p>Supports multiple package variants, including <code class="docutils literal notranslate"><span class="pre">nompi</span></code>, <code class="docutils literal notranslate"><span class="pre">mpich</span></code>, <code class="docutils literal notranslate"><span class="pre">openmpi</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">hpc</span></code>.</p></li>
+<li><p>Uses machine-aware deployment on supported HPC systems through <code class="docutils literal notranslate"><span class="pre">mache</span></code>.</p></li>
+<li><p>Is fully open source and maintained in GitHub.</p></li>
 </ul>
 </section>
 <section id="common-use-cases">
@@ -133,6 +137,18 @@ high-performance computing (HPC) systems.</p>
 </ul>
 <p>It can also be installed on Linux or macOS laptops for limited use (see
 <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart Guide</span></a>). Windows is not supported.</p>
+</section>
+<section id="how-the-deployment-model-works">
+<h2>How the Deployment Model Works<a class="headerlink" href="#how-the-deployment-model-works" title="Link to this heading"></a></h2>
+<p>There are two common ways to use E3SM-Unified:</p>
+<ul class="simple">
+<li><p>Install <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> directly from conda-forge on a personal system.</p></li>
+<li><p>Source a maintainer-provided load script on a supported HPC machine.</p></li>
+</ul>
+<p>HPC deployments can use a dual-layout setup, where login nodes use a lighter
+Pixi environment and compute nodes switch to an MPI-capable environment with
+system libraries provided through Spack. This lets the same load script work
+well on both login and compute nodes.</p>
 </section>
 <section id="getting-help">
 <h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>

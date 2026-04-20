@@ -55,6 +55,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#permission-denied-when-installing-e3sm-unified">“Permission Denied” When Installing E3SM-Unified</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-not-found-when-importing-packages">“Module Not Found” When Importing Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mpi-based-tools-fail-on-login-nodes">MPI-based Tools Fail on Login Nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-install-solves-to-the-wrong-package-variant">Local Install Solves to the Wrong Package Variant</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#tips-best-practices">Tips &amp; Best Practices</a></li>
@@ -120,15 +121,38 @@ different shell/session.</p>
 <p><strong>Solution:</strong>
 Re-source the appropriate <code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_&lt;machine&gt;.sh</span></code> script and
 retry.</p>
+<p>If you installed E3SM-Unified locally, confirm that your active environment
+contains the package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>list<span class="w"> </span>e3sm-unified
+</pre></div>
+</div>
 </section>
 <hr class="docutils" />
 <section id="mpi-based-tools-fail-on-login-nodes">
 <h3>MPI-based Tools Fail on Login Nodes<a class="headerlink" href="#mpi-based-tools-fail-on-login-nodes" title="Link to this heading"></a></h3>
 <p><strong>Symptom:</strong> Tools like <code class="docutils literal notranslate"><span class="pre">mpas_analysis</span></code> or <code class="docutils literal notranslate"><span class="pre">nco</span></code> crash with MPI errors.</p>
-<p><strong>Cause:</strong> These tools are compiled with system MPI (or launch other tools
-that use system MPI) and require execution on compute nodes.</p>
+<p><strong>Cause:</strong> These tools may require the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> package variant or another
+MPI-enabled stack that is intended for compute nodes.</p>
 <p><strong>Solution:</strong> Launch a batch job or an interactive compute session with
 <code class="docutils literal notranslate"><span class="pre">srun</span></code>, <code class="docutils literal notranslate"><span class="pre">salloc</span></code> or <code class="docutils literal notranslate"><span class="pre">qsub</span></code>, depending on your machine.</p>
+<p>If you are on an HPC machine, confirm the active deployment mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$E3SMU_MPI</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>If this prints <code class="docutils literal notranslate"><span class="pre">NOMPI</span></code> on a compute node, the load script may have selected
+the login environment instead of the compute-node environment.</p>
+</section>
+<hr class="docutils" />
+<section id="local-install-solves-to-the-wrong-package-variant">
+<h3>Local Install Solves to the Wrong Package Variant<a class="headerlink" href="#local-install-solves-to-the-wrong-package-variant" title="Link to this heading"></a></h3>
+<p><strong>Symptom:</strong> You expected MPI-enabled tools but installed the default package.</p>
+<p><strong>Cause:</strong> <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">e3sm-unified</span> <span class="pre">e3sm-unified</span></code> will typically resolve
+to the default <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant unless you constrain the build string.</p>
+<p><strong>Solution:</strong> Create a fresh environment and request the desired variant
+explicitly, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span><span class="s2">&quot;e3sm-unified=*=mpi_mpich_*&quot;</span>
+</pre></div>
+</div>
 </section>
 </section>
 <hr class="docutils" />

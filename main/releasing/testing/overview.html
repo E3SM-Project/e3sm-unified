@@ -152,9 +152,9 @@ stacks</p></li>
 <section id="deploying-on-hpcs">
 <h3>🚀 <a class="reference internal" href="deploying-on-hpcs.html"><span class="std std-doc">Deploying on HPCs</span></a><a class="headerlink" href="#deploying-on-hpcs" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Use the <code class="docutils literal notranslate"><span class="pre">deploy_e3sm_unified.py</span></code> script and template infrastructure in
-<code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines</span></code></p></li>
-<li><p>Build environments and activation scripts tailored to each system</p></li>
+<li><p>Use the repository’s <code class="docutils literal notranslate"><span class="pre">deploy/</span></code> configuration together with <code class="docutils literal notranslate"><span class="pre">mache</span> <span class="pre">deploy</span></code></p></li>
+<li><p>Build Pixi environments, optional Spack environments, and load scripts
+tailored to each system</p></li>
 </ul>
 </section>
 <section id="troubleshooting-deployment-issues">
@@ -162,7 +162,8 @@ stacks</p></li>
 <ul class="simple">
 <li><p>Resolve Spack build failures and MPI/compiler mismatches</p></li>
 <li><p>Address problems with activation, modules, or symbolic links</p></li>
-<li><p>Common pitfalls in <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> or <code class="docutils literal notranslate"><span class="pre">shared.py</span></code> configuration</p></li>
+<li><p>Common pitfalls in <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code>, <code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code>, or
+machine-specific <code class="docutils literal notranslate"><span class="pre">mache</span></code> configuration</p></li>
 </ul>
 </section>
 </section>

@@ -122,9 +122,52 @@ This RC will be referenced in the E3SM-Unified build process.
 with a development branch of `mache` available on GitHub.  However, it is
 always cleaner to use a release candidate.
 
+### 4. Refresh mache-owned assets in E3SM-Unified
+
+After publishing a `mache` release candidate or final release, update the
+E3SM-Unified repository from the repository root with:
+
+```bash
+./deploy.py --bootstrap-only
+pixi shell -m deploy_tmp/bootstrap_pixi/pixi.toml
+mache deploy update --software e3sm-unified
+exit
+```
+
+This refreshes the files that are owned by `mache` and copied into the target
+repository, including:
+
+* `deploy.py`
+* `deploy/cli_spec.json`
+* `deploy/config.yaml.j2`
+* `deploy/pixi.toml.j2`
+* `deploy/spack.yaml.j2`
+
+If the repository contains `deploy/custom_cli_spec.json`, treat that file as
+repo-owned. Review it after the update and keep any E3SM-Unified-specific
+arguments or help text that should remain local.
+
+`mache deploy update` does **not** update every version reference in this
+repository. After running it, maintainers still need to update the following
+manually:
+
+* `deploy/pins.cfg`
+  Set `[pixi] mache` to the new version and review the bootstrap, Spack, and
+  post-install pins.
+* `pixi.toml`
+  Update the `mache` dependency used by this repository's CI/test environment.
+  If `mache` is still a release candidate published only on the
+  `conda-forge/label/mache_dev` label, `pixi.toml` must include that label in
+  `channels`. Once `mache` has a final release on the main `conda-forge`
+  channel, remove the `mache_dev` label from `pixi.toml`.
+
+Review the diff carefully before committing. In particular, make sure the
+updated `deploy.py` and templated files still match any E3SM-Unified-specific
+workflow decisions in `deploy/hooks.py`.
+
 ---
 
-### 4. Finalize the Release
+### 5. Finalize the Release
 
 Once testing across all platforms is complete:
 

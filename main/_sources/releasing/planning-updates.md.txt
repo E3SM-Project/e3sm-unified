@@ -73,22 +73,22 @@ using the [Creating Release Candidates](creating-rcs/overview.md) workflow.
 
 ---
 
-## ✍️ Updating `meta.yaml`
+## ✍️ Updating `recipe.yaml`
 
 Once the package list and versions are finalized, update the
-[`recipes/e3sm-unified/meta.yaml`](https://github.com/E3SM-Project/e3sm-unified/blob/main/recipes/e3sm-unified/meta.yaml)
+[`recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml`](https://github.com/E3SM-Project/e3sm-unified/blob/main/recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml)
 file to reflect the new selections. This file is the authoritative source for
-the conda environment and must be kept in sync with the planned versions.
+the `e3sm-unified` package and must be kept in sync with the planned versions.
 
-- Edit the `meta.yaml` to add new packages, update versions, or remove
+- Edit `recipe.yaml` to add new packages, update versions, or remove
   deprecated packages as needed.
 - Ensure that all changes are consistent with the decisions made during
   planning.
 - Commit these changes to your release branch as part of preparing the
   release candidate.
 
-> **Tip:** Also update `e3sm_supported_machines/default.cfg` to match, unless
-  there is a technical reason to diverge.
+> **Tip:** Also update `deploy/pins.cfg` when deployment-side pins need to stay
+  aligned with the recipe.
 
 ---
 
@@ -177,37 +177,31 @@ pinned more strictly.
 
 ## 🔄 Other Places That Require Updates
 
-In addition to updating versions in `meta.yaml` and the conda-forge feedstocks,
+In addition to updating versions in `recipe.yaml` and the conda-forge
+feedstocks,
 the following deployment-related files should also be kept in sync:
 
-### 📦 `e3sm_supported_machines/default.cfg`
+### 📦 `deploy/pins.cfg`
 
-This file specifies the versions of key packages (both Spack-built and
-Conda-installed) used during deployment.
+This file specifies the versions of key packages used by deployment, including
+the pinned `mache` version, Python version, Spack-built packages, and optional
+post-install Python packages for the `hpc` variant.
 
-**Best Practice:** Package versions listed in `default.cfg` should typically
-match the versions in `recipes/e3sm-unified/meta.yaml`, unless there's a clear
-technical reason to diverge (e.g., system module incompatibilities or build
-issues with a newer version).
+**Best Practice:** Package versions listed in `deploy/pins.cfg` should
+typically match the versions in
+`recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml`, unless
+there's a clear technical reason to diverge.
 
-**ESMPy:** We have found that `ESMPy` build with system compilers is not
-compatible with `xesmf`, which is used by `xcdat` and `e3sm_diags`.  As a
-results, the current best practice is to set `esmpy = None` in `default.cfg`.
+**ESMPy/xESMF:** These may need special handling for the `hpc` variant. The
+current branch handles such post-install choices through `deploy/pins.cfg` and
+`deploy/hooks.py` rather than an older monolithic deploy config.
 
 Maintainers should update these entries as part of planning and testing a new
 release candidate.
 
-### 🛠️ `e3sm_supported_machines/shared.py`
+### 🛠️ `deploy/hooks.py`
 
-The version of E3SM-Unified being deployed is hard-coded here:
-
-```python
-parser.add_argument("--version", dest="version", default="1.11.1",
-                    help="The version of E3SM-Unified to deploy")
-```
-
-This value should be updated manually for **each new release candidate** and
-final release to reflect the current version being tested or deployed.
-
-> 🧩 Note: We plan to automate this step in the future, but for now it must be
-updated manually.
+This hook file decides how the deployed version is resolved, which channels are
+used, when local package builds are allowed, and when Spack is enabled.
+Review it whenever package-variant behavior, environment layout, or load-script
+behavior changes.

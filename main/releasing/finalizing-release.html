@@ -125,12 +125,17 @@ been validated</p></li>
 <h2>Step-by-Step Finalization<a class="headerlink" href="#step-by-step-finalization" title="Link to this heading"></a></h2>
 <section id="remove-rc-labels">
 <h3>1. Remove RC Labels<a class="headerlink" href="#remove-rc-labels" title="Link to this heading"></a></h3>
-<p>Edit <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code> and:</p>
+<p>Edit
+<code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code>
+and:</p>
 <ul class="simple">
 <li><p>Replace RC versions of dependencies (e.g., <code class="docutils literal notranslate"><span class="pre">3.0.0rc2</span></code>) with final versions
-(e.g., <code class="docutils literal notranslate"><span class="pre">3.0.0</span></code>) in both <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code></p></li>
+(e.g., <code class="docutils literal notranslate"><span class="pre">3.0.0</span></code>) in both <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code></p></li>
 <li><p>Bump the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> version accordingly (e.g., from <code class="docutils literal notranslate"><span class="pre">1.12.0rc3</span></code> to
-<code class="docutils literal notranslate"><span class="pre">1.12.0</span></code>) in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code></p></li>
+<code class="docutils literal notranslate"><span class="pre">1.12.0</span></code>) in <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code></p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> temporarily included <code class="docutils literal notranslate"><span class="pre">conda-forge/label/mache_dev</span></code> to test a
+<code class="docutils literal notranslate"><span class="pre">mache</span></code> release candidate, remove that label once the final <code class="docutils literal notranslate"><span class="pre">mache</span></code> package
+is available on the main <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> channel</p></li>
 </ul>
 <p>Commit the changes to your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch.</p>
 </section>
@@ -169,7 +174,7 @@ final deployment.</p>
 <section id="deploy-final-release-on-hpc-systems">
 <h3>4. Deploy Final Release on HPC Systems<a class="headerlink" href="#deploy-final-release-on-hpc-systems" title="Link to this heading"></a></h3>
 <p>Use the same process as during RC testing, but now with the <code class="docutils literal notranslate"><span class="pre">--release</span></code> flag:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span>--release
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy.py<span class="w"> </span>--machine<span class="w"> </span>&lt;machine&gt;<span class="w"> </span>--release
 </pre></div>
 </div>
 <p>This creates new activation scripts like:</p>
@@ -204,7 +209,7 @@ final deployment.</p>
 <p>On each supported machine:</p>
 <ul class="simple">
 <li><p>Clean up outdated <code class="docutils literal notranslate"><span class="pre">test_...</span></code> activation scripts</p></li>
-<li><p>Remove conda and spack environments for E3SM-Unified RCs</p></li>
+<li><p>Remove temporary RC Pixi and Spack environments for E3SM-Unified</p></li>
 <li><p>Delete the <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch</p></li>
 <li><p>Move the contents on Confluence describing the
 <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Current-Version">current version</a>

@@ -61,7 +61,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Troubleshooting Deployment</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#spack-build-failures">1. 🛠️ Spack Build Failures</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#activation-script-or-module-issues">2. 🔢 Activation Script or Module Issues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#conda-environment-problems">3. 🚫 Conda Environment Problems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pixi-conda-environment-problems">3. 🚫 Pixi / Conda Environment Problems</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#filesystem-and-permission-issues">4. 💾 Filesystem and Permission Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mache-configuration-problems">5. 🧰 <code class="docutils literal notranslate"><span class="pre">mache</span></code> Configuration Problems</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#spack-caching-and-environment-contamination">6. 🪖 Spack Caching and Environment Contamination</a></li>
@@ -164,12 +164,12 @@ etc.)</p></li>
 </section>
 </section>
 <hr class="docutils" />
-<section id="conda-environment-problems">
-<h2>3. 🚫 Conda Environment Problems<a class="headerlink" href="#conda-environment-problems" title="Link to this heading"></a></h2>
+<section id="pixi-conda-environment-problems">
+<h2>3. 🚫 Pixi / Conda Environment Problems<a class="headerlink" href="#pixi-conda-environment-problems" title="Link to this heading"></a></h2>
 <section id="id1">
 <h3>Symptoms<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Conda fails to resolve dependencies</p></li>
+<li><p>Pixi fails to resolve dependencies</p></li>
 <li><p>Environments install but are missing key packages</p></li>
 </ul>
 </section>
@@ -178,7 +178,7 @@ etc.)</p></li>
 <ul class="simple">
 <li><p>Run with <code class="docutils literal notranslate"><span class="pre">--recreate</span></code> to force a rebuild</p></li>
 <li><p>Inspect logs carefully for root cause messages</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/conda_first_failure.py</span></code> to bisect failing specs</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/pixi_first_failure.py</span></code> to bisect failing specs</p></li>
 <li><p>Check for channel mismatches or conflicting dev-label dependencies</p></li>
 </ul>
 </section>
@@ -257,7 +257,7 @@ config</p></li>
 <h2>7. ⚠️ Common Fix: Full Clean + Re-run<a class="headerlink" href="#common-fix-full-clean-re-run" title="Link to this heading"></a></h2>
 <p>When in doubt, remove and rebuild everything:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rm<span class="w"> </span>-rf<span class="w"> </span>&lt;base_path&gt;/spack/e3sm_unified_&lt;version&gt;_&lt;machine&gt;_&lt;compiler&gt;_&lt;mpi&gt;
-./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span>--recreate
+./deploy.py<span class="w"> </span>--machine<span class="w"> </span>&lt;machine&gt;<span class="w"> </span>--recreate
 </pre></div>
 </div>
 <p>This often resolves cases where previous state is interfering with a clean

@@ -50,7 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../using-tools.html">Using Tools in E3SM-Unified</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Release Workflow</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Overview of the Workflow</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#backgraound-how-conda-and-spack-work-together-in-polaris">Backgraound: How Conda and Spack Work Together in Polaris</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#background-how-conda-and-spack-work-together-in-polaris">Background: How Conda and Spack Work Together in Polaris</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#planning-package-updates">1. Planning Package Updates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-release-candidates">2. Creating Release Candidates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#deploying-and-testing-on-hpcs">3. Deploying and Testing on HPCs</a></li>
@@ -107,15 +107,16 @@
 <li><p><strong><a class="reference internal" href="testing/overview.html"><span class="std std-doc">Deployment and Testing</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="adding-new-machines.html"><span class="std std-doc">Adding a New Machine</span></a></strong></p></li>
 <li><p><strong><a class="reference internal" href="finalizing-release.html"><span class="std std-doc">Finalizing the Release</span></a></strong></p></li>
-<li><p><strong><a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Maintaining Past Versionse</span></a></strong></p></li>
+<li><p><strong><a class="reference internal" href="maintaining-past-versions.html"><span class="std std-doc">Maintaining Past Versions</span></a></strong></p></li>
 </ol>
 <p>We begin with some background information, then each of these steps is detailed
 in its own page. See below for a high-level summary.</p>
 <hr class="docutils" />
-<section id="backgraound-how-conda-and-spack-work-together-in-polaris">
-<h2>Backgraound: How Conda and Spack Work Together in Polaris<a class="headerlink" href="#backgraound-how-conda-and-spack-work-together-in-polaris" title="Link to this heading"></a></h2>
+<section id="background-how-conda-and-spack-work-together-in-polaris">
+<h2>Background: How Conda and Spack Work Together in Polaris<a class="headerlink" href="#background-how-conda-and-spack-work-together-in-polaris" title="Link to this heading"></a></h2>
 <p>Why does E3SM-Unified use both Conda and Spack? What roles do they each serve?
-Before you start, it’s critical to understand how these two systems work
+Before you start, it’s critical to understand how the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> conda
+package, Pixi deployment, and optional Spack system-library integration work
 together.</p>
 <p>🔗 <a class="reference internal" href="conda-vs-spack.html"><span class="std std-doc">Read more</span></a></p>
 </section>
@@ -142,9 +143,9 @@ changes to existing ones.</p>
 <h2>3. Deploying and Testing on HPCs<a class="headerlink" href="#deploying-and-testing-on-hpcs" title="Link to this heading"></a></h2>
 <p>Before full deployment, release candidates are installed on a subset of HPC
 platforms for iterative testing and validation. This stage often requires
-updating updating <code class="docutils literal notranslate"><span class="pre">mache</span></code> to support new systems or changes in machine
-configurations, adding package versions to E3SM’s Spack fork, and
-troubleshooting deployment scripts.</p>
+updating <code class="docutils literal notranslate"><span class="pre">mache</span></code> to support new systems or changes in machine configurations,
+adding package versions to E3SM’s Spack fork, and validating the repository’s
+<code class="docutils literal notranslate"><span class="pre">deploy/</span></code> configuration and hooks.</p>
 <p>Testing includes everything from basic imports to full <code class="docutils literal notranslate"><span class="pre">zppy</span></code> workflows. This
 is a collaborative effort, with the full iterative process often spanning
 several weeks to a few months.</p>

@@ -61,7 +61,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#making-suggestions">Making Suggestions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#final-selection">Final Selection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#updating-meta-yaml">✍️ Updating <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-recipe-yaml">✍️ Updating <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#managing-version-pins-during-conda-forge-migrations">📦 Managing Version Pins During Conda-Forge Migrations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#what-happens-during-a-migration">🔀 What Happens During a Migration?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#why-this-matters">⚠ Why This Matters</a></li>
@@ -71,8 +71,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#other-places-that-require-updates">🔄 Other Places That Require Updates</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#e3sm-supported-machines-default-cfg">📦 <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e3sm-supported-machines-shared-py">🛠️ <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-pins-cfg">📦 <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-hooks-py">🛠️ <code class="docutils literal notranslate"><span class="pre">deploy/hooks.py</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -192,14 +192,14 @@ maintained</p></li>
 using the <a class="reference internal" href="creating-rcs/overview.html"><span class="std std-doc">Creating Release Candidates</span></a> workflow.</p>
 </section>
 <hr class="docutils" />
-<section id="updating-meta-yaml">
-<h2>✍️ Updating <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code><a class="headerlink" href="#updating-meta-yaml" title="Link to this heading"></a></h2>
+<section id="updating-recipe-yaml">
+<h2>✍️ Updating <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code><a class="headerlink" href="#updating-recipe-yaml" title="Link to this heading"></a></h2>
 <p>Once the package list and versions are finalized, update the
-<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified/blob/main/recipes/e3sm-unified/meta.yaml"><code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code></a>
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-unified/blob/main/recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml"><code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code></a>
 file to reflect the new selections. This file is the authoritative source for
-the conda environment and must be kept in sync with the planned versions.</p>
+the <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> package and must be kept in sync with the planned versions.</p>
 <ul class="simple">
-<li><p>Edit the <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> to add new packages, update versions, or remove
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code> to add new packages, update versions, or remove
 deprecated packages as needed.</p></li>
 <li><p>Ensure that all changes are consistent with the decisions made during
 planning.</p></li>
@@ -207,8 +207,8 @@ planning.</p></li>
 release candidate.</p></li>
 </ul>
 <blockquote>
-<div><p><strong>Tip:</strong> Also update <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code> to match, unless
-there is a technical reason to diverge.</p>
+<div><p><strong>Tip:</strong> Also update <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code> when deployment-side pins need to stay
+aligned with the recipe.</p>
 </div></blockquote>
 </section>
 <hr class="docutils" />
@@ -298,35 +298,30 @@ pinned more strictly.</p>
 <hr class="docutils" />
 <section id="other-places-that-require-updates">
 <h2>🔄 Other Places That Require Updates<a class="headerlink" href="#other-places-that-require-updates" title="Link to this heading"></a></h2>
-<p>In addition to updating versions in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> and the conda-forge feedstocks,
+<p>In addition to updating versions in <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code> and the conda-forge
+feedstocks,
 the following deployment-related files should also be kept in sync:</p>
-<section id="e3sm-supported-machines-default-cfg">
-<h3>📦 <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/default.cfg</span></code><a class="headerlink" href="#e3sm-supported-machines-default-cfg" title="Link to this heading"></a></h3>
-<p>This file specifies the versions of key packages (both Spack-built and
-Conda-installed) used during deployment.</p>
-<p><strong>Best Practice:</strong> Package versions listed in <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code> should typically
-match the versions in <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/meta.yaml</span></code>, unless there’s a clear
-technical reason to diverge (e.g., system module incompatibilities or build
-issues with a newer version).</p>
-<p><strong>ESMPy:</strong> We have found that <code class="docutils literal notranslate"><span class="pre">ESMPy</span></code> build with system compilers is not
-compatible with <code class="docutils literal notranslate"><span class="pre">xesmf</span></code>, which is used by <code class="docutils literal notranslate"><span class="pre">xcdat</span></code> and <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>.  As a
-results, the current best practice is to set <code class="docutils literal notranslate"><span class="pre">esmpy</span> <span class="pre">=</span> <span class="pre">None</span></code> in <code class="docutils literal notranslate"><span class="pre">default.cfg</span></code>.</p>
+<section id="deploy-pins-cfg">
+<h3>📦 <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code><a class="headerlink" href="#deploy-pins-cfg" title="Link to this heading"></a></h3>
+<p>This file specifies the versions of key packages used by deployment, including
+the pinned <code class="docutils literal notranslate"><span class="pre">mache</span></code> version, Python version, Spack-built packages, and optional
+post-install Python packages for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant.</p>
+<p><strong>Best Practice:</strong> Package versions listed in <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code> should
+typically match the versions in
+<code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code>, unless
+there’s a clear technical reason to diverge.</p>
+<p><strong>ESMPy/xESMF:</strong> These may need special handling for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant. The
+current branch handles such post-install choices through <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code> and
+<code class="docutils literal notranslate"><span class="pre">deploy/hooks.py</span></code> rather than an older monolithic deploy config.</p>
 <p>Maintainers should update these entries as part of planning and testing a new
 release candidate.</p>
 </section>
-<section id="e3sm-supported-machines-shared-py">
-<h3>🛠️ <code class="docutils literal notranslate"><span class="pre">e3sm_supported_machines/shared.py</span></code><a class="headerlink" href="#e3sm-supported-machines-shared-py" title="Link to this heading"></a></h3>
-<p>The version of E3SM-Unified being deployed is hard-coded here:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--version&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1.11.1&quot;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The version of E3SM-Unified to deploy&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This value should be updated manually for <strong>each new release candidate</strong> and
-final release to reflect the current version being tested or deployed.</p>
-<blockquote>
-<div><p>🧩 Note: We plan to automate this step in the future, but for now it must be
-updated manually.</p>
-</div></blockquote>
+<section id="deploy-hooks-py">
+<h3>🛠️ <code class="docutils literal notranslate"><span class="pre">deploy/hooks.py</span></code><a class="headerlink" href="#deploy-hooks-py" title="Link to this heading"></a></h3>
+<p>This hook file decides how the deployed version is resolved, which channels are
+used, when local package builds are allowed, and when Spack is enabled.
+Review it whenever package-variant behavior, environment layout, or load-script
+behavior changes.</p>
 </section>
 </section>
 </section>

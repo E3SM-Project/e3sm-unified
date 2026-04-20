@@ -1,9 +1,10 @@
 # Deploying on HPCs
 
 Once a release candidate of E3SM-Unified is ready, it must be deployed and
-tested on HPC systems using a combination of Spack and Conda-based tools.
-Deployment scripts and configurations live within the `e3sm_supported_machines`
-directory of the E3SM-Unified repo.
+tested on HPC systems using the deployment configuration in this repository's
+`deploy/` directory together with `mache deploy`. Pixi manages the deployed
+conda environments, and Spack is used only when the selected package variant
+requires machine-specific system libraries.
 
 This document explains the deployment workflow, what needs to be updated, and
 how to test and validate the install.
@@ -14,95 +15,81 @@ how to test and validate the install.
 
 Deployment happens via the following components:
 
-### 🔧 `deploy_e3sm_unified.py`
+### 🔧 `./deploy.py`
 
-* The main entry point for deploying E3SM-Unified
-* Installs the combined Conda + Spack environment on supported systems
-* Reads deployment config from `default.cfg` and shared logic in `shared.py`
+* The main entry point for deploying E3SM-Unified from this repository
+* Reads `deploy/pins.cfg`, `deploy/cli_spec.json`, and
+  `deploy/custom_cli_spec.json`
+* Creates a bootstrap Pixi environment and then invokes `mache deploy run`
+  internally
 
-You can find the full list of command-line flags with:
+The workflow should start from the repository root with `./deploy.py`.
+The CLI exposed by `./deploy.py` is assembled from `deploy/cli_spec.json`
+plus `deploy/custom_cli_spec.json`.
+
+You can inspect the routed arguments in:
 
 ```bash
-./deploy_e3sm_unified.py --help
+./deploy.py --help
+cat deploy/cli_spec.json
+cat deploy/custom_cli_spec.json
 ```
 
-You must supply `--conda` at a minimum. This is the path to a conda
-installation (typically in your home directory) where the deployment tool
-can create a conda environment (`temp_e3sm_unified_install`) used to install
-E3SM-Unified. This environment includes the `mache` package, which can
-automatically recognize the machine you are on and configure accordingly.
+The wrapper also supports repository-specific flags such as `--release`,
+`--package-source`, `--package-mpi`, `--env-layout`, and
+`--load-script-dir`.
 
-For release builds (but not release candidates), you should supply
-`--release`. If this flag is **not** supplied, the activation scripts
-created during deployment will start with `test_e3sm_unified_...` whereas
-the release versions will be called `load_latest_e3sm_unified_...` and
-`load_e3sm_unified_<version>...`.
+When `mache` itself changes, refresh the mache-owned deployment assets with
+`mache deploy update` before testing deployments. See
+[Updating `mache`](mache-updates.md) for the exact sequence and for the list of
+files that still must be edited manually afterward.
 
-Other flags are optional and will be discussed below.
+### 📁 `deploy/pins.cfg`
 
-### 📁 `default.cfg`
+* Pins the bootstrap Python version, deployed Python version, and `mache`
+  version
+* Pins versions for Spack-managed packages and optional post-install packages
+* Is **not** updated by `mache deploy update`; maintainers must edit it
+  manually after refreshing mache-owned assets
+* Should stay aligned with
+  `recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml` unless
+  there is an intentional reason to diverge
 
-* Specifies which packages and versions to install via Spack as well as the
-  versions of some conda packages required in the installation environment
-  (notably `mache`)
-* Version numbers here should match `meta.yaml` unless diverging for a reason
-* Special case are `esmpy = None` and `xesmf = None`, required so ESMPy and
-  xESMF come from conda-forge, not Spack (for compatibility with xCDAT and
-  E3SM Diags).
+### ⚙️ `deploy/config.yaml.j2`
 
-### ⚙️ `shared.py`
+* Defines the generic `mache deploy` project configuration
+* Delegates machine-specific and E3SM-Unified-specific decisions to hooks
+* Controls Pixi prefixes, permissions, runtime version checks, and Spack
+  behavior
 
-* Contains logic shared between `deploy_e3sm_unified.py` and `bootstrap.py`
-* Defines the version of E3SM-Unified to deploy (hard-coded)
+### 🧰 `deploy/hooks.py`
 
-### 🧰 `bootstrap.py`
-
-* Used by `deploy_e3sm_unified.py` to build and configure environments once
-  the `temp_e3sm_unified_install` conda environment has been created.
+* Resolves the deployed E3SM-Unified version from the feedstock recipe unless
+  overridden
+* Selects channels, package source, package MPI, and environment layout
+* Enables or disables Spack dynamically based on the chosen package variant
+* Adds E3SM-Unified-specific environment variables through `deploy/load.sh`
 
 ### 🧪 Templates
 
-The `e3sm_supported_machines/templates` subdirectory contains jinja2 templates
-used during deployment.
+The key templates live in the `deploy/` directory:
 
-* Build script template:
+* `deploy/pixi.toml.j2`
+* `deploy/spack.yaml.j2`
+* `deploy/config.yaml.j2`
 
-  * `build.template`: Used during deployment to build and install versions of
-    the following packages using system compilers and MPI (if requested):
+`mache` contributes the higher-level deployment templates and generated wrapper
+scripts. E3SM-Unified supplies the repository-specific pieces above.
 
-    ```bash
-    mpi4py
-    ilamb
-    esmpy
-    xesmf
-    ```
+When you run `mache deploy update`, the mache-owned wrapper and template files
+in `deploy/` are refreshed automatically. The maintainer-owned version pins in
+`deploy/pins.cfg` and the CI dependency pin in `pixi.toml` still need manual
+updates.
 
-  * Maintainers may need to add new packages to the template over time.
-    Typically, the dependencies here are python-based but use system compilers
-    and/or MPI. Spack must not install Python itself, as this would conflict
-    with the Conda-managed Python environment. All Python packages need to be
-    installed into the Conda environment.
+### 🧪 `ci/render_pixi_manifest.py`
 
-* Activation script templates:
-
-  * `load_e3sm_unified.sh.template`
-  * `load_e3sm_unified.csh.template`
-  * Since E3SM itself cannot be built when E3SM-Unified is active, these
-    scripts set:
-
-    ```bash
-    CIME_MODEL="ENVIRONMENT_RUNNING_E3SM_UNIFIED_USE_ANOTHER_TERMINAL"
-    ```
-
-    This is supposed to tell users that they cannot build E3SM with this
-    terminal window (because E3SM-Unified is loaded) and they should open
-    a new one. Some users have not found this very intuitive but we don't
-    currently have a better way for E3SM to detect that E3SM-Unified is active.
-  * These scripts also detect whether the user is on a compute or login node
-    via `$SLURM_JOB_ID` or `$COBALT_JOBID` environment variables (which should
-    only be set on compute nodes).
-  * Maintainers will need to edit these scripts to support new queuing systems
-    (e.g. PBS).
+* Used only in CI to validate that locally built packages can be installed with
+  Pixi from the generated local channel
 
 ---
 
@@ -110,15 +97,21 @@ used during deployment.
 
 1. **Update config files**:
 
-   * Set the target version in `shared.py`
-   * Update `default.cfg` with package versions (Spack + Conda)
+   * If you updated `mache`, first run `mache deploy update` as described in
+     [Updating `mache`](mache-updates.md)
+   * Update the version and dependency pins in
+     `recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml`
+   * Update `deploy/pins.cfg` with bootstrap, `mache`, Spack, and post-install
+     pins
+   * Update `pixi.toml` so the CI/test environment uses the intended `mache`
+     version
+   * Review `deploy/hooks.py` if package-variant or channel behavior changed
    * Update `mache` config files (see [Updating `mache`](mache-updates.md))
 
 2. **Test the build** on one or more HPC machines:
 
    ```bash
-   cd e3sm_supported_machines
-   ./deploy_e3sm_unified.py --conda ~/miniforge3
+   ./deploy.py --machine <machine>
    ```
 
    **Note:** This can take a lot of time. If the connection to the HPC machine
@@ -126,29 +119,28 @@ used during deployment.
    connection and you should pipe the output to a log file, e.g.:
 
    ```bash
-   ./deploy_e3sm_unified.py --conda ~/miniforge3 2>&1 | tee deploy.log
+   ./deploy.py --machine <machine> 2>&1 | tee deploy.log
    ```
 
    **Note:** It is not recommended that you try to deploy E3SM-Unified
-   simultaneously on two different machines that share the same base conda
-   environment (e.g. Anvil and Chrysalis). The two deployments will step on
-   each other's toes.
+   simultaneously on two different machines that share the same deployment
+   prefix. The runs will step on each other's state.
 
 3. **Check terminal output** and validate that:
 
-   * Spack built the expected packages
-   * Conda environment was created and activated
+   * The expected Pixi environment or environments were created
+   * Spack built the expected packages when `--package-mpi hpc` was used
    * Activation scripts were generated and symlinked correctly
    * Permissions have been updated successfully (read only for everyone
      except the E3SM-Unified maintainer)
 
 4. **Verify compute-node activation**
 
-   The activation scripts are designed to load a no-MPI environment on login
-   nodes and the MPI-enabled environment on compute nodes (detected via
-   scheduler variables like `$SLURM_JOB_ID` or `$COBALT_JOBID`). Before manual
-   testing, confirm that sourcing the script on a compute node loads the MPI
-   environment as expected.
+   When `--env-layout dual` is used, the load scripts are designed to load a
+   login-friendly environment on login nodes and the compute-node environment
+   when scheduler variables indicate that you are inside an allocation.
+   Before manual testing, confirm that sourcing the script on a compute node
+   loads the expected package variant.
 
    Steps:
 
@@ -192,8 +184,8 @@ used during deployment.
    * Verify that the MPI environment is active (not the no-MPI one):
 
      ```bash
-     echo "$E3SMU_MPI"   # should NOT be "NOMPI" on a compute node
-     which python        # should point to the E3SM-Unified conda env
+     echo "$E3SMU_MPI"   # should reflect the compute-node variant
+     which python        # should point to the active Pixi env
      python -c "import mpi4py, xarray; print('mpi4py:', mpi4py.__version__)"
      ```
 
@@ -205,9 +197,9 @@ used during deployment.
      srun -n 2 python -c "from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())"
      ```
 
-   If the script loads the no-MPI environment (`E3SMU_MPI=NOMPI`) on a compute
-   node, check that the scheduler environment variables are present on compute
-   nodes for this machine and update the activation templates if needed.
+   If the script loads the login environment on a compute node, check that the
+   scheduler environment variables are present on compute nodes for this
+   machine and update the relevant `mache` deployment logic if needed.
 
 5. **Manually test** tools in the installed environment
 
@@ -218,38 +210,44 @@ used during deployment.
 
 ---
 
-## Optional flags to `deploy_e3sm_unified.py`
+## Common flags
 
-Here, we start with the flags that a mainainer is most likely to need, with
-less useful flags at the bottom.
+These are the repository-specific flags maintainers are most likely to use.
 
-* `--recreate`: Rebuilds the Conda environment if it already exists. This will
-  also recreate the installation environment `temp_e3sm_unified_install`.
+* `--recreate`: Rebuilds the Pixi environment if it already exists.
 
-  Note: This will **not** rebuild Spack packages from scratch. To do that,
-  manually delete the corresponding Spack directory before running the
-  deployment script again. These directories are typically located under:
+  This will **not** necessarily rebuild Spack packages from scratch. To do
+  that, manually delete the corresponding Spack environment before rerunning.
 
-  ```
-  spack/e3sm_unified_<version>_<machine>_<compiler>_<mpi>
-  ```
+* `--release`: Performs a shared release deployment. This forbids local package
+  builds and forked `mache` sources.
 
-* `--mache_fork` and `--mache_branch`: It is common to need to co-develop
-  E3SM-Unified and `mache`, and it is impractical to tag a release candidate
-  and build the associated conda-forge package every time. Instead, use these
-  flags to point to your fork and branch of `mache` to install into both
-  the installation and testing `conda` environments. **Do not use this
-  for release deployments.**
+* `--package-source`: Choose between `conda-forge` and `local-build`.
 
-* `--tmpdir`: Set the `$TMPDIR` environment variable for Spack to use in case
-  `/tmp` is full or not a desirable place to install.
+  `local-build` is useful while validating a release candidate before the
+  package has been published.
 
-* `--version`: Typically you want to deploy the latest release candidate or
-  release, which should be the hard-coded default. You can set this to
-  a different value to perform a deployment of an earlier version if needed.
+* `--package-mpi`: Choose `nompi`, `mpich`, `openmpi`, or `hpc`.
 
-* `--python`: Deploy with a different version of python than specified in
-  `default.cfg`
+  On supported HPC systems, `hpc` is typically the target release variant.
+
+* `--env-layout`: Choose `single` or `dual`.
+
+  `dual` is typically used for shared HPC deployments so login and compute
+  nodes can use different runtime environments through one load script.
+
+* `--e3sm-unified-version`: Override the version resolved from the feedstock
+  recipe.
+
+* `--mache-fork` and `--mache-branch`: Test against a development branch of
+  `mache` instead of a tagged release. Do not use these for release
+  deployments.
+
+* `--spack-path`: Point to a specific Spack checkout.
+
+* `--spack-tmpdir`: Set a temporary directory for Spack builds.
+
+* `--python`: Override the Python version pinned in `deploy/pins.cfg`.
 
 * `-m` or `--machine`: Specify the machine if `mache` did not detect it
   correctly for some reason.
@@ -266,14 +264,8 @@ less useful flags at the bottom.
   and supported alternatives by looking in the configs and templates in
   `mache`.
 
-* `-f` or `--config_file`: You can provide a config file to override defaults
-  from `default.cfg` or the config file for the specific machine from `mache`.
-  Use this with caution because this approach will be hard for other
-  maintainers to reproduce in the future.
-
-* `--use_local`: Typically not useful but can be used in a pinch if you have
-  built conda package locally in the installation you pointed to with `--conda`
-  and want to use them in the deployment.
+* `--load-script-dir`: Write a copy of the generated load script to a specific
+  directory.
 
 ---
 

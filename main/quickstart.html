@@ -58,6 +58,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-by-step-macos-with-apple-silicon">Step-by-Step (macOS with Apple Silicon)</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#notes-for-maintainers-testing-hpc-deployments">Notes for Maintainers Testing HPC Deployments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#related-pages">Related Pages</a></li>
 </ul>
 </li>
@@ -102,7 +103,7 @@ supported on Windows.</p>
 <section id="accessing-e3sm-unified-on-supported-machines">
 <h2>Accessing E3SM-Unified on Supported Machines<a class="headerlink" href="#accessing-e3sm-unified-on-supported-machines" title="Link to this heading"></a></h2>
 <p>On most E3SM-supported HPC systems, E3SM-Unified is already installed and
-ready to use via an activation script.</p>
+ready to use via a generated load script.</p>
 <section id="example-activation-commands">
 <h3>Example Activation Commands<a class="headerlink" href="#example-activation-commands" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Andes</span>
@@ -133,29 +134,37 @@ ready to use via an activation script.</p>
 <span class="nb">source</span><span class="w"> </span>/usr/workspace/e3sm/apps/e3sm-unified/load_latest_e3sm_unified_ruby.sh
 </pre></div>
 </div>
-<p>Once the script is sourced, you’ll have access to all the tools provided by
-E3SM-Unified in your environment.</p>
+<p>Once the script is sourced, you’ll have access to the tools provided by
+E3SM-Unified. On systems deployed in a dual-layout configuration, the script
+typically activates a login-friendly environment on login nodes and switches to
+the compute-node environment automatically inside an interactive or batch job.</p>
 </section>
 </section>
 <section id="verifying-installation">
 <h2>Verifying Installation<a class="headerlink" href="#verifying-installation" title="Link to this heading"></a></h2>
-<p>After activation, you can verify that the environment is correctly loaded by
-testing if major packages are importable:</p>
+<p>After activation, verify that the environment is correctly loaded:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;import xarray, e3sm_diags, mpas_analysis, zppy&quot;</span>
 </pre></div>
 </div>
+<p>On HPC systems, you can also check which package variant is active:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$E3SMU_MPI</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Typical values are <code class="docutils literal notranslate"><span class="pre">NOMPI</span></code>, <code class="docutils literal notranslate"><span class="pre">mpich</span></code>, <code class="docutils literal notranslate"><span class="pre">openmpi</span></code>, or <code class="docutils literal notranslate"><span class="pre">SYSTEM</span></code> (for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code>
+variant).</p>
 </section>
 <section id="running-on-compute-nodes-optional-but-recommended">
 <h2>Running on Compute Nodes (Optional but Recommended)<a class="headerlink" href="#running-on-compute-nodes-optional-but-recommended" title="Link to this heading"></a></h2>
-<p>Many E3SM-Unified tools (e.g., MOAB, MPAS-Analysis, NCO, TempestRemap) benefit
-from running on compute nodes using MPI-enabled system builds.</p>
+<p>Many E3SM-Unified tools benefit from running on compute nodes, especially when
+the active deployment uses the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> package variant together with
+machine-specific system libraries.</p>
 <p>Check your system documentation for how to launch interactive compute sessions
 (e.g., <code class="docutils literal notranslate"><span class="pre">srun</span></code>, <code class="docutils literal notranslate"><span class="pre">salloc</span></code>, or <code class="docutils literal notranslate"><span class="pre">qsub</span></code>).</p>
 </section>
 <section id="installing-e3sm-unified-on-an-unsupported-system">
 <h2>Installing E3SM-Unified on an Unsupported System<a class="headerlink" href="#installing-e3sm-unified-on-an-unsupported-system" title="Link to this heading"></a></h2>
-<p>E3SM-Unified is not officially supported on Linux or Mac laptops or
-workstations, but users can install it using <code class="docutils literal notranslate"><span class="pre">miniforge3</span></code>.</p>
+<p>E3SM-Unified can also be installed directly from conda-forge on Linux or macOS
+systems using <code class="docutils literal notranslate"><span class="pre">miniforge3</span></code>.</p>
 <section id="step-by-step-linux">
 <h3>Step-by-Step (Linux):<a class="headerlink" href="#step-by-step-linux" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install miniforge3</span>
@@ -163,21 +172,27 @@ wget<span class="w"> </span><span class="s2">&quot;https://github.com/conda-forg
 bash<span class="w"> </span><span class="s2">&quot;Miniforge3-</span><span class="k">$(</span>uname<span class="k">)</span><span class="s2">-</span><span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="s2">.sh&quot;</span>
 
 <span class="c1"># Create a new environment</span>
-conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>esm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>e3sm-unified
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span>e3sm-unified
 
 <span class="c1"># Activate it</span>
 conda<span class="w"> </span>activate<span class="w"> </span>e3sm-unified
 </pre></div>
 </div>
-<p><strong>Note</strong>: The above instructions also work for macOS machines with intel hardware.</p>
+<p>If you need an MPI-enabled conda package instead of the default <code class="docutils literal notranslate"><span class="pre">nompi</span></code>
+variant, select one explicitly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span><span class="s2">&quot;e3sm-unified=*=mpi_mpich_*&quot;</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: The above instructions also work for macOS machines with Intel
+hardware.</p>
 </section>
 <section id="step-by-step-macos-with-apple-silicon">
 <h3>Step-by-Step (macOS with Apple Silicon)<a class="headerlink" href="#step-by-step-macos-with-apple-silicon" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># starts a shell in &quot;Rosetta&quot; mode</span>
 arch<span class="w"> </span>-x86_64<span class="w"> </span>/bin/bash<span class="w"> </span>--login
 
-<span class="c1"># create the conda-environment to install e3sm-unified within</span>
-<span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
+<span class="c1"># create the conda environment to install e3sm-unified within</span>
+<span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13
 
 <span class="c1"># activate the environment and set an environmental variable</span>
 conda<span class="w"> </span>activate<span class="w"> </span>e3sm-unified
@@ -194,18 +209,22 @@ conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> <
 <span class="nb">exit</span>
 </pre></div>
 </div>
-<p><strong>Checking if you macOS machine has Apple Silicon</strong>:</p>
+</section>
+</section>
+<section id="notes-for-maintainers-testing-hpc-deployments">
+<h2>Notes for Maintainers Testing HPC Deployments<a class="headerlink" href="#notes-for-maintainers-testing-hpc-deployments" title="Link to this heading"></a></h2>
+<p>This branch uses <code class="docutils literal notranslate"><span class="pre">mache</span> <span class="pre">deploy</span></code> to create the HPC environments and load
+scripts. If you are validating a fresh deployment rather than consuming an
+existing shared install, start with the maintainer docs in
+<a class="reference internal" href="releasing/testing/overview.html"><span class="std std-doc">Deployment and Testing</span></a>.</p>
+<p><strong>Checking if your macOS machine has Apple Silicon</strong>:</p>
 <ol class="arabic simple">
 <li><p>Click the Apple menu at the top-left of your screen.</p></li>
-<li><p>Select “About This Mac”: from the dropdown menu.</p>
-<ul class="simple">
-<li><p>If you see “Chip” followed by M1, M2, M3, or M4, your Mac has Apple silicon.</p></li>
-</ul>
-</li>
+<li><p>Select “About This Mac”: from the dropdown menu.</p></li>
+<li><p>If you see “Chip” followed by M1, M2, M3, or M4, your Mac has Apple
+silicon.</p></li>
 </ol>
 </section>
-</section>
-<hr class="docutils" />
 <section id="related-pages">
 <h2>Related Pages<a class="headerlink" href="#related-pages" title="Link to this heading"></a></h2>
 <ul class="simple">

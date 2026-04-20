@@ -24,12 +24,17 @@ Before publishing:
 
 ### 1. Remove RC Labels
 
-Edit `recipes/e3sm-unified/meta.yaml` and:
+Edit
+`recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml`
+and:
 
 * Replace RC versions of dependencies (e.g., `3.0.0rc2`) with final versions
-  (e.g., `3.0.0`) in both `meta.yaml` and `default.cfg`
+  (e.g., `3.0.0`) in both `recipe.yaml` and `deploy/pins.cfg`
 * Bump the `e3sm-unified` version accordingly (e.g., from `1.12.0rc3` to
-  `1.12.0`) in `meta.yaml` and `e3sm_supported_machines/shared.py`
+  `1.12.0`) in `recipe.yaml`
+* If `pixi.toml` temporarily included `conda-forge/label/mache_dev` to test a
+  `mache` release candidate, remove that label once the final `mache` package
+  is available on the main `conda-forge` channel
 
 Commit the changes to your `update-to-<version>` branch.
 
@@ -73,7 +78,7 @@ final deployment.
 Use the same process as during RC testing, but now with the `--release` flag:
 
 ```bash
-./deploy_e3sm_unified.py --conda ~/miniforge3 --release
+./deploy.py --machine <machine> --release
 ```
 
 This creates new activation scripts like:
@@ -106,7 +111,7 @@ Be sure to include:
 On each supported machine:
 
 * Clean up outdated `test_...` activation scripts
-* Remove conda and spack environments for E3SM-Unified RCs
+* Remove temporary RC Pixi and Spack environments for E3SM-Unified
 * Delete the `update-to-<version>` branch
 * Move the contents on Confluence describing the
   [current version](https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Current-Version)

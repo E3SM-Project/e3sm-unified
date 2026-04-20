@@ -50,7 +50,10 @@
 <li class="toctree-l1"><a class="reference internal" href="using-tools.html">Using Tools in E3SM-Unified</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releasing/index.html">Release Workflow</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Package Catalog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#main-packages-and-dependencies">Main Packages and Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-tooling">Core Tooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variant-sensitive-packages">Variant-Sensitive Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#selected-shared-dependencies">Selected Shared Dependencies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
@@ -84,17 +87,22 @@
   <section class="tex2jax_ignore mathjax_ignore" id="package-catalog">
 <h1>Package Catalog<a class="headerlink" href="#package-catalog" title="Link to this heading"></a></h1>
 <p>This page provides a complete inventory of packages included in the latest
-E3SM-Unified release (<code class="docutils literal notranslate"><span class="pre">1.11.1</span></code>), along with their versions. These packages
-come from the <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> build file and represent the authoritative source
-for what is installed in the environment.</p>
+E3SM-Unified recipe (<code class="docutils literal notranslate"><span class="pre">1.13.0rc1</span></code> at the time of this branch), along with the
+most important package constraints. The authoritative source is
+<code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code>.</p>
 <hr class="docutils" />
-<section id="main-packages-and-dependencies">
-<h2>Main Packages and Dependencies<a class="headerlink" href="#main-packages-and-dependencies" title="Link to this heading"></a></h2>
-<p>Empty cells under “Version Constraint” indicate that there is no constraint
-on that package.  Blank cells under “Package Name” indicate the same package
-as above.  Some package are forced to have different versions for different
-python versions (typically when the dependency has dropped support for a python
-version that we wish to support).</p>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<p>The exact environment depends on the selected package variant:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nompi</span></code> is the default conda-only variant.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mpich</span></code> and <code class="docutils literal notranslate"><span class="pre">openmpi</span></code> add MPI-enabled conda packages.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hpc</span></code> omits several system-library-heavy packages from the conda package so
+they can be provided by the HPC deployment through Spack.</p></li>
+</ul>
+</section>
+<section id="core-tooling">
+<h2>Core Tooling<a class="headerlink" href="#core-tooling" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Package Name</p></th>
@@ -102,286 +110,155 @@ version that we wish to support).</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>blas</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>bottleneck</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>cartopy</p></td>
-<td><p>&gt;=0.17.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>cdat_info</p></td>
-<td><p>8.2.1</p></td>
-</tr>
-<tr class="row-even"><td><p>cdms2</p></td>
-<td><p>3.1.5</p></td>
-</tr>
-<tr class="row-odd"><td><p>cdtime</p></td>
-<td><p>3.1.4</p></td>
-</tr>
-<tr class="row-even"><td><p>cdutil</p></td>
-<td><p>8.2.1</p></td>
-</tr>
-<tr class="row-odd"><td><p>cdo</p></td>
-<td><p></p></td>
-</tr>
 <tr class="row-even"><td><p>chemdyg</p></td>
-<td><p>1.1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>cime_gen_domain</p></td>
-<td><p>6.1.59</p></td>
-</tr>
-<tr class="row-even"><td><p>cmocean</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>cython</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>dask</p></td>
-<td><p>2024.8.0 (py&lt;3.10)</p></td>
-</tr>
-<tr class="row-odd"><td><p></p></td>
-<td><p>2024.11.2 (py&gt;=3.10)</p></td>
-</tr>
-<tr class="row-even"><td><p>dogpile.cache</p></td>
-<td><p></p></td>
+<td><p>==1.1.1</p></td>
 </tr>
 <tr class="row-odd"><td><p>e3sm_diags</p></td>
-<td><p>3.0.0</p></td>
+<td><p>==3.1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>e3sm-tools</p></td>
-<td><p>3.0.2</p></td>
+<tr class="row-even"><td><p>e3sm_to_cmip</p></td>
+<td><p>==1.13.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>e3sm_to_cmip</p></td>
-<td><p>1.11.3</p></td>
-</tr>
-<tr class="row-even"><td><p>eofs</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>esmf</p></td>
-<td><p>8.8.0</p></td>
-</tr>
-<tr class="row-even"><td><p>esmpy</p></td>
-<td><p>8.8.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>f90nml</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>ffmpeg</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>genutil</p></td>
-<td><p>8.2.1</p></td>
-</tr>
-<tr class="row-even"><td><p>geometric_features</p></td>
-<td><p>1.6.1</p></td>
-</tr>
-<tr class="row-odd"><td><p>globus-cli</p></td>
-<td><p>&gt;=3.15.0</p></td>
-</tr>
-<tr class="row-even"><td><p>globus-sdk</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>gsw</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>hdf5</p></td>
-<td><p>1.14.3</p></td>
-</tr>
-<tr class="row-odd"><td><p>ilamb</p></td>
-<td><p>2.7.2</p></td>
-</tr>
-<tr class="row-even"><td><p>ipygany</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>ipython</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>jupyter</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>libnetcdf</p></td>
-<td><p>4.9.2</p></td>
+<tr class="row-odd"><td><p>geometric_features</p></td>
+<td><p>==1.6.1</p></td>
 </tr>
 <tr class="row-even"><td><p>livvkit</p></td>
-<td><p>3.1.0</p></td>
+<td><p>==3.2.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>lxml</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>mache</p></td>
-<td><p>1.28.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>matplotlib-base</p></td>
-<td><p>3.9.4</p></td>
-</tr>
-<tr class="row-even"><td><p>metpy</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>mkdocs-bibtex</p></td>
-<td><p>2.18.0</p></td>
-</tr>
-<tr class="row-even"><td><p>mkdocs-material</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>mkdocs-monorepo-plugin</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>mkdocs-redirects</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>moab</p></td>
-<td><p>5.5.1</p></td>
+<tr class="row-odd"><td><p>mache</p></td>
+<td><p>==3.3.0rc1</p></td>
 </tr>
 <tr class="row-even"><td><p>mosaic</p></td>
-<td><p>1.1.0 (py&gt;=3.10)</p></td>
+<td><p>==1.2.1</p></td>
 </tr>
 <tr class="row-odd"><td><p>mpas-analysis</p></td>
-<td><p>1.13.0</p></td>
+<td><p>==1.14.0</p></td>
 </tr>
 <tr class="row-even"><td><p>mpas_tools</p></td>
-<td><p>0.36.0</p></td>
+<td><p>==1.4.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>pcmdi_metrics</p></td>
+<td><p>==4.0.1</p></td>
+</tr>
+<tr class="row-even"><td><p>uxarray</p></td>
+<td><p>&gt;=2024.12.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>xcdat</p></td>
+<td><p>==0.10.1</p></td>
+</tr>
+<tr class="row-even"><td><p>zppy</p></td>
+<td><p>==3.1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>zppy-interfaces</p></td>
+<td><p>==0.2.0</p></td>
+</tr>
+<tr class="row-even"><td><p>zstash</p></td>
+<td><p>==1.5.0 on Linux</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variant-sensitive-packages">
+<h2>Variant-Sensitive Packages<a class="headerlink" href="#variant-sensitive-packages" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package Name</p></th>
+<th class="head"><p>Version Constraint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>moab</p></td>
+<td><p>==5.6.0 for non-<code class="docutils literal notranslate"><span class="pre">hpc</span></code> variants</p></td>
+</tr>
+<tr class="row-odd"><td><p>nco</p></td>
+<td><p>==5.3.6 for non-<code class="docutils literal notranslate"><span class="pre">hpc</span></code> variants</p></td>
+</tr>
+<tr class="row-even"><td><p>tempest-remap</p></td>
+<td><p>==2.2.0 for non-<code class="docutils literal notranslate"><span class="pre">hpc</span></code> variants</p></td>
+</tr>
+<tr class="row-odd"><td><p>tempest-extremes</p></td>
+<td><p>==2.4 for non-<code class="docutils literal notranslate"><span class="pre">hpc</span></code> variants</p></td>
+</tr>
+<tr class="row-even"><td><p>ilamb</p></td>
+<td><p>==2.7.2 for MPI-enabled conda variants</p></td>
 </tr>
 <tr class="row-odd"><td><p>mpi4py</p></td>
-<td><p></p></td>
+<td><p>included for MPI-enabled conda variants</p></td>
 </tr>
-<tr class="row-even"><td><p>nco</p></td>
-<td><p>5.3.2</p></td>
+<tr class="row-even"><td><p>openssh</p></td>
+<td><p>included for the <code class="docutils literal notranslate"><span class="pre">openmpi</span></code> variant</p></td>
 </tr>
-<tr class="row-odd"><td><p>nc-time-axis</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p>cython</p></td>
+<td><p>included for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+<tr class="row-even"><td><p>cf-units</p></td>
+<td><p>&gt;=2.0.0 for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+<tr class="row-odd"><td><p>pandas</p></td>
+<td><p>included for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+<tr class="row-even"><td><p>psutil</p></td>
+<td><p>included for the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="selected-shared-dependencies">
+<h2>Selected Shared Dependencies<a class="headerlink" href="#selected-shared-dependencies" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package Name</p></th>
+<th class="head"><p>Version Constraint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>dask</p></td>
+<td><p>==2025.9.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>esmf</p></td>
+<td><p>==8.9.0</p></td>
+</tr>
+<tr class="row-even"><td><p>esmpy</p></td>
+<td><p>==8.9.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>hdf5</p></td>
+<td><p>==1.14.6</p></td>
+</tr>
+<tr class="row-even"><td><p>libnetcdf</p></td>
+<td><p>==4.9.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>matplotlib-base</p></td>
+<td><p>==3.10.6</p></td>
 </tr>
 <tr class="row-even"><td><p>ncview</p></td>
-<td><p>2.1.8</p></td>
+<td><p>==2.1.8</p></td>
 </tr>
-<tr class="row-odd"><td><p>ncvis-climate</p></td>
-<td><p>2024.01.26</p></td>
-</tr>
-<tr class="row-even"><td><p>netcdf4</p></td>
-<td><p>1.7.2 nompi_*</p></td>
-</tr>
-<tr class="row-odd"><td><p>notebook</p></td>
-<td><p>&lt;7.0.0</p></td>
+<tr class="row-odd"><td><p>netcdf4</p></td>
+<td><p>==1.7.2 <code class="docutils literal notranslate"><span class="pre">nompi_*</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>numpy</p></td>
 <td><p>&gt;=2.0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>openssh</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>output_viewer</p></td>
-<td><p>1.3.3</p></td>
-</tr>
-<tr class="row-odd"><td><p>pandas</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>pcmdi_metrics</p></td>
-<td><p>3.8.2</p></td>
-</tr>
-<tr class="row-odd"><td><p>pillow</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>plotly</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>progessbar2</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p>output_viewer</p></td>
+<td><p>==1.3.3</p></td>
 </tr>
 <tr class="row-even"><td><p>proj</p></td>
-<td><p>9.5.1</p></td>
+<td><p>==9.6.2</p></td>
 </tr>
-<tr class="row-odd"><td><p>psutil</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p>pyproj</p></td>
+<td><p>==3.7.2</p></td>
 </tr>
-<tr class="row-even"><td><p>pyproj</p></td>
-<td><p>3.6.1 (py&lt;3.10)</p></td>
+<tr class="row-even"><td><p>xarray</p></td>
+<td><p>==2025.9.0</p></td>
 </tr>
-<tr class="row-odd"><td><p></p></td>
-<td><p>3.7.0 (py&gt;=3.10)</p></td>
-</tr>
-<tr class="row-even"><td><p>pyevtk</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>pyremap</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>pytest</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>pywavelets</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>r</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>r-dplyr</p></td>
-<td><p>1.1.4</p></td>
-</tr>
-<tr class="row-even"><td><p>r-ggplot2</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>r-tidyverse</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>scikit-image</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>scipy</p></td>
-<td><p>&gt;=0.9.0</p></td>
-</tr>
-<tr class="row-even"><td><p>shapely</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>squadgen</p></td>
-<td><p>1.2.2</p></td>
-</tr>
-<tr class="row-even"><td><p>sympy</p></td>
-<td><p>&gt;=0.7.6</p></td>
-</tr>
-<tr class="row-odd"><td><p>tabulate</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p>tempest-extremes</p></td>
-<td><p>2.2.3</p></td>
-</tr>
-<tr class="row-odd"><td><p>tempest-remap</p></td>
-<td><p>2.2.0</p></td>
-</tr>
-<tr class="row-even"><td><p>uxarray</p></td>
-<td><p>2024.11.1 (py&lt;3.10)</p></td>
-</tr>
-<tr class="row-odd"><td><p></p></td>
-<td><p>&gt;=2024.12.0 (py&gt;=3.10)</p></td>
-</tr>
-<tr class="row-even"><td><p>windspharm</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p>xarray</p></td>
-<td><p>2024.7.0 (py&lt;3.10)</p></td>
-</tr>
-<tr class="row-even"><td><p></p></td>
-<td><p>2025.1.1 (py&gt;=3.10)</p></td>
-</tr>
-<tr class="row-odd"><td><p>xcdat</p></td>
-<td><p>0.8.0</p></td>
-</tr>
-<tr class="row-even"><td><p>xesmf</p></td>
-<td><p>0.8.8</p></td>
-</tr>
-<tr class="row-odd"><td><p>zppy</p></td>
-<td><p>3.0.0</p></td>
-</tr>
-<tr class="row-even"><td><p>zppy-interfaces</p></td>
-<td><p>0.1.2</p></td>
-</tr>
-<tr class="row-odd"><td><p>zstash</p></td>
-<td><p>1.4.4</p></td>
+<tr class="row-odd"><td><p>xesmf</p></td>
+<td><p>==0.8.8</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
-<p>This table reflects the current runtime environment for E3SM-Unified <code class="docutils literal notranslate"><span class="pre">1.11.1</span></code>.</p>
+<p>Refer to the recipe itself for the full dependency list and all
+platform/variant-specific conditionals.</p>
 </section>
 </section>
 

@@ -100,7 +100,7 @@
 <p>Support for a new HPC machine in E3SM-Unified requires coordinated updates
 across multiple tools — primarily in
 <a class="reference external" href="https://github.com/E3SM-Project/mache"><code class="docutils literal notranslate"><span class="pre">mache</span></code></a>, but also in the E3SM Spack
-fork and deployment scripts.</p>
+fork and the repository’s <code class="docutils literal notranslate"><span class="pre">deploy/</span></code> configuration.</p>
 <p>This page provides guidance for E3SM-Unified maintainers and infrastructure
 developers integrating new machines into the release and deployment workflow.</p>
 <hr class="docutils" />
@@ -132,7 +132,7 @@ can support them.</p>
 <ol class="arabic simple">
 <li><p><strong>Reference your <code class="docutils literal notranslate"><span class="pre">mache</span></code> branch in E3SM-Unified Deployment</strong></p>
 <ul class="simple">
-<li><p>Use the <code class="docutils literal notranslate"><span class="pre">--mache_fork</span></code> and <code class="docutils literal notranslate"><span class="pre">--mache_branch</span></code> flags to deploy using the
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">--mache-fork</span></code> and <code class="docutils literal notranslate"><span class="pre">--mache-branch</span></code> flags to deploy using the
 updated branch</p></li>
 <li><p>Confirm the new machine is recognized and templates are applied correctly</p></li>
 </ul>
@@ -151,16 +151,14 @@ updated branch</p></li>
 <h2>✅ Testing Your Changes<a class="headerlink" href="#testing-your-changes" title="Link to this heading"></a></h2>
 <p>Use the standard test deployment approach from
 <a class="reference internal" href="testing/deploying-on-hpcs.html"><span class="std std-doc">Deploying on HPCs</span></a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>e3sm_supported_machines
-./deploy_e3sm_unified.py<span class="w"> </span>--conda<span class="w"> </span>~/miniforge3<span class="w"> </span><span class="se">\</span>
-<span class="w">                         </span>--mache_fork<span class="w"> </span>&lt;your_fork&gt;<span class="w"> </span><span class="se">\</span>
-<span class="w">                         </span>--mache_branch<span class="w"> </span>&lt;your_branch&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./deploy.py<span class="w"> </span>--mache-fork<span class="w"> </span>&lt;your_fork&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--mache-branch<span class="w"> </span>&lt;your_branch&gt;
 </pre></div>
 </div>
 <p>You can also supply these flags:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                         <span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">new_machine</span><span class="o">&gt;</span> \
-                         <span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">compiler</span><span class="o">&gt;</span> \
-                         <span class="o">--</span><span class="n">mpi</span> <span class="o">&lt;</span><span class="n">mpi</span><span class="o">&gt;</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">new_machine</span><span class="o">&gt;</span>
+<span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">compiler</span><span class="o">&gt;</span>
+<span class="o">--</span><span class="n">mpi</span> <span class="o">&lt;</span><span class="n">mpi</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>but they should not be needed if you have set things up in <code class="docutils literal notranslate"><span class="pre">mache</span></code> correctly.</p>
