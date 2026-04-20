@@ -5,7 +5,7 @@ platforms = ["linux-64"]
 channel-priority = "strict"
 
 [dependencies]
-python = ">=3.10,<3.14"
+python = ">=3.11,<3.14"
 mache = "==3.3.0"
 pytest = "*"
 pyyaml = "*"
@@ -13,9 +13,6 @@ rattler-build = "*"
 sphinx = ">=7.0.0"
 sphinx_rtd_theme = "*"
 "myst-parser" = "*"
-
-[feature.py310.dependencies]
-python = "3.10.*"
 
 [feature.py311.dependencies]
 python = "3.11.*"
@@ -27,7 +24,6 @@ python = "3.12.*"
 python = "3.13.*"
 
 [environments]
-py310 = ["py310"]
 py311 = ["py311"]
 py312 = ["py312"]
 py313 = ["py313"]
