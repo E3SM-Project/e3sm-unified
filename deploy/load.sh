@@ -27,7 +27,8 @@ if command -v pnetcdf-config >/dev/null 2>&1; then
     export PNETCDF="$(dirname "$(dirname "$(command -v pnetcdf-config)")")"
 fi
 
-if [ -n "${MACHE_DEPLOY_SPACK_LIBRARY_VIEW:-}" ]; then
+if [[ "${MACHE_DEPLOY_ACTIVE_ENV_KIND}" == "compute" ]] && \
+        [ -n "${MACHE_DEPLOY_SPACK_LIBRARY_VIEW:-}" ]; then
     export PIO="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}"
     export METIS_ROOT="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}"
     export PARMETIS_ROOT="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}"
