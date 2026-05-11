@@ -32,9 +32,7 @@ if [[ "${MACHE_DEPLOY_ACTIVE_ENV_KIND}" == "compute" ]] && \
     export PIO="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}"
     export METIS_ROOT="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}"
     export PARMETIS_ROOT="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}"
-    if [ -f "${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}/lib/esmf.mk" ]; then
-        export ESMFMKFILE="${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}/lib/esmf.mk"
-    fi
-elif [ -n "${CONDA_PREFIX:-}" ] && [ -f "${CONDA_PREFIX}/lib/esmf.mk" ]; then
-    export ESMFMKFILE="${CONDA_PREFIX}/lib/esmf.mk"
 fi
+# We want the pixi version of ESMF on both login and compute nodes.
+# This is for e3sm_diags.
+export ESMFMKFILE="${CONDA_PREFIX}/lib/esmf.mk"

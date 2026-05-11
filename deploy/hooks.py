@@ -279,7 +279,6 @@ def post_spack(ctx: DeployContext) -> None:
             f'"ilamb=={ilamb_version}"'
         )
 
-    view_path = Path(str(spack_result['view_path']))
     if esmpy_version is not None:
         esmf_dir = SOURCE_BUILD_DIR / f'esmf-{esmpy_version}'
         esmpy_dir = esmf_dir / 'src' / 'addon' / 'esmpy'
@@ -289,8 +288,7 @@ def post_spack(ctx: DeployContext) -> None:
             [
                 f'git clone https://github.com/esmf-org/esmf.git '
                 f'-b v{esmpy_version} {shlex.quote(str(esmf_dir))}',
-                'export ESMFMKFILE='
-                f'{shlex.quote(str(view_path / "lib/esmf.mk"))}',
+                'export ESMFMKFILE="${CONDA_PREFIX}/lib/esmf.mk"',
                 (
                     'cd '
                     f'{shlex.quote(str(esmpy_dir))} '
@@ -308,8 +306,7 @@ def post_spack(ctx: DeployContext) -> None:
             [
                 f'git clone https://github.com/pangeo-data/xESMF.git '
                 f'-b v{xesmf_version} {shlex.quote(str(xesmf_dir))}',
-                'export ESMFMKFILE='
-                f'{shlex.quote(str(view_path / "lib/esmf.mk"))}',
+                'export ESMFMKFILE="${CONDA_PREFIX}/lib/esmf.mk"',
                 (
                     f'cd {shlex.quote(str(xesmf_dir))} '
                     '&& python -m pip install --no-deps --no-build-isolation .'
