@@ -122,6 +122,67 @@ def test_pre_pixi_defaults_to_nompi_single_for_pixi_only_machine(tmp_path: Path)
     assert updates['toolchain'] == {}
 
 
+def test_pre_publish_falls_back_to_pixi_prefix_without_login_prefix(
+    tmp_path: Path,
+):
+    base_path = tmp_path / 'e3sm-unified'
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='E3SMinput',
+        base_path=str(base_path),
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='polaris',
+        machine_cfg_path=machine_cfg_path,
+    )
+    ctx.args.release = True
+    ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
+    ctx.runtime['pixi'].pop('login_prefix')
+
+    updates = deploy_hooks.pre_publish(ctx)
+
+    nco_root = base_path / 'e3smu_latest_for_nco'
+    machine_link = nco_root / 'polaris'
+    assert updates == {
+        'shared': {
+            'managed_directories': [str(nco_root)],
+        }
+    }
+    assert machine_link.is_symlink()
+    assert machine_link.readlink() == Path(ctx.runtime['pixi']['prefix'])
+
+
+def test_pre_publish_adds_nco_alias_for_dual_env_release(tmp_path: Path):
+    base_path = tmp_path / 'e3sm-unified'
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path=str(base_path),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    ctx.args.release = True
+    ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
+
+    updates = deploy_hooks.pre_publish(ctx)
+
+    nco_root = base_path / 'e3smu_latest_for_nco'
+    machine_link = nco_root / 'compy'
+    assert updates == {
+        'shared': {
+            'managed_directories': [str(nco_root)],
+        }
+    }
+    assert machine_link.is_symlink()
+    assert machine_link.readlink() == Path(ctx.runtime['pixi']['login_prefix'])
+
+
 def test_ensure_feedstock_submodule_initializes_missing_recipe(
     tmp_path: Path, monkeypatch
 ):

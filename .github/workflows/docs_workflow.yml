@@ -8,7 +8,7 @@ on:
     types: [published]
 
 env:
-  PIXI_ENVIRONMENT: "py310"
+  PIXI_ENVIRONMENT: "py311"
 
 jobs:
   publish-docs:
