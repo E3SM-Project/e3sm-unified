@@ -332,7 +332,7 @@ def pre_publish(ctx: DeployContext) -> dict[str, Any] | None:
         return None
 
     login_prefix = _normalize_optional_path(
-        _get_runtime_pixi_value(ctx, 'login_prefix')
+        _get_optional_runtime_pixi_value(ctx, 'login_prefix')
     )
     if login_prefix is None:
         return None
@@ -849,6 +849,18 @@ def _get_runtime_pixi_value(ctx: DeployContext, key: str) -> str:
     value = runtime_pixi.get(key)
     if value is None:
         raise ValueError(f'runtime.pixi.{key} is missing')
+    return str(value)
+
+
+def _get_optional_runtime_pixi_value(
+    ctx: DeployContext, key: str
+) -> str | None:
+    runtime_pixi = ctx.runtime.get('pixi', {})
+    if not isinstance(runtime_pixi, dict):
+        raise ValueError('runtime.pixi is missing or invalid')
+    value = runtime_pixi.get(key)
+    if value is None:
+        return None
     return str(value)
 
 
