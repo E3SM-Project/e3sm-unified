@@ -122,7 +122,9 @@ def test_pre_pixi_defaults_to_nompi_single_for_pixi_only_machine(tmp_path: Path)
     assert updates['toolchain'] == {}
 
 
-def test_pre_publish_skips_nco_alias_without_login_prefix(tmp_path: Path):
+def test_pre_publish_falls_back_to_pixi_prefix_without_login_prefix(
+    tmp_path: Path,
+):
     base_path = tmp_path / 'e3sm-unified'
     machine_cfg_path = _write_machine_cfg(
         tmp_path,
@@ -140,8 +142,15 @@ def test_pre_publish_skips_nco_alias_without_login_prefix(tmp_path: Path):
 
     updates = deploy_hooks.pre_publish(ctx)
 
-    assert updates is None
-    assert not (base_path / 'e3smu_latest_for_nco').exists()
+    nco_root = base_path / 'e3smu_latest_for_nco'
+    machine_link = nco_root / 'polaris'
+    assert updates == {
+        'shared': {
+            'managed_directories': [str(nco_root)],
+        }
+    }
+    assert machine_link.is_symlink()
+    assert machine_link.readlink() == Path(ctx.runtime['pixi']['prefix'])
 
 
 def test_pre_publish_adds_nco_alias_for_dual_env_release(tmp_path: Path):

@@ -335,7 +335,9 @@ def pre_publish(ctx: DeployContext) -> dict[str, Any] | None:
         _get_optional_runtime_pixi_value(ctx, 'login_prefix')
     )
     if login_prefix is None:
-        return None
+        login_prefix = _normalize_optional_path(
+            _get_runtime_pixi_value(ctx, 'prefix')
+        )
 
     machine_tag = ctx.machine or 'local'
     nco_root = prefix_root / 'e3smu_latest_for_nco'
