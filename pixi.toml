@@ -6,7 +6,7 @@ channel-priority = "strict"
 
 [dependencies]
 python = ">=3.11,<3.14"
-mache = "==3.3.0"
+mache = "==3.7.0"
 pytest = "*"
 pyyaml = "*"
 rattler-build = "*"

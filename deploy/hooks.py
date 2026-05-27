@@ -349,7 +349,10 @@ def pre_publish(ctx: DeployContext) -> dict[str, Any] | None:
 
     return {
         'shared': {
-            'managed_directories': [str(nco_root)],
+            'managed_directories': [{
+                'path': str(nco_root),
+                'root_group_writable': True,
+            }]
         }
     }
 
