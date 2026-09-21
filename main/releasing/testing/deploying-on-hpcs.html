@@ -14,8 +14,8 @@
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -282,15 +282,15 @@ loads the expected package variant.</p>
 or <code class="docutils literal notranslate"><span class="pre">load_latest_e3sm_unified_&lt;machine&gt;.*</span></code> script names.</p>
 </li>
 <li><p>Verify that the MPI environment is active (not the no-MPI one):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$E3SMU_MPI</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># should reflect the compute-node variant</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$E3SMU_MPI</span><span class="s2">"</span><span class="w">   </span><span class="c1"># should reflect the compute-node variant</span>
 which<span class="w"> </span>python<span class="w">        </span><span class="c1"># should point to the active Pixi env</span>
-python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mpi4py, xarray; print(&#39;mpi4py:&#39;, mpi4py.__version__)&quot;</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import mpi4py, xarray; print('mpi4py:', mpi4py.__version__)"</span>
 </pre></div>
 </div>
 <p>Optional quick MPI sanity check (if mpirun/srun is available on the node):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())"</span>
 <span class="c1"># or, for Slurm</span>
-srun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())&quot;</span>
+srun<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from mpi4py import MPI; print(MPI.COMM_WORLD.Get_size())"</span>
 </pre></div>
 </div>
 </li>

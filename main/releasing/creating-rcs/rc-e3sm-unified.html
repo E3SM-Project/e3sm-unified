@@ -14,8 +14,8 @@
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=a8da1a53"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -236,7 +236,7 @@ and provenance only.</p>
 <p>If E3SM-Unified testing depends on a <code class="docutils literal notranslate"><span class="pre">mache</span></code> release candidate rather than a
 final <code class="docutils literal notranslate"><span class="pre">mache</span></code> release, update the repository’s <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> so the CI/test
 environment includes:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;conda-forge/label/mache_dev&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;conda-forge&quot;</span><span class="p">]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"conda-forge/label/mache_dev"</span><span class="p">,</span><span class="w"> </span><span class="s2">"conda-forge"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>This allows Pixi to resolve the RC build of <code class="docutils literal notranslate"><span class="pre">mache</span></code> during CI and local test

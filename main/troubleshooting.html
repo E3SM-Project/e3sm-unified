@@ -14,8 +14,8 @@
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=a8da1a53"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -100,7 +100,7 @@ here, please reach out via Slack or GitHub.</p>
 <section id="permission-denied-when-installing-e3sm-unified">
 <h3>“Permission Denied” When Installing E3SM-Unified<a class="headerlink" href="#permission-denied-when-installing-e3sm-unified" title="Link to this heading"></a></h3>
 <p><strong>Symptom:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">OSError</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="s1">&#39;Permission denied&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">OSError</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="s1">'Permission denied'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Cause:</strong> You’re likely trying to install E3SM-Unified into a system-wide
@@ -113,7 +113,7 @@ see <a class="reference internal" href="quickstart.html"><span class="std std-do
 <section id="module-not-found-when-importing-packages">
 <h3>“Module Not Found” When Importing Packages<a class="headerlink" href="#module-not-found-when-importing-packages" title="Link to this heading"></a></h3>
 <p><strong>Symptom:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">ModuleNotFoundError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="s1">&#39;e3sm_diags&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">ModuleNotFoundError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="s1">'e3sm_diags'</span>
 </pre></div>
 </div>
 <p><strong>Cause:</strong> E3SM-Unified may not be activated correctly, or you’re in a
@@ -136,7 +136,7 @@ MPI-enabled stack that is intended for compute nodes.</p>
 <p><strong>Solution:</strong> Launch a batch job or an interactive compute session with
 <code class="docutils literal notranslate"><span class="pre">srun</span></code>, <code class="docutils literal notranslate"><span class="pre">salloc</span></code> or <code class="docutils literal notranslate"><span class="pre">qsub</span></code>, depending on your machine.</p>
 <p>If you are on an HPC machine, confirm the active deployment mode:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$E3SMU_MPI</span><span class="s2">&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$E3SMU_MPI</span><span class="s2">"</span>
 </pre></div>
 </div>
 <p>If this prints <code class="docutils literal notranslate"><span class="pre">NOMPI</span></code> on a compute node, the load script may have selected
@@ -150,7 +150,7 @@ the login environment instead of the compute-node environment.</p>
 to the default <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant unless you constrain the build string.</p>
 <p><strong>Solution:</strong> Create a fresh environment and request the desired variant
 explicitly, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span><span class="s2">&quot;e3sm-unified=*=mpi_mpich_*&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span><span class="s2">"e3sm-unified=*=mpi_mpich_*"</span>
 </pre></div>
 </div>
 </section>
