@@ -552,9 +552,8 @@ def _get_pixi_prefixes(
     package_mpi: str,
     env_layout: str,
 ) -> tuple[str, str | None]:
-    explicit_prefix = getattr(ctx.args, 'prefix', None)
-    if explicit_prefix:
-        prefix = _abs_path(str(explicit_prefix))
+    prefix = _get_explicit_prefix(ctx)
+    if prefix is not None:
         if env_layout == 'single':
             return prefix, None
         if package_mpi == 'nompi':
@@ -577,6 +576,16 @@ def _get_pixi_prefixes(
 
     login_prefix = install_root / 'pixi_login'
     return str(prefix_path), str(login_prefix)
+
+
+def _get_explicit_prefix(ctx: DeployContext) -> str | None:
+    # mache 3.10 renamed --prefix to --pixi-path (dest pixi_path) and kept
+    # --prefix as an alias; older mache still stores it under prefix.
+    for attr in ('pixi_path', 'prefix'):
+        value = getattr(ctx.args, attr, None)
+        if value:
+            return _abs_path(str(value))
+    return None
 
 
 def _get_prefix_root(ctx: DeployContext) -> Path | None:
@@ -602,6 +611,12 @@ def _resolve_spack_path(ctx: DeployContext) -> str | None:
         cfg_path = _normalize_optional_path(cfg_value)
         if cfg_path is not None:
             return str(cfg_path)
+
+    # An explicit pixi prefix keeps the whole deployment out of the shared
+    # prefix root, so Spack goes next to the pixi environments.
+    explicit_prefix = _get_explicit_prefix(ctx)
+    if explicit_prefix is not None:
+        return f'{explicit_prefix}_spack'
 
     prefix_root = _get_prefix_root(ctx)
     if prefix_root is not None:
@@ -736,8 +751,14 @@ def _get_shared_runtime(
         'load_script_symlinks': [],
     }
     prefix_root = _get_prefix_root(ctx)
-    if prefix_root is not None:
-        runtime['base_path'] = str(prefix_root / _get_version_dir_name(version))
+    explicit_prefix = _get_explicit_prefix(ctx)
+    # shared.base_path is the versioned install root that mache manages
+    # (recursive permission updates). With an explicit prefix, the
+    # environments live elsewhere, so there is nothing of ours under it.
+    if prefix_root is not None and explicit_prefix is None:
+        runtime['base_path'] = str(
+            prefix_root / _get_version_dir_name(version)
+        )
 
     requested_load_script_dir = _get_requested_load_script_dir(ctx)
     if requested_load_script_dir is not None:
@@ -749,6 +770,13 @@ def _get_shared_runtime(
         ctx.logger.info(
             'Skipping shared load-script aliases: no deploy prefix root was '
             'configured for this machine.'
+        )
+        return runtime
+
+    if not release and explicit_prefix is not None:
+        ctx.logger.info(
+            'Skipping shared load-script aliases: this is a non-release '
+            'deployment with an explicit pixi prefix.'
         )
         return runtime
 

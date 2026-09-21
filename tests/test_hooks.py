@@ -89,7 +89,7 @@ def _ctx(
             env_layout=None,
             release=False,
             no_spack=False,
-            prefix=None,
+            pixi_path=None,
             spack_path=None,
             spack_tmpdir=None,
             load_script_dir=None,
@@ -355,6 +355,92 @@ def test_pre_pixi_defaults_to_hpc_dual_for_hpc_machine(tmp_path: Path):
         '/share/apps/E3SM/conda_envs/e3smu_1_2_3'
     )
     assert updates['e3sm_unified']['env_layout'] == 'dual'
+
+
+def test_explicit_pixi_path_keeps_deploy_out_of_base_path(tmp_path: Path):
+    base_path = tmp_path / 'e3sm-unified'
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path=str(base_path),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    pixi_path = tmp_path / 'scratch' / 'e3sm-unified-pixi'
+    ctx.args.pixi_path = str(pixi_path)
+
+    updates = deploy_hooks.pre_pixi(ctx)
+
+    assert updates is not None
+    assert updates['pixi']['prefix'] == str(pixi_path)
+    assert updates['pixi']['login_prefix'] == f'{pixi_path}_login'
+    assert 'base_path' not in updates['shared']
+    assert updates['shared']['load_script_copies'] == []
+    assert updates['shared']['load_script_symlinks'] == []
+
+    ctx.runtime.update(updates)
+    spack_updates = deploy_hooks.pre_spack(ctx)
+
+    assert spack_updates is not None
+    assert spack_updates['spack']['spack_path'] == f'{pixi_path}_spack'
+
+
+def test_explicit_prefix_alias_is_honored(tmp_path: Path):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path=str(tmp_path / 'e3sm-unified'),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    pixi_path = tmp_path / 'scratch' / 'e3sm-unified-pixi'
+    del ctx.args.pixi_path
+    ctx.args.prefix = str(pixi_path)
+
+    updates = deploy_hooks.pre_pixi(ctx)
+
+    assert updates is not None
+    assert updates['pixi']['prefix'] == str(pixi_path)
+    assert 'base_path' not in updates['shared']
+
+
+def test_release_with_explicit_pixi_path_still_publishes_load_scripts(
+    tmp_path: Path,
+):
+    base_path = tmp_path / 'e3sm-unified'
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path=str(base_path),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    ctx.args.release = True
+    ctx.args.pixi_path = str(tmp_path / 'scratch' / 'e3sm-unified-pixi')
+
+    updates = deploy_hooks.pre_pixi(ctx)
+
+    assert updates is not None
+    assert 'base_path' not in updates['shared']
+    assert updates['shared']['load_script_copies'] == [
+        str(base_path / 'load_e3sm_unified_1.2.3_compy.sh')
+    ]
+    assert len(updates['shared']['load_script_symlinks']) == 1
 
 
 def test_pre_pixi_release_rejects_local_build(tmp_path: Path):
