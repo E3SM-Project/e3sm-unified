@@ -203,11 +203,13 @@ spack:
   # branch; a --release deployment requires tags from E3SM-Project or spack
   # (see docs/releasing/testing/spack-updates.md).  --spack-pins <file> on the
   # command line takes precedence.
+  #
+  # mache 5.4.0 pins e3sm-spack-packages v2026.06.2, and v2026.06.3 adds
+  # nco 5.4.2, which `[spack]` in deploy/pins.cfg pins.
   pins:
     repos:
       e3sm:
-        # nco 5.4.1 (E3SM-Project/e3sm-spack-packages#2), not yet tagged
-        commit: 6d619c4d54e758b361dd706ca706fcc2854b63ab
+        tag: v2026.06.3
 
   # Optional spack build settings
   tmpdir: null
