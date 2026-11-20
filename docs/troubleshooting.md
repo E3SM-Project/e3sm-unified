@@ -72,17 +72,24 @@ the login environment instead of the compute-node environment.
 
 ### Local Install Solves to the Wrong Package Variant
 
-**Symptom:** You expected MPI-enabled tools but installed the default package.
+**Symptom:** You expected MPI-enabled tools but installed the default package,
+or a command like
+`conda create ... "e3sm-unified=*=mpi_mpich_*"` fails to solve or installs an
+old version.
 
-**Cause:** `conda create -n e3sm-unified e3sm-unified` will typically resolve
-to the default `nompi` variant unless you constrain the build string.
+**Cause:** Conda-forge MPI variants (`mpich` and `openmpi`) were last published
+for E3SM-Unified 1.12.0. Starting with 1.13.0, only the `nompi` and `hpc`
+variants are built, because `e3sm_diags` requires the `nompi` build of `esmf`
+([e3sm_diags#1051](https://github.com/E3SM-Project/e3sm_diags/issues/1051)).
 
-**Solution:** Create a fresh environment and request the desired variant
-explicitly, for example:
+**Solution:** For local installs, use the default `nompi` variant:
 
 ```bash
-conda create -n e3sm-unified -c conda-forge python=3.13 "e3sm-unified=*=mpi_mpich_*"
+conda create -n e3sm-unified -c conda-forge python=3.13 e3sm-unified
 ```
+
+For MPI-enabled tools on an HPC machine, use the shared E3SM-Unified deployment
+on a compute node, where the `hpc` variant uses the system MPI.
 
 ---
 

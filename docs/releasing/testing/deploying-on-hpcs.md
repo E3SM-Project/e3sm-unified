@@ -260,6 +260,8 @@ These are the repository-specific flags maintainers are most likely to use.
 * `--package-mpi`: Choose `nompi`, `mpich`, `openmpi`, or `hpc`.
 
   On supported HPC systems, `hpc` is typically the target release variant.
+  Since 1.13.0, only `nompi` and `hpc` packages are published on conda-forge,
+  so `mpich` and `openmpi` will not resolve with `--package-source conda-forge`.
 
 * `--env-layout`: Choose `single` or `dual`.
 
