@@ -41,7 +41,7 @@ E3SM-Unified `1.12.0`. Starting with `1.13.0`, they are not built because
 | globus-cli | >=3.15.0 |
 | livvext | ==1.1.2 |
 | livvkit | ==3.3.1 |
-| mache | ==5.4.0 |
+| mache | ==5.5.2 |
 | mosaic | ==1.3.1 |
 | mpas-analysis | ==1.16.0 |
 | mpas_tools | ==2.2.1 |
