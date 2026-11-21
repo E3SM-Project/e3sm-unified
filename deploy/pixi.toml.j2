@@ -21,8 +21,7 @@ git = "*"
 {{ dependency }}
 {%- endfor %}
 
-{%- if include_mache %}
-mache = "=={{ mache }}"
-{%- endif %}
+{#- mache comes from the e3sm-unified package's own pin, not deploy/pins.cfg,
+    which pins the mache used to deploy #}
 
 e3sm-unified = {version = "=={{ software_version }}", build = "{{ mpi_prefix }}_*"}

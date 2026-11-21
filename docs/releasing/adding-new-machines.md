@@ -43,9 +43,10 @@ After updating `mache`, you'll need to:
 
 2. **Update Spack if needed**
 
-   * If new versions of external tools are required, update the
-     [`spack_for_mache_<version>`](testing/spack-updates.md) branch of the
-     [E3SM Spack fork](https://github.com/E3SM-Project/spack)
+   * If new versions of external tools are required, add them to
+     [e3sm-spack-packages](https://github.com/E3SM-Project/e3sm-spack-packages)
+     and pin them as described in
+     [Updating Spack Packages](testing/spack-updates.md)
 
 ---
 

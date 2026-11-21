@@ -17,6 +17,7 @@ from mache.deploy.bootstrap import (
     build_pixi_shell_hook_prefix,
     check_call,
 )
+from mache.spack.pins import load_pins, release_pins_are_valid
 
 if TYPE_CHECKING:
     from mache.deploy.hooks import DeployContext
@@ -51,7 +52,16 @@ def _load_shared_helpers():
 
 _shared = _load_shared_helpers()
 get_base_channels = _shared.get_base_channels
+get_recipe_tests = _shared.get_recipe_tests
 get_version_from_recipe = _shared.get_version_from_recipe
+
+# Import names of the packages that post_spack() installs from [hpc] pins
+HPC_PIN_IMPORTS = {
+    'mpi4py': 'mpi4py',
+    'ilamb': 'ILAMB',
+    'esmpy': 'esmpy',
+    'xesmf': 'xesmf',
+}
 
 
 def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
@@ -188,6 +198,9 @@ def pre_spack(ctx: DeployContext) -> dict[str, Any] | None:
         }
 
     _sync_e3sm_unified_spack_machine_options(machine_config=ctx.machine_config)
+
+    if ctx.runtime.get('e3sm_unified', {}).get('release', False):
+        _check_release_spack_pins(ctx)
 
     spack_path = _resolve_spack_path(ctx)
     if spack_path is None:
@@ -326,6 +339,10 @@ def post_spack(ctx: DeployContext) -> None:
 
 
 def pre_publish(ctx: DeployContext) -> dict[str, Any] | None:
+    # test before anything is published, so a broken environment never
+    # replaces a working one
+    _test_deployed_envs(ctx)
+
     prefix_root = _get_prefix_root(ctx)
     release = bool(ctx.runtime.get('e3sm_unified', {}).get('release', False))
     if not release or prefix_root is None:
@@ -349,9 +366,167 @@ def pre_publish(ctx: DeployContext) -> dict[str, Any] | None:
 
     return {
         'shared': {
-            'managed_directories': [str(nco_root)],
+            'managed_directories': [{
+                'path': str(nco_root),
+                'root_group_writable': True,
+            }]
         }
     }
+
+
+def _test_deployed_envs(ctx: DeployContext) -> None:
+    if getattr(ctx.args, 'skip_env_tests', False):
+        ctx.logger.info('Skipping environment tests (--skip-env-tests).')
+        return
+
+    load_scripts = ctx.runtime.get('load_scripts') or []
+    if not load_scripts:
+        ctx.logger.info('Skipping environment tests: no load scripts.')
+        return
+
+    compute_mpi = _get_runtime_pixi_value(ctx, 'mpi')
+    login_mpi = _get_optional_runtime_pixi_value(ctx, 'login_mpi')
+    checks_by_mpi = {compute_mpi: _get_env_checks(ctx, compute_mpi)}
+    if login_mpi is not None and login_mpi not in checks_by_mpi:
+        checks_by_mpi[login_mpi] = _get_env_checks(ctx, login_mpi)
+
+    log_filename = _get_log_filename(ctx)
+    quiet = bool(getattr(ctx.args, 'quiet', False))
+    for load_script in load_scripts:
+        # mache gives load script paths relative to the repo root, but the
+        # test script may be rerun by hand from any directory (e.g. with srun
+        # to test the compute environment of a dual layout)
+        script_path = _write_env_test_script(
+            ctx=ctx,
+            load_script=Path(ctx.repo_root).resolve() / load_script,
+            checks_by_mpi=checks_by_mpi,
+        )
+        try:
+            check_call(
+                ['/bin/bash', str(script_path)],
+                log_filename=log_filename,
+                quiet=quiet,
+                env=build_pixi_env(),
+                cwd=ctx.repo_root,
+            )
+        except subprocess.CalledProcessError as e:
+            raise ValueError(
+                f'The deployed environment failed its tests (see '
+                f'{log_filename}). Nothing has been published. To publish '
+                f'anyway, rerun with --skip-env-tests.'
+            ) from e
+
+        if len(checks_by_mpi) > 1:
+            ctx.logger.info(
+                'The load script selects the login or compute environment '
+                'by node type, so only one was tested. To test the other, '
+                'run on the other kind of node:\n  bash %s',
+                script_path,
+            )
+
+
+def _get_env_checks(ctx: DeployContext, mpi: str) -> list[str]:
+    variables = {**_get_recipe_platform_variables(), 'mpi': mpi}
+    imports, commands = get_recipe_tests(RECIPE_PATH, variables)
+    checks = [f'python -c "import {name}"' for name in imports]
+    # ${PREFIX} is the package's install prefix in recipe tests
+    checks.extend(
+        command.replace('${PREFIX}', '${CONDA_PREFIX}') for command in commands
+    )
+    if mpi != 'hpc':
+        return checks
+
+    # The hpc package leaves NCO, ESMF and the Tempest tools to Spack, so the
+    # recipe only tests them for other variants. Test them in the Spack view.
+    nompi_variables = {**variables, 'mpi': 'nompi'}
+    _, nompi_commands = get_recipe_tests(RECIPE_PATH, nompi_variables)
+    checks.extend(
+        command.replace('${PREFIX}', '${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}')
+        for command in nompi_commands
+        if command not in commands
+    )
+    hpc_pins = ctx.pins.get('hpc', {})
+    for package, import_name in HPC_PIN_IMPORTS.items():
+        if _normalize_optional_pin(hpc_pins.get(package)) is not None:
+            checks.append(f'python -c "import {import_name}"')
+    return checks
+
+
+def _get_recipe_platform_variables() -> dict[str, bool]:
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+    return {
+        'linux': system == 'linux',
+        'osx': system == 'darwin',
+        'win': system == 'windows',
+        'unix': system in ('linux', 'darwin'),
+        'x86_64': machine == 'x86_64',
+        'aarch64': machine == 'aarch64',
+        'arm64': machine == 'arm64',
+        'ppc64le': machine == 'ppc64le',
+    }
+
+
+def _write_env_test_script(
+    *,
+    ctx: DeployContext,
+    load_script: Path,
+    checks_by_mpi: dict[str, list[str]],
+) -> Path:
+    lines = [
+        '#!/bin/bash',
+        '# Tests of a deployed E3SM-Unified environment, written by',
+        '# deploy/hooks.py from the feedstock recipe tests. The load script',
+        '# activates the login environment on a login node and the compute',
+        '# environment on a compute node.',
+        '',
+        f'source {shlex.quote(str(load_script))} || exit 1',
+        '',
+        'echo "Testing the ${MACHE_DEPLOY_ACTIVE_ENV_KIND} environment" \\',
+        '    "(${MACHE_DEPLOY_ACTIVE_PIXI_MPI})"',
+        '# some tests write files',
+        'test_dir="$(mktemp -d)"',
+        'cd "${test_dir}" || exit 1',
+        'failures=0',
+        '',
+        '_check() {',
+        '  local output',
+        '  if output="$(eval "$1" 2>&1)"; then',
+        '    echo "  PASS: $1"',
+        '  else',
+        '    echo "  FAIL: $1"',
+        '    tail -n 20 <<< "${output}" | sed "s/^/      /"',
+        '    failures=$((failures + 1))',
+        '  fi',
+        '}',
+        '',
+        'case "${MACHE_DEPLOY_ACTIVE_PIXI_MPI}" in',
+    ]
+    for mpi, checks in checks_by_mpi.items():
+        lines.append(f'  {mpi})')
+        lines.extend(f'    _check {shlex.quote(check)}' for check in checks)
+        lines.append('    ;;')
+    lines.extend(
+        [
+            '  *)',
+            '    echo "  FAIL: no tests for this environment"',
+            '    failures=1',
+            '    ;;',
+            'esac',
+            '',
+            'cd / && rm -rf "${test_dir}"',
+            'if (( failures > 0 )); then',
+            '  echo "${failures} test(s) failed"',
+            '  exit 1',
+            'fi',
+            'echo "All tests passed"',
+        ]
+    )
+
+    script_path = Path(ctx.work_dir) / f'test_{load_script.stem}.sh'
+    script_path.parent.mkdir(parents=True, exist_ok=True)
+    script_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    return script_path
 
 
 def _get_version(ctx: DeployContext | None = None) -> str:
@@ -598,6 +773,29 @@ def _get_prefix_root(ctx: DeployContext) -> Path | None:
             ctx.machine_config.get('e3sm_unified', 'base_path')
         )
     return None
+
+
+def _check_release_spack_pins(ctx: DeployContext) -> None:
+    # Overrides from spack.pins in deploy/config.yaml.j2 and --spack-pins,
+    # merged the same way mache does when it checks out Spack
+    overrides: list[Any] = []
+    spack_cfg = ctx.config.get('spack', {})
+    if isinstance(spack_cfg, dict) and spack_cfg.get('pins'):
+        overrides.append(spack_cfg['pins'])
+    cli_pins = getattr(ctx.args, 'spack_pins', None)
+    if cli_pins:
+        overrides.append(_abs_path(str(cli_pins)))
+    pins = load_pins(overrides)
+
+    version = str(ctx.runtime.get('project', {}).get('version', '')).strip()
+    if not release_pins_are_valid(pins, version):
+        raise ValueError(
+            f'Release deployment of E3SM-Unified {version} requires Spack '
+            'sources pinned to tags from github.com/spack or '
+            'github.com/E3SM-Project. Tag the repositories and pin the tags '
+            'in spack.pins in deploy/config.yaml.j2 (and in any '
+            '--spack-pins file).'
+        )
 
 
 def _resolve_spack_path(ctx: DeployContext) -> str | None:

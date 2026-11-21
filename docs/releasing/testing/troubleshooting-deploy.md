@@ -14,8 +14,8 @@ you have encountered and solutions you have found.
 ### Common Causes
 
 * Missing or incompatible system modules (`cmake`, `perl`, `bison`, etc.)
-* Outdated Spack package definitions in the `spack_for_mache_<version>`
-  branch on the E3SM fork
+* Outdated Spack package definitions in the pinned `e3sm-spack-packages` or
+  `spack-packages` refs
 * Spack build cache pollution
 * Environment not set correctly for Spack to detect compilers/libraries
 
@@ -29,7 +29,9 @@ you have encountered and solutions you have found.
 * Load required modules manually before re-running
 * Rebuild: `spack uninstall -y <package>` or delete the full deployment
   directory
-* Double-check you are using the correct `spack_for_mache_<version>` branch
+* Double-check the Spack pins (`spack.pins` in `deploy/config.yaml.j2`,
+  `--spack-pins` and the `mache` release's `pins.yaml`); see
+  [Updating Spack Packages](spack-updates.md)
 
 ---
 

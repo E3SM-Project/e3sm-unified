@@ -5,9 +5,12 @@ import logging
 from pathlib import Path
 import sys
 
+import jinja2
 import pytest
+import yaml
 from mache.deploy.hooks import DeployContext
 from mache.deploy.spack import _render_spack_specs
+from mache.spack.pins import load_pins
 
 
 def _load_deploy_hooks():
@@ -27,6 +30,16 @@ deploy_hooks = _load_deploy_hooks()
 CURRENT_RECIPE_VERSION = deploy_hooks.get_version_from_recipe(
     deploy_hooks.RECIPE_PATH
 )
+
+
+def _assert_managed_nco_root(updates: dict, nco_root: Path) -> None:
+    assert updates is not None
+    assert updates['shared']['managed_directories'] == [
+        {
+            'path': str(nco_root),
+            'root_group_writable': True,
+        }
+    ]
 
 
 def _write_machine_cfg(
@@ -144,11 +157,7 @@ def test_pre_publish_falls_back_to_pixi_prefix_without_login_prefix(
 
     nco_root = base_path / 'e3smu_latest_for_nco'
     machine_link = nco_root / 'polaris'
-    assert updates == {
-        'shared': {
-            'managed_directories': [str(nco_root)],
-        }
-    }
+    _assert_managed_nco_root(updates, nco_root)
     assert machine_link.is_symlink()
     assert machine_link.readlink() == Path(ctx.runtime['pixi']['prefix'])
 
@@ -174,11 +183,7 @@ def test_pre_publish_adds_nco_alias_for_dual_env_release(tmp_path: Path):
 
     nco_root = base_path / 'e3smu_latest_for_nco'
     machine_link = nco_root / 'compy'
-    assert updates == {
-        'shared': {
-            'managed_directories': [str(nco_root)],
-        }
-    }
+    _assert_managed_nco_root(updates, nco_root)
     assert machine_link.is_symlink()
     assert machine_link.readlink() == Path(ctx.runtime['pixi']['login_prefix'])
 
@@ -600,6 +605,79 @@ def test_pre_spack_uses_prefix_root_when_no_override_path(tmp_path: Path):
     }
 
 
+def test_config_spack_pins_are_valid():
+    config_path = Path(deploy_hooks.REPO_ROOT) / 'deploy' / 'config.yaml.j2'
+    config = yaml.safe_load(config_path.read_text(encoding='utf-8'))
+
+    pins = load_pins([config['spack'].get('pins') or {}])
+
+    assert set(pins['repos']) == {'e3sm', 'builtin'}
+
+
+def _hpc_release_ctx(tmp_path: Path, version: str) -> DeployContext:
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path=str(tmp_path / 'e3sm-unified'),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    (tmp_path / 'deploy_tmp').mkdir(parents=True, exist_ok=True)
+    ctx.args.e3sm_unified_version = version
+    ctx.args.release = True
+    ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
+    return ctx
+
+
+@pytest.mark.parametrize('ref', [{'commit': 'abc123'}, {'branch': 'main'}])
+def test_pre_spack_release_rejects_untagged_config_pins(
+    tmp_path: Path, ref: dict
+):
+    ctx = _hpc_release_ctx(tmp_path, '1.2.3')
+    ctx.config['spack'] = {'pins': {'repos': {'e3sm': ref}}}
+
+    with pytest.raises(ValueError, match='pinned to tags'):
+        deploy_hooks.pre_spack(ctx)
+
+
+def test_pre_spack_release_rejects_untagged_cli_pins(tmp_path: Path):
+    ctx = _hpc_release_ctx(tmp_path, '1.2.3')
+    pins_path = tmp_path / 'pins.yaml'
+    pins_path.write_text(
+        'repos:\n  e3sm:\n    commit: abc123\n', encoding='utf-8'
+    )
+    ctx.args.spack_pins = str(pins_path)
+
+    with pytest.raises(ValueError, match='pinned to tags'):
+        deploy_hooks.pre_spack(ctx)
+
+
+def test_pre_spack_release_accepts_tagged_pins(tmp_path: Path):
+    ctx = _hpc_release_ctx(tmp_path, '1.2.3')
+    ctx.config['spack'] = {'pins': {'repos': {'e3sm': {'tag': 'v2099.01.0'}}}}
+
+    updates = deploy_hooks.pre_spack(ctx)
+
+    assert updates is not None
+    assert updates['spack']['deploy'] is True
+
+
+def test_pre_spack_allows_untagged_pins_for_test_deployments(tmp_path: Path):
+    ctx = _hpc_release_ctx(tmp_path, '1.2.3')
+    ctx.runtime['e3sm_unified']['release'] = False
+    ctx.config['spack'] = {'pins': {'repos': {'e3sm': {'commit': 'abc123'}}}}
+
+    updates = deploy_hooks.pre_spack(ctx)
+
+    assert updates is not None
+    assert updates['spack']['deploy'] is True
+
+
 def test_post_spack_installs_mpi4py_and_ilamb_without_rewriting_pixi(
     tmp_path: Path, monkeypatch
 ):
@@ -742,3 +820,257 @@ def test_spack_specs_omit_hdf5_bundle_when_machine_uses_bundle(tmp_path: Path):
     assert 'netcdf-c' not in spec_names
     assert 'netcdf-fortran' not in spec_names
     assert 'parallel-netcdf' not in spec_names
+
+
+ENV_TEST_RECIPE = """\
+tests:
+  - python:
+      imports:
+        - json
+        - if: not (linux and aarch64)
+          then: e3sm_compareview
+        - if: mpi != "nompi" and mpi != "hpc"
+          then: ILAMB
+      pip_check: false
+  - script:
+      - echo ok
+      - if: mpi != "hpc"
+        then:
+          - ncks --help
+          - test -f ${PREFIX}/bin/Climatology
+"""
+
+
+def _write_env_test_recipe(tmp_path: Path, text: str = ENV_TEST_RECIPE) -> Path:
+    recipe_path = tmp_path / 'recipe.yaml'
+    recipe_path.write_text(text, encoding='utf-8')
+    return recipe_path
+
+
+def _linux(machine: str = 'x86_64', **variables) -> dict:
+    return {'linux': True, 'aarch64': machine == 'aarch64', **variables}
+
+
+def test_get_recipe_tests_evaluates_selectors(tmp_path: Path):
+    recipe_path = _write_env_test_recipe(tmp_path)
+
+    imports, commands = deploy_hooks.get_recipe_tests(
+        recipe_path, _linux(mpi='nompi')
+    )
+    assert imports == ['json', 'e3sm_compareview']
+    assert commands == [
+        'echo ok',
+        'ncks --help',
+        'test -f ${PREFIX}/bin/Climatology',
+    ]
+
+    imports, commands = deploy_hooks.get_recipe_tests(
+        recipe_path, _linux('aarch64', mpi='openmpi')
+    )
+    assert imports == ['json', 'ILAMB']
+
+    imports, commands = deploy_hooks.get_recipe_tests(
+        recipe_path, _linux(mpi='hpc')
+    )
+    assert imports == ['json', 'e3sm_compareview']
+    assert commands == ['echo ok']
+
+
+def test_get_recipe_tests_rejects_unknown_selector_variable(tmp_path: Path):
+    recipe_path = _write_env_test_recipe(tmp_path)
+
+    with pytest.raises(jinja2.UndefinedError, match='aarch64'):
+        deploy_hooks.get_recipe_tests(recipe_path, {'linux': True, 'mpi': 'nompi'})
+
+
+@pytest.mark.parametrize('mpi', ['nompi', 'hpc', 'mpich', 'openmpi'])
+def test_get_recipe_tests_understands_feedstock_selectors(mpi: str):
+    variables = {
+        **deploy_hooks._get_recipe_platform_variables(),
+        'mpi': mpi,
+    }
+
+    imports, commands = deploy_hooks.get_recipe_tests(
+        deploy_hooks.RECIPE_PATH, variables
+    )
+
+    assert 'mache' in imports
+    assert commands
+
+
+def _hpc_publish_ctx(tmp_path: Path, monkeypatch, load_script: Path):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        group='users',
+        base_path=str(tmp_path / 'e3sm-unified'),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    ctx.runtime.update(deploy_hooks.pre_pixi(ctx) or {})
+    ctx.runtime['load_scripts'] = [str(load_script)]
+    ctx.pins['hpc'] = {
+        'mpi4py': '4.1.1',
+        'ilamb': '2.7.2',
+        'esmpy': 'None',
+        'xesmf': 'None',
+    }
+    monkeypatch.setattr(
+        deploy_hooks, 'RECIPE_PATH', _write_env_test_recipe(tmp_path)
+    )
+    monkeypatch.setattr(
+        deploy_hooks,
+        '_get_recipe_platform_variables',
+        lambda: _linux(),
+    )
+    return ctx
+
+
+def test_pre_publish_tests_login_and_compute_envs(tmp_path: Path, monkeypatch):
+    load_script = tmp_path / 'load_e3sm_unified_compy.sh'
+    ctx = _hpc_publish_ctx(tmp_path, monkeypatch, load_script)
+
+    called = []
+
+    def fake_check_call(cmd, *, log_filename, quiet, env, cwd):
+        called.append(cmd)
+
+    monkeypatch.setattr(deploy_hooks, 'check_call', fake_check_call)
+
+    deploy_hooks.pre_publish(ctx)
+
+    script_path = tmp_path / 'deploy_tmp' / 'test_load_e3sm_unified_compy.sh'
+    assert called == [['/bin/bash', str(script_path)]]
+    script_text = script_path.read_text(encoding='utf-8')
+    assert f'source {load_script} || exit 1' in script_text
+
+    hpc_checks = script_text.split('  hpc)\n', 1)[1].split('    ;;', 1)[0]
+    assert hpc_checks.splitlines() == [
+        """    _check 'python -c "import json"'""",
+        """    _check 'python -c "import e3sm_compareview"'""",
+        "    _check 'echo ok'",
+        "    _check 'ncks --help'",
+        "    _check 'test -f ${MACHE_DEPLOY_SPACK_LIBRARY_VIEW}/bin/Climatology'",
+        """    _check 'python -c "import mpi4py"'""",
+        """    _check 'python -c "import ILAMB"'""",
+    ]
+
+    nompi_checks = script_text.split('  nompi)\n', 1)[1].split('    ;;', 1)[0]
+    assert nompi_checks.splitlines() == [
+        """    _check 'python -c "import json"'""",
+        """    _check 'python -c "import e3sm_compareview"'""",
+        "    _check 'echo ok'",
+        "    _check 'ncks --help'",
+        "    _check 'test -f ${CONDA_PREFIX}/bin/Climatology'",
+    ]
+
+
+def test_env_test_script_sources_load_script_by_absolute_path(
+    tmp_path: Path, monkeypatch
+):
+    # mache records load scripts relative to the repo root, but the test
+    # script may be rerun by hand from any directory
+    ctx = _hpc_publish_ctx(
+        tmp_path, monkeypatch, Path('load_e3sm_unified_compy.sh')
+    )
+    monkeypatch.setattr(
+        deploy_hooks, 'check_call', lambda cmd, **kwargs: None
+    )
+
+    deploy_hooks.pre_publish(ctx)
+
+    script_path = tmp_path / 'deploy_tmp' / 'test_load_e3sm_unified_compy.sh'
+    load_script = tmp_path.resolve() / 'load_e3sm_unified_compy.sh'
+    script_text = script_path.read_text(encoding='utf-8')
+    assert f'source {load_script} || exit 1' in script_text
+
+
+def test_pre_publish_skips_env_tests_when_requested(
+    tmp_path: Path, monkeypatch
+):
+    ctx = _hpc_publish_ctx(tmp_path, monkeypatch, tmp_path / 'load.sh')
+    ctx.args.skip_env_tests = True
+
+    def fail_check_call(*args, **kwargs):
+        raise AssertionError('environment tests should be skipped')
+
+    monkeypatch.setattr(deploy_hooks, 'check_call', fail_check_call)
+
+    deploy_hooks.pre_publish(ctx)
+
+    assert not list((tmp_path / 'deploy_tmp').glob('test_*.sh'))
+
+
+def _write_fake_load_script(tmp_path: Path, mpi: str) -> Path:
+    conda_prefix = tmp_path / 'env'
+    (conda_prefix / 'bin').mkdir(parents=True, exist_ok=True)
+    load_script = tmp_path / 'load_fake.sh'
+    load_script.write_text(
+        f'export PATH="{Path(sys.executable).parent}:$PATH"\n'
+        f'export CONDA_PREFIX="{conda_prefix}"\n'
+        'export MACHE_DEPLOY_ACTIVE_ENV_KIND=login\n'
+        f'export MACHE_DEPLOY_ACTIVE_PIXI_MPI={mpi}\n',
+        encoding='utf-8',
+    )
+    return load_script
+
+
+def _single_env_publish_ctx(tmp_path: Path, monkeypatch, recipe: str):
+    ctx = _hpc_publish_ctx(
+        tmp_path, monkeypatch, _write_fake_load_script(tmp_path, 'nompi')
+    )
+    ctx.runtime['pixi']['mpi'] = 'nompi'
+    ctx.runtime['pixi']['login_mpi'] = None
+    monkeypatch.setattr(
+        deploy_hooks, 'RECIPE_PATH', _write_env_test_recipe(tmp_path, recipe)
+    )
+    (tmp_path / 'deploy_tmp' / 'logs').mkdir(parents=True, exist_ok=True)
+    return ctx
+
+
+def test_env_test_script_passes_in_a_working_env(tmp_path: Path, monkeypatch):
+    ctx = _single_env_publish_ctx(
+        tmp_path,
+        monkeypatch,
+        'tests:\n'
+        '  - python:\n'
+        '      imports: [json]\n'
+        '  - script:\n'
+        '      - test -f ${PREFIX}/bin/Climatology\n'
+        '      - touch written-by-a-test\n',
+    )
+    (tmp_path / 'env' / 'bin' / 'Climatology').touch()
+
+    deploy_hooks.pre_publish(ctx)
+
+    log_text = (tmp_path / 'deploy_tmp' / 'logs' / 'mache_deploy_run.log').read_text()
+    assert 'Testing the login environment (nompi)' in log_text
+    assert '  PASS: test -f ${CONDA_PREFIX}/bin/Climatology' in log_text
+    assert 'All tests passed' in log_text
+    assert not (tmp_path / 'written-by-a-test').exists()
+
+
+def test_env_test_script_reports_every_failure(tmp_path: Path, monkeypatch):
+    ctx = _single_env_publish_ctx(
+        tmp_path,
+        monkeypatch,
+        'tests:\n'
+        '  - python:\n'
+        '      imports: [json, not_a_real_module]\n'
+        '  - script:\n'
+        '      - test -f ${PREFIX}/bin/Climatology\n',
+    )
+
+    with pytest.raises(ValueError, match='Nothing has been published'):
+        deploy_hooks.pre_publish(ctx)
+
+    log_text = (tmp_path / 'deploy_tmp' / 'logs' / 'mache_deploy_run.log').read_text()
+    assert '''  PASS: python -c "import json"''' in log_text
+    assert '''  FAIL: python -c "import not_a_real_module"''' in log_text
+    assert "No module named 'not_a_real_module'" in log_text
+    assert '  FAIL: test -f ${CONDA_PREFIX}/bin/Climatology' in log_text
+    assert '2 test(s) failed' in log_text

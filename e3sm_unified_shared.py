@@ -81,6 +81,28 @@ def get_base_channels(
     return list(dict.fromkeys(ordered))
 
 
+def get_recipe_tests(
+    recipe_yaml_path: str | Path, variables: dict[str, Any]
+) -> tuple[list[str], list[str]]:
+    """Return the imports and commands the recipe tests for one variant.
+
+    ``if``/``then``/``else`` selectors are evaluated with ``variables`` (for
+    example ``mpi``, ``linux`` and ``aarch64``); a selector that uses any
+    other name raises an error rather than being silently skipped.
+    """
+    recipe = _load_recipe(recipe_yaml_path)
+    imports: list[str] = []
+    commands: list[str] = []
+    for test in recipe.get('tests', []):
+        if 'python' in test:
+            _collect_selected(
+                test['python'].get('imports', []), variables, imports
+            )
+        if 'script' in test:
+            _collect_selected(test['script'], variables, commands)
+    return imports, commands
+
+
 def _load_recipe(recipe_yaml_path: str | Path) -> dict[str, Any]:
     recipe_path = Path(recipe_yaml_path)
     with recipe_path.open('r', encoding='utf-8') as handle:
@@ -98,3 +120,28 @@ def _collect_requirements(requirements: Any, collected: list[str]) -> None:
             _collect_requirements(requirements['else'], collected)
     elif isinstance(requirements, str):
         collected.append(requirements)
+
+
+def _collect_selected(
+    items: Any, variables: dict[str, Any], collected: list[str]
+) -> None:
+    if isinstance(items, list):
+        for item in items:
+            _collect_selected(item, variables, collected)
+    elif isinstance(items, dict):
+        if _evaluate_selector(str(items['if']), variables):
+            _collect_selected(items.get('then', []), variables, collected)
+        else:
+            _collect_selected(items.get('else', []), variables, collected)
+    elif isinstance(items, str):
+        collected.append(items)
+
+
+def _evaluate_selector(expression: str, variables: dict[str, Any]) -> bool:
+    # rattler-build selectors are minijinja expressions, which jinja2 (a
+    # mache dependency) evaluates the same way for the syntax recipes use
+    import jinja2
+
+    env = jinja2.Environment(undefined=jinja2.StrictUndefined)
+    evaluate = env.compile_expression(expression, undefined_to_none=False)
+    return bool(evaluate(**variables))

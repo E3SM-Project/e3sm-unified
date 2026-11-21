@@ -46,6 +46,13 @@
       "dest": "load_script_dir",
       "help": "Directory where a copy of the generated load script should be written.",
       "route": ["deploy", "run"]
+    },
+    {
+      "flags": ["--skip-env-tests"],
+      "dest": "skip_env_tests",
+      "action": "store_true",
+      "help": "Publish without first running the feedstock recipe's import and command tests in the deployed environment.",
+      "route": ["deploy", "run"]
     }
   ]
 }

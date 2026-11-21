@@ -68,6 +68,7 @@ files that still must be edited manually afterward.
   overridden
 * Selects channels, package source, package MPI, and environment layout
 * Enables or disables Spack dynamically based on the chosen package variant
+* Tests the deployed environment before publishing it (see step 3 below)
 * Adds E3SM-Unified-specific environment variables through `deploy/load.sh`
 
 ### 🧪 Templates
@@ -133,6 +134,25 @@ updates.
    * Activation scripts were generated and symlinked correctly
    * Permissions have been updated successfully (read only for everyone
      except the E3SM-Unified maintainer)
+   * The environment tests passed (`All tests passed` in the log)
+
+   Before anything is published, the deployment sources the new load script
+   and runs the imports and commands from the `tests` section of the feedstock
+   recipe, with the same selectors, so a package commented out of the recipe
+   tests is skipped here too. For the `hpc` variant it also checks the tools
+   that come from Spack (NCO, ESMF and the Tempest tools) and the packages
+   installed from the `[hpc]` pins. Every failure is listed in the log, and a
+   failure stops the deployment before the load scripts are published. Pass
+   `--skip-env-tests` to publish anyway.
+
+   With `--env-layout dual`, only the environment the load script selects on
+   the node you deployed from is tested. The log gives the path of the test
+   script (`deploy_tmp/test_<load script>.sh`); run it on the other kind of
+   node as well, e.g. on a compute node:
+
+   ```bash
+   srun -N 1 -t 10:00 bash deploy_tmp/test_<load script>.sh
+   ```
 
 4. **Verify compute-node activation**
 
@@ -208,6 +228,16 @@ updates.
 
 6. **Deploy more broadly** once core systems pass testing
 
+### Driving deployments from your own computer
+
+`utils/hpc_deploy/hpc_deploy.py` runs steps 2–4 on several machines from
+your own computer, over the ssh connections you open by logging in.  It
+brings each machine's checkout to your pushed commit, and runs `./deploy.py`
+there in the background with its log in the checkout.  It then reports the
+results and submits the test script as a compute-node job.  An AI agent can
+run it, following `utils/hpc_deploy/AGENTS.md`.  See
+`utils/hpc_deploy/README.md`.
+
 ---
 
 ## Common flags
@@ -230,6 +260,8 @@ These are the repository-specific flags maintainers are most likely to use.
 * `--package-mpi`: Choose `nompi`, `mpich`, `openmpi`, or `hpc`.
 
   On supported HPC systems, `hpc` is typically the target release variant.
+  Since 1.13.0, only `nompi` and `hpc` packages are published on conda-forge,
+  so `mpich` and `openmpi` will not resolve with `--package-source conda-forge`.
 
 * `--env-layout`: Choose `single` or `dual`.
 
@@ -267,15 +299,17 @@ These are the repository-specific flags maintainers are most likely to use.
 * `--load-script-dir`: Write a copy of the generated load script to a specific
   directory.
 
+* `--skip-env-tests`: Publish without first testing the deployed environment.
+
 ---
 
 ## Notes for Maintainers
 
 * A partial deployment is expected during RC testing; not all systems must be
   built initially. Chrysalis and Perlmutter are good places to start.
-* Always ensure that the E3SM spack fork has a `spack_for_mache_<version>`
-  branch (e.g. `spack_for_mache_1.32.0`) for the version of `mache` you are
-  testing (e.g. `mache` 1.32.0rc1).
+* Make sure any Spack package versions in `deploy/pins.cfg` that the
+  `mache` release does not provide are pinned in `spack.pins` in
+  `deploy/config.yaml.j2` (see [Updating Spack Packages](spack-updates.md)).
 * Be aware of potential permission or filesystem issues when writing to
   shared software locations.
 
