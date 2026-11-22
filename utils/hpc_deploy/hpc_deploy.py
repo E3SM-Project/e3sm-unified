@@ -254,6 +254,10 @@ _remove() {
     [ -e "$path" ] || continue
     if [ "$delete" = true ]; then
       echo "  delete        $path"
+      # Deploys leave directories read-only, even to their owner, and rm
+      # cannot remove anything from those
+      chmod u+w "$(dirname "$path")" 2>/dev/null
+      find "$path" -type d ! -perm -u+w -exec chmod u+w {} + 2>/dev/null
       rm -rf "$path" || exit 1
     else
       echo "  would delete  $path"
@@ -285,7 +289,7 @@ for version in $(printf '%s' "$testing" | sort -rn | awk '{print $2}'); do
   _remove "test_e3sm_unified_${version}_$machine.sh" \
     "e3smu_${version//./_}/$machine"
   if [ "$delete" = true ]; then
-    rmdir "e3smu_${version//./_}" 2>/dev/null
+    rmdir "e3smu_${version//./_}" 2>/dev/null || true
   fi
 done
 '''
