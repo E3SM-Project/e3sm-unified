@@ -1074,3 +1074,103 @@ def test_env_test_script_reports_every_failure(tmp_path: Path, monkeypatch):
     assert "No module named 'not_a_real_module'" in log_text
     assert '  FAIL: test -f ${CONDA_PREFIX}/bin/Climatology' in log_text
     assert '2 test(s) failed' in log_text
+
+
+def _write_lock(prefix: Path, version: str, build_number: int) -> Path:
+    prefix.mkdir(parents=True, exist_ok=True)
+    lock_path = prefix / 'pixi.lock'
+    url = (
+        'https://conda.anaconda.org/conda-forge/linux-64/'
+        f'e3sm-unified-{version}-hpc_py314h6eb19bb_{build_number}.conda'
+    )
+    lock_path.write_text(
+        f'packages:\n- conda: {url}\n- conda: {url}\n', encoding='utf-8'
+    )
+    return lock_path
+
+
+def test_get_build_number_from_recipe(tmp_path: Path):
+    from_context = tmp_path / 'context.yaml'
+    from_context.write_text(
+        'context:\n  version: "1.2.3"\n  build: 1\n'
+        'build:\n  number: ${{ build }}\n',
+        encoding='utf-8',
+    )
+    from_build = tmp_path / 'build.yaml'
+    from_build.write_text('build:\n  number: 2\n', encoding='utf-8')
+    neither = tmp_path / 'neither.yaml'
+    neither.write_text('package:\n  version: "1.2.3"\n', encoding='utf-8')
+
+    assert deploy_hooks.get_build_number_from_recipe(from_context) == 1
+    assert deploy_hooks.get_build_number_from_recipe(from_build) == 2
+    assert deploy_hooks.get_build_number_from_recipe(neither) == 0
+
+
+def test_remove_stale_lock_removes_lock_of_another_build(tmp_path: Path):
+    machine_cfg_path = _write_machine_cfg(tmp_path)
+    ctx = _ctx(tmp_path=tmp_path, machine=None, machine_cfg_path=machine_cfg_path)
+    prefix = tmp_path / 'pixi'
+    lock_path = _write_lock(prefix, '1.2.3', 0)
+    # Released deployments leave the prefix read-only
+    prefix.chmod(0o555)
+    try:
+        deploy_hooks._remove_stale_lock(
+            ctx=ctx, prefix=str(prefix), version='1.2.3', build_number=1
+        )
+    finally:
+        prefix.chmod(0o755)
+
+    assert not lock_path.exists()
+
+
+def test_remove_stale_lock_keeps_lock_of_same_build(tmp_path: Path):
+    machine_cfg_path = _write_machine_cfg(tmp_path)
+    ctx = _ctx(tmp_path=tmp_path, machine=None, machine_cfg_path=machine_cfg_path)
+    same_build = _write_lock(tmp_path / 'same', '1.2.3', 1)
+    other_version = _write_lock(tmp_path / 'other', '1.2.30', 0)
+
+    for lock_path in (same_build, other_version):
+        deploy_hooks._remove_stale_lock(
+            ctx=ctx,
+            prefix=str(lock_path.parent),
+            version='1.2.3',
+            build_number=1,
+        )
+
+    assert same_build.exists()
+    assert other_version.exists()
+    # No lock at all is fine too
+    deploy_hooks._remove_stale_lock(
+        ctx=ctx,
+        prefix=str(tmp_path / 'missing'),
+        version='1.2.3',
+        build_number=1,
+    )
+
+
+def test_pre_pixi_removes_stale_locks_in_both_prefixes(
+    tmp_path: Path, monkeypatch
+):
+    machine_cfg_path = _write_machine_cfg(
+        tmp_path,
+        base_path=str(tmp_path / 'e3sm-unified'),
+        compiler='gnu',
+        mpi='openmpi',
+    )
+    ctx = _ctx(
+        tmp_path=tmp_path,
+        machine='compy',
+        machine_cfg_path=machine_cfg_path,
+    )
+    pixi_path = tmp_path / 'scratch' / 'e3sm-unified-pixi'
+    ctx.args.pixi_path = str(pixi_path)
+    compute_lock = _write_lock(pixi_path, '1.2.3', 0)
+    login_lock = _write_lock(Path(f'{pixi_path}_login'), '1.2.3', 0)
+    monkeypatch.setattr(
+        deploy_hooks, 'get_build_number_from_recipe', lambda path: 1
+    )
+
+    deploy_hooks.pre_pixi(ctx)
+
+    assert not compute_lock.exists()
+    assert not login_lock.exists()

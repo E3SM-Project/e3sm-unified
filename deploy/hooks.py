@@ -5,7 +5,9 @@ from __future__ import annotations
 import importlib.util
 import os
 import platform
+import re
 import shlex
+import stat
 import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -52,6 +54,7 @@ def _load_shared_helpers():
 
 _shared = _load_shared_helpers()
 get_base_channels = _shared.get_base_channels
+get_build_number_from_recipe = _shared.get_build_number_from_recipe
 get_recipe_tests = _shared.get_recipe_tests
 get_version_from_recipe = _shared.get_version_from_recipe
 
@@ -149,6 +152,15 @@ def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
         package_mpi=package_mpi,
         env_layout=env_layout,
     )
+    build_number = get_build_number_from_recipe(RECIPE_PATH)
+    for pixi_prefix in {prefix, login_prefix} - {None}:
+        _remove_stale_lock(
+            ctx=ctx,
+            prefix=pixi_prefix,
+            version=version,
+            build_number=build_number,
+        )
+
     omit_dependencies: list[str] = []
     if use_system_git:
         omit_dependencies.append('git')
@@ -751,6 +763,49 @@ def _get_pixi_prefixes(
 
     login_prefix = install_root / 'pixi_login'
     return str(prefix_path), str(login_prefix)
+
+
+def _remove_stale_lock(
+    *,
+    ctx: DeployContext,
+    prefix: str,
+    version: str,
+    build_number: int,
+) -> None:
+    """
+    Remove a pixi.lock that locks another build of this E3SM-Unified version.
+
+    A new build of the same version (to update a dependency, say) has the
+    same pixi.toml, so pixi would keep installing the locked build.  Without
+    the lock, pixi solves again and picks up the build in the recipe.
+    """
+    lock_path = Path(prefix) / 'pixi.lock'
+    if not lock_path.is_file():
+        return
+    pattern = re.compile(
+        rf'/e3sm-unified-{re.escape(version)}-[^/\s]*_(\d+)\.conda'
+    )
+    locked = {
+        int(number)
+        for number in pattern.findall(lock_path.read_text(encoding='utf-8'))
+    }
+    if not locked or locked == {build_number}:
+        return
+
+    ctx.logger.info(
+        'Removing %s, which locks build %s of e3sm-unified %s, so that '
+        'build %d is installed',
+        lock_path,
+        ', '.join(str(number) for number in sorted(locked)),
+        version,
+        build_number,
+    )
+    # A released deployment leaves its prefix read-only, even to its owner
+    lock_dir = lock_path.parent
+    mode = stat.S_IMODE(lock_dir.stat().st_mode)
+    if not mode & stat.S_IWUSR:
+        os.chmod(lock_dir, mode | stat.S_IWUSR)
+    lock_path.unlink()
 
 
 def _get_explicit_prefix(ctx: DeployContext) -> str | None:

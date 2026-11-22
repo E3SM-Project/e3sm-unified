@@ -34,6 +34,21 @@ def get_version_from_recipe(recipe_yaml_path: str | Path) -> str:
     return str(version)
 
 
+def get_build_number_from_recipe(recipe_yaml_path: str | Path) -> int:
+    """Parse the build number from the context or build section."""
+    recipe = _load_recipe(recipe_yaml_path)
+    build = recipe.get('context', {}).get('build')
+    if build is None:
+        build = recipe.get('build', {}).get('number', 0)
+    try:
+        return int(build)
+    except (TypeError, ValueError) as e:
+        raise ValueError(
+            f'Could not parse the build number {build!r} in '
+            f'{recipe_yaml_path}'
+        ) from e
+
+
 def get_rc_dev_labels(recipe_yaml_path: str | Path) -> list[str]:
     """Return dev labels for RC dependencies in the recipe run requirements."""
     recipe = _load_recipe(recipe_yaml_path)
