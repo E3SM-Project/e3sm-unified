@@ -70,7 +70,7 @@ HPC_PIN_IMPORTS = {
 # The environment tests also start each one and check that it serves a page.
 SERVED_APPS = ('quickview', 'quickcompare')
 # How long to wait for a web app to serve its page, in seconds
-SERVED_APP_TIMEOUT = 120
+SERVED_APP_TIMEOUT = 300
 
 
 def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:

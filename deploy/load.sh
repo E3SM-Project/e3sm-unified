@@ -36,3 +36,16 @@ fi
 # We want the pixi version of ESMF on both login and compute nodes.
 # This is for e3sm_diags.
 export ESMFMKFILE="${CONDA_PREFIX}/lib/esmf.mk"
+
+# Mesa, which QuickView and QuickCompare render with, segfaults if
+# XDG_RUNTIME_DIR is not an existing directory, as on Polaris login nodes,
+# where /run/user/<uid> is missing.  Use a private directory in /tmp instead.
+if [ -z "${XDG_RUNTIME_DIR:-}" ] || [ ! -d "${XDG_RUNTIME_DIR}" ]; then
+    _e3smu_runtime_dir="${TMPDIR:-/tmp}/runtime-$(id -u)"
+    mkdir -p -m 700 "${_e3smu_runtime_dir}" 2> /dev/null
+    if [ ! -L "${_e3smu_runtime_dir}" ] && [ -O "${_e3smu_runtime_dir}" ] \
+            && chmod 700 "${_e3smu_runtime_dir}" 2> /dev/null; then
+        export XDG_RUNTIME_DIR="${_e3smu_runtime_dir}"
+    fi
+    unset _e3smu_runtime_dir
+fi
