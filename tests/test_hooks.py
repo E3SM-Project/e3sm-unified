@@ -1117,9 +1117,9 @@ def test_env_checks_start_web_apps_tested_with_help(
     assert checks == ['quickview --help', '_serves quickview']
 
 
-def test_env_test_script_checks_that_web_apps_serve(
-    tmp_path: Path, monkeypatch
-):
+def _web_app_publish_ctx(tmp_path: Path, monkeypatch):
+    for var in ('SLURM_JOB_ID', 'PBS_JOBID', 'COBALT_JOBID'):
+        monkeypatch.delenv(var, raising=False)
     ctx = _single_env_publish_ctx(
         tmp_path,
         monkeypatch,
@@ -1150,6 +1150,13 @@ def test_env_test_script_checks_that_web_apps_serve(
         'quickcompare',
         "sys.exit('RuntimeError: There is no current event loop')",
     )
+    return ctx
+
+
+def test_env_test_script_checks_that_web_apps_serve(
+    tmp_path: Path, monkeypatch
+):
+    ctx = _web_app_publish_ctx(tmp_path, monkeypatch)
 
     with pytest.raises(ValueError, match='Nothing has been published'):
         deploy_hooks.pre_publish(ctx)
@@ -1261,3 +1268,18 @@ def test_pre_pixi_removes_stale_locks_in_both_prefixes(
 
     assert not compute_lock.exists()
     assert not login_lock.exists()
+
+
+def test_env_test_script_skips_web_apps_in_batch_jobs(
+    tmp_path: Path, monkeypatch
+):
+    ctx = _web_app_publish_ctx(tmp_path, monkeypatch)
+    monkeypatch.setenv('SLURM_JOB_ID', '12345')
+
+    deploy_hooks.pre_publish(ctx)
+
+    log_text = (tmp_path / 'deploy_tmp' / 'logs' / 'mache_deploy_run.log').read_text()
+    assert '  PASS: quickcompare --help' in log_text
+    assert '  SKIP: _serves quickview (in a batch job)' in log_text
+    assert '  SKIP: _serves quickcompare (in a batch job)' in log_text
+    assert 'All tests passed' in log_text

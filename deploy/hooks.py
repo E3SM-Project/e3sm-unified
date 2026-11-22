@@ -556,11 +556,24 @@ def _write_env_test_script(
         '  return 1',
         '}',
         '',
+        '# Web apps are for login nodes (or JupyterHub), not batch jobs, so',
+        '# only check that they serve a page outside a batch job',
+        '_login_check() {',
+        '  if [[ -n "${SLURM_JOB_ID:-}${PBS_JOBID:-}${COBALT_JOBID:-}" ]]; then',
+        '    echo "  SKIP: $1 (in a batch job)"',
+        '  else',
+        '    _check "$1"',
+        '  fi',
+        '}',
+        '',
         'case "${MACHE_DEPLOY_ACTIVE_PIXI_MPI}" in',
     ]
     for mpi, checks in checks_by_mpi.items():
         lines.append(f'  {mpi})')
-        lines.extend(f'    _check {shlex.quote(check)}' for check in checks)
+        lines.extend(
+            f'    {_get_check_function(check)} {shlex.quote(check)}'
+            for check in checks
+        )
         lines.append('    ;;')
     lines.extend(
         [
@@ -583,6 +596,13 @@ def _write_env_test_script(
     script_path.parent.mkdir(parents=True, exist_ok=True)
     script_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     return script_path
+
+
+def _get_check_function(check: str) -> str:
+    """The test-script function that runs a check: web apps only on login."""
+    if check.startswith('_serves '):
+        return '_login_check'
+    return '_check'
 
 
 def _get_version(ctx: DeployContext | None = None) -> str:
