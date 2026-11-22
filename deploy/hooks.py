@@ -66,6 +66,12 @@ HPC_PIN_IMPORTS = {
     'xesmf': 'xesmf',
 }
 
+# Web apps that the recipe tests only with --help, which does not start them.
+# The environment tests also start each one and check that it serves a page.
+SERVED_APPS = ('quickview', 'quickcompare')
+# How long to wait for a web app to serve its page, in seconds
+SERVED_APP_TIMEOUT = 120
+
 
 def pre_pixi(ctx: DeployContext) -> dict[str, Any] | None:
     _ensure_feedstock_submodule(ctx)
@@ -445,6 +451,9 @@ def _get_env_checks(ctx: DeployContext, mpi: str) -> list[str]:
     checks.extend(
         command.replace('${PREFIX}', '${CONDA_PREFIX}') for command in commands
     )
+    checks.extend(
+        f'_serves {app}' for app in SERVED_APPS if f'{app} --help' in commands
+    )
     if mpi != 'hpc':
         return checks
 
@@ -510,6 +519,41 @@ def _write_env_test_script(
         '    tail -n 20 <<< "${output}" | sed "s/^/      /"',
         '    failures=$((failures + 1))',
         '  fi',
+        '}',
+        '',
+        '# Start a web app without a browser, on localhost only, and check that',
+        '# it serves a page.  This catches failures at startup that --help',
+        '# does not.',
+        '_serves() {',
+        '  local app="$1" log="${test_dir}/$1.log" port pid i',
+        '  port="$(python -c "import socket; s = socket.socket(); '
+        's.bind((\'localhost\', 0)); print(s.getsockname()[1])")" || return 1',
+        '  "${app}" --server --host localhost --port "${port}" --timeout 0 \\',
+        '    > "${log}" 2>&1 &',
+        '  pid=$!',
+        f'  for ((i = 0; i < {SERVED_APP_TIMEOUT}; i++)); do',
+        '    if ! kill -0 "${pid}" 2> /dev/null; then',
+        '      echo "${app} exited before serving a page:"',
+        '      cat "${log}"',
+        '      return 1',
+        '    fi',
+        '    if python -c "import http.client, sys; '
+        'c = http.client.HTTPConnection(\'localhost\', int(sys.argv[1]), '
+        'timeout=5); c.request(\'GET\', \'/\'); '
+        'sys.exit(c.getresponse().status >= 400)" "${port}" 2> /dev/null; then',
+        '      pkill -P "${pid}" 2> /dev/null',
+        '      kill "${pid}"',
+        '      wait "${pid}" 2> /dev/null',
+        '      return 0',
+        '    fi',
+        '    sleep 1',
+        '  done',
+        f'  echo "${{app}} served no page within {SERVED_APP_TIMEOUT} s:"',
+        '  cat "${log}"',
+        '  pkill -9 -P "${pid}" 2> /dev/null',
+        '  kill -9 "${pid}"',
+        '  wait "${pid}" 2> /dev/null',
+        '  return 1',
         '}',
         '',
         'case "${MACHE_DEPLOY_ACTIVE_PIXI_MPI}" in',

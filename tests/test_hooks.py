@@ -1076,6 +1076,93 @@ def test_env_test_script_reports_every_failure(tmp_path: Path, monkeypatch):
     assert '2 test(s) failed' in log_text
 
 
+
+_FAKE_WEB_APP = """#!{python}
+import argparse
+import http.server
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--server', action='store_true')
+parser.add_argument('--host')
+parser.add_argument('--port', type=int)
+parser.add_argument('--timeout')
+args = parser.parse_args()
+{body}
+"""
+
+
+def _write_fake_web_app(bin_dir: Path, name: str, body: str) -> None:
+    app = bin_dir / name
+    app.write_text(
+        _FAKE_WEB_APP.format(python=sys.executable, body=body),
+        encoding='utf-8',
+    )
+    app.chmod(0o755)
+
+
+def test_env_checks_start_web_apps_tested_with_help(
+    tmp_path: Path, monkeypatch
+):
+    ctx = _single_env_publish_ctx(
+        tmp_path,
+        monkeypatch,
+        'tests:\n'
+        '  - script:\n'
+        '      - quickview --help\n',
+    )
+
+    checks = deploy_hooks._get_env_checks(ctx, 'nompi')
+
+    assert checks == ['quickview --help', '_serves quickview']
+
+
+def test_env_test_script_checks_that_web_apps_serve(
+    tmp_path: Path, monkeypatch
+):
+    ctx = _single_env_publish_ctx(
+        tmp_path,
+        monkeypatch,
+        'tests:\n'
+        '  - script:\n'
+        '      - quickview --help\n'
+        '      - quickcompare --help\n',
+    )
+    bin_dir = tmp_path / 'env' / 'bin'
+    load_script = Path(ctx.runtime['load_scripts'][0])
+    with load_script.open('a', encoding='utf-8') as handle:
+        handle.write(f'export PATH="{bin_dir}:$PATH"\n')
+    # Like QuickView, redirect rather than serve the page directly
+    _write_fake_web_app(
+        bin_dir,
+        'quickview',
+        'class Handler(http.server.BaseHTTPRequestHandler):\n'
+        '    def do_GET(self):\n'
+        '        self.send_response(302)\n'
+        '        self.send_header("Location", "/index.html")\n'
+        '        self.end_headers()\n'
+        'http.server.HTTPServer((args.host, args.port), Handler)'
+        '.serve_forever()',
+    )
+    # Like QuickCompare 1.11.3 with python 3.14
+    _write_fake_web_app(
+        bin_dir,
+        'quickcompare',
+        "sys.exit('RuntimeError: There is no current event loop')",
+    )
+
+    with pytest.raises(ValueError, match='Nothing has been published'):
+        deploy_hooks.pre_publish(ctx)
+
+    log_text = (tmp_path / 'deploy_tmp' / 'logs' / 'mache_deploy_run.log').read_text()
+    assert '  PASS: quickview --help' in log_text
+    assert '  PASS: _serves quickview' in log_text
+    assert '  PASS: quickcompare --help' in log_text
+    assert '  FAIL: _serves quickcompare' in log_text
+    assert 'quickcompare exited before serving a page' in log_text
+    assert 'There is no current event loop' in log_text
+    assert '1 test(s) failed' in log_text
+
 def _write_lock(prefix: Path, version: str, build_number: int) -> Path:
     prefix.mkdir(parents=True, exist_ok=True)
     lock_path = prefix / 'pixi.lock'
