@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Updating Spack Packages</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01009efc"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Updating mache" href="mache-updates.html" />
+    <link rel="prev" title="Overview of Deployment and Testing" href="overview.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using-tools.html">Using Tools in E3SM-Unified</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release Workflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../release-workflow.html">Overview of the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../conda-vs-spack.html">How Conda and Spack Work Together in E3SM-Unified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../planning-updates.html">Planning Package Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../creating-rcs/index.html">Creating Release Candidates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Deployment and Testing</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Deployment and Testing</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Updating Spack Packages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#where-the-recipes-come-from">Where the Recipes Come From</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-a-package-version">Adding a Package Version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#before-the-final-release">Before the Final Release</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="deploying-on-hpcs.html">Deploying on HPCs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting-deploy.html">Troubleshooting Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../adding-new-machines.html">Adding a New Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finalizing-release.html">Publishing the Final Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maintaining-past-versions.html">Maintaining Past Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages.html">Package Catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing &amp; Community</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Release Workflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Deployment and Testing</a></li>
+      <li class="breadcrumb-item active">Updating Spack Packages</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/releasing/testing/spack-updates.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="updating-spack-packages">
+<h1>Updating Spack Packages<a class="headerlink" href="#updating-spack-packages" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant of E3SM-Unified builds performance-critical tools (NCO,
+ESMF, MOAB, TempestRemap, TempestExtremes and, on some machines, HDF5 and
+NetCDF) with Spack against each machine’s compilers and MPI. This page
+explains where the Spack recipes come from and how to pick up a new package
+version during a release cycle without waiting for a new <code class="docutils literal notranslate"><span class="pre">mache</span></code> release.</p>
+<hr class="docutils" />
+<section id="where-the-recipes-come-from">
+<h2>Where the Recipes Come From<a class="headerlink" href="#where-the-recipes-come-from" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mache</span></code> 5 uses Spack 1.x, which keeps packages in repositories separate from
+Spack itself. A deployment checks out three repositories:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Repository</p></th>
+<th class="head"><p>Spack namespace</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/spack/spack">spack/spack</a></p></td>
+<td><p>—</p></td>
+<td><p>the Spack tool</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/E3SM-Project/e3sm-spack-packages">E3SM-Project/e3sm-spack-packages</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">e3sm</span></code></p></td>
+<td><p>versions and fixes E3SM needs ahead of upstream</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/spack/spack-packages">spack/spack-packages</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">builtin</span></code></p></td>
+<td><p>upstream recipes</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">e3sm</span></code> repository is searched ahead of <code class="docutils literal notranslate"><span class="pre">builtin</span></code>, so a recipe there
+shadows the upstream one. Each <code class="docutils literal notranslate"><span class="pre">mache</span></code> release pins a tag of each repository
+in <code class="docutils literal notranslate"><span class="pre">mache/spack/pins.yaml</span></code>. The old <code class="docutils literal notranslate"><span class="pre">E3SM-Project/spack</span></code> fork and its
+<code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> branches are retired.</p>
+<p>The Spack checkout for a deployment lives under that version’s prefix, and
+every deployment hard-resets the package repositories to the pinned refs, so
+changing a pin takes effect on the next deployment.</p>
+</section>
+<hr class="docutils" />
+<section id="adding-a-package-version">
+<h2>Adding a Package Version<a class="headerlink" href="#adding-a-package-version" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Open a pull request against
+<a class="reference external" href="https://github.com/E3SM-Project/e3sm-spack-packages">e3sm-spack-packages</a>
+adding the version (its README explains how recipes subclass upstream).
+Submit the same version upstream to <code class="docutils literal notranslate"><span class="pre">spack-packages</span></code> so the <code class="docutils literal notranslate"><span class="pre">e3sm</span></code> copy can
+be dropped later.</p></li>
+<li><p>Once it is merged, pin the merge commit in <code class="docutils literal notranslate"><span class="pre">spack.pins</span></code> in
+<code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">spack</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pins</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">repos</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">e3sm</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># nco 5.4.1 (E3SM-Project/e3sm-spack-packages#2), not yet tagged</span>
+<span class="w">        </span><span class="nt">commit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;merge commit hash&gt;</span>
+</pre></div>
+</div>
+<p>An override replaces only the ref of the repository it names; the others
+keep the tags from the <code class="docutils literal notranslate"><span class="pre">mache</span></code> release. <code class="docutils literal notranslate"><span class="pre">spack</span></code> and <code class="docutils literal notranslate"><span class="pre">builtin</span></code> can be
+overridden the same way.</p>
+</li>
+<li><p>Update the version in the <code class="docutils literal notranslate"><span class="pre">[spack]</span></code> section of <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code> to match
+the feedstock recipe.</p></li>
+</ol>
+<p>No new tag, <code class="docutils literal notranslate"><span class="pre">mache</span></code> pull request, <code class="docutils literal notranslate"><span class="pre">mache</span></code> release candidate or conda-forge
+package is needed to test a release candidate.</p>
+<section id="testing-an-unmerged-recipe">
+<h3>Testing an unmerged recipe<a class="headerlink" href="#testing-an-unmerged-recipe" title="Link to this heading"></a></h3>
+<p>To try a recipe before it is merged, point a single deployment at a branch,
+on a fork if needed, with <code class="docutils literal notranslate"><span class="pre">--spack-pins</span></code>, which takes precedence over
+<code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>&gt;<span class="w"> </span>my_pins.yaml<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
+<span class="s">repos:</span>
+<span class="s">  e3sm:</span>
+<span class="s">    git: https://github.com/&lt;user&gt;/e3sm-spack-packages.git</span>
+<span class="s">    branch: &lt;branch&gt;</span>
+<span class="s">EOF</span>
+./deploy.py<span class="w"> </span>--machine<span class="w"> </span>&lt;machine&gt;<span class="w"> </span>--spack-pins<span class="w"> </span>my_pins.yaml
+</pre></div>
+</div>
+<p>Prefer a commit in <code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code> over a branch for anything shared
+with other maintainers, so every machine builds the same recipes.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="before-the-final-release">
+<h2>Before the Final Release<a class="headerlink" href="#before-the-final-release" title="Link to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">--release</span></code> deployment refuses Spack sources that are not tags from
+<code class="docutils literal notranslate"><span class="pre">github.com/spack</span></code> or <code class="docutils literal notranslate"><span class="pre">github.com/E3SM-Project</span></code>. Before the final release:</p>
+<ol class="arabic simple">
+<li><p>Tag <code class="docutils literal notranslate"><span class="pre">e3sm-spack-packages</span></code> following the <code class="docutils literal notranslate"><span class="pre">vYYYY.MM.N</span></code> convention in its
+README.</p></li>
+<li><p>Change the <code class="docutils literal notranslate"><span class="pre">commit</span></code> in <code class="docutils literal notranslate"><span class="pre">spack.pins</span></code> to that <code class="docutils literal notranslate"><span class="pre">tag</span></code>, or remove the
+override if the <code class="docutils literal notranslate"><span class="pre">mache</span></code> release used for E3SM-Unified already pins a tag
+that includes the change.</p></li>
+</ol>
+<p>A new <code class="docutils literal notranslate"><span class="pre">mache</span></code> release is not required: a tag pinned in
+<code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code> is enough. The next <code class="docutils literal notranslate"><span class="pre">mache</span></code> release can pick up the
+tag through an ordinary pull request that edits <code class="docutils literal notranslate"><span class="pre">mache/spack/pins.yaml</span></code>, after
+which the override here can be removed.</p>
+<hr class="docutils" />
+<p>➡ Next: <a class="reference internal" href="mache-updates.html"><span class="std std-doc">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview of Deployment and Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mache-updates.html" class="btn btn-neutral float-right" title="Updating mache" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="1.14.0">
+  <meta name="doc-site-root" content="../../">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../../../shared/version-switcher.js"></script>
+
+
+</body>
+</html>

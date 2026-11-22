@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Package Catalog</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01009efc"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting &amp; FAQs" href="troubleshooting.html" />
+    <link rel="prev" title="Maintaining Past Versions" href="releasing/maintaining-past-versions.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            E3SM-Unified
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using-tools.html">Using Tools in E3SM-Unified</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing/index.html">Release Workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Package Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-tooling">Core Tooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variant-sensitive-packages">Variant-Sensitive Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#selected-shared-dependencies">Selected Shared Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting &amp; FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing &amp; Community</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">E3SM-Unified</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Package Catalog</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/packages.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="package-catalog">
+<h1>Package Catalog<a class="headerlink" href="#package-catalog" title="Link to this heading"></a></h1>
+<p>This page lists the packages in the E3SM-Unified <code class="docutils literal notranslate"><span class="pre">1.14.0</span></code> recipe, along with
+the most important package constraints. The authoritative source is
+<code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code>.</p>
+<hr class="docutils" />
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<p>E3SM-Unified <code class="docutils literal notranslate"><span class="pre">1.14.0</span></code> is published on conda-forge for Python 3.12, 3.13 and
+3.14 on <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>, <code class="docutils literal notranslate"><span class="pre">linux-aarch64</span></code>, <code class="docutils literal notranslate"><span class="pre">osx-64</span></code> and <code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code>.</p>
+<p>The exact environment depends on the selected package variant. Two variants
+are published:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nompi</span></code> is the default conda-only variant. Use it on laptops, workstations
+and unsupported systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hpc</span></code> omits several system-library-heavy packages from the conda package so
+they can be provided by the HPC deployment through Spack. It is meant for
+shared deployments on supported HPC machines.</p></li>
+</ul>
+<p>Conda-forge MPI variants (<code class="docutils literal notranslate"><span class="pre">mpich</span></code> and <code class="docutils literal notranslate"><span class="pre">openmpi</span></code>) were last published for
+E3SM-Unified <code class="docutils literal notranslate"><span class="pre">1.12.0</span></code>. Starting with <code class="docutils literal notranslate"><span class="pre">1.13.0</span></code>, they are not built because
+<code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code> requires the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> build of <code class="docutils literal notranslate"><span class="pre">esmf</span></code>
+(<a class="reference external" href="https://github.com/E3SM-Project/e3sm_diags/issues/1051">e3sm_diags#1051</a>).</p>
+</section>
+<section id="core-tooling">
+<h2>Core Tooling<a class="headerlink" href="#core-tooling" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package Name</p></th>
+<th class="head"><p>Version Constraint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cdo</p></td>
+<td><p>unpinned, Linux only</p></td>
+</tr>
+<tr class="row-odd"><td><p>chemdyg</p></td>
+<td><p>==1.1.1</p></td>
+</tr>
+<tr class="row-even"><td><p>cprnc</p></td>
+<td><p>==1.1.7</p></td>
+</tr>
+<tr class="row-odd"><td><p>e3sm_compareview</p></td>
+<td><p>==1.11.5</p></td>
+</tr>
+<tr class="row-even"><td><p>e3sm_diags</p></td>
+<td><p>==3.3.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>e3sm-quickview</p></td>
+<td><p>==2.11.0</p></td>
+</tr>
+<tr class="row-even"><td><p>e3sm_to_cmip</p></td>
+<td><p>==1.15.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>e3sm-tools</p></td>
+<td><p>==3.1.0 on Linux</p></td>
+</tr>
+<tr class="row-even"><td><p>geometric_features</p></td>
+<td><p>==1.6.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>globus-cli</p></td>
+<td><p>&gt;=3.15.0</p></td>
+</tr>
+<tr class="row-even"><td><p>livvext</p></td>
+<td><p>==1.1.2</p></td>
+</tr>
+<tr class="row-odd"><td><p>livvkit</p></td>
+<td><p>==3.3.1</p></td>
+</tr>
+<tr class="row-even"><td><p>mache</p></td>
+<td><p>==5.5.2</p></td>
+</tr>
+<tr class="row-odd"><td><p>mosaic</p></td>
+<td><p>==1.3.1</p></td>
+</tr>
+<tr class="row-even"><td><p>mpas-analysis</p></td>
+<td><p>==1.16.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>mpas_tools</p></td>
+<td><p>==2.2.1</p></td>
+</tr>
+<tr class="row-even"><td><p>pcmdi_metrics</p></td>
+<td><p>==4.2.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>squadgen</p></td>
+<td><p>==1.2.2 on Linux</p></td>
+</tr>
+<tr class="row-even"><td><p>uxarray-base</p></td>
+<td><p>&gt;=2026.09.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>xcdat</p></td>
+<td><p>==0.11.5</p></td>
+</tr>
+<tr class="row-even"><td><p>zppy</p></td>
+<td><p>==3.3.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>zppy-interfaces</p></td>
+<td><p>==0.3.0</p></td>
+</tr>
+<tr class="row-even"><td><p>zstash</p></td>
+<td><p>==1.6.1 on Linux</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variant-sensitive-packages">
+<h2>Variant-Sensitive Packages<a class="headerlink" href="#variant-sensitive-packages" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package Name</p></th>
+<th class="head"><p>Version Constraint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>moab</p></td>
+<td><p>==5.6.0 in the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant</p></td>
+</tr>
+<tr class="row-odd"><td><p>nco</p></td>
+<td><p>==5.4.2 in the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant</p></td>
+</tr>
+<tr class="row-even"><td><p>tempest-remap</p></td>
+<td><p>==2.2.0 in the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant</p></td>
+</tr>
+<tr class="row-odd"><td><p>tempest-extremes</p></td>
+<td><p>==2.4.2 in the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant</p></td>
+</tr>
+<tr class="row-even"><td><p>cython</p></td>
+<td><p>included in the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+<tr class="row-odd"><td><p>cf-units</p></td>
+<td><p>&gt;=2.0.0 in the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+<tr class="row-even"><td><p>pandas</p></td>
+<td><p>included in the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+<tr class="row-odd"><td><p>psutil</p></td>
+<td><p>included in the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant</p></td>
+</tr>
+</tbody>
+</table>
+<p>In <code class="docutils literal notranslate"><span class="pre">hpc</span></code> deployments, ESMF, MOAB, NCO, TempestRemap and TempestExtremes come
+from Spack. <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code> and <code class="docutils literal notranslate"><span class="pre">ilamb</span></code> are installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code> against the system
+MPI (see the <code class="docutils literal notranslate"><span class="pre">[spack]</span></code> and <code class="docutils literal notranslate"><span class="pre">[hpc]</span></code> sections of <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code>).</p>
+</section>
+<section id="selected-shared-dependencies">
+<h2>Selected Shared Dependencies<a class="headerlink" href="#selected-shared-dependencies" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package Name</p></th>
+<th class="head"><p>Version Constraint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cartopy</p></td>
+<td><p>==0.26.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dask</p></td>
+<td><p>==2026.8.0</p></td>
+</tr>
+<tr class="row-even"><td><p>esmf</p></td>
+<td><p>==8.9.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>esmpy</p></td>
+<td><p>==8.9.1</p></td>
+</tr>
+<tr class="row-even"><td><p>hdf5</p></td>
+<td><p>==1.14.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>libnetcdf</p></td>
+<td><p>==4.10.1</p></td>
+</tr>
+<tr class="row-even"><td><p>matplotlib-base</p></td>
+<td><p>==3.11.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>ncview</p></td>
+<td><p>==2.1.11</p></td>
+</tr>
+<tr class="row-even"><td><p>ncvis-climate</p></td>
+<td><p>==2026.10.07</p></td>
+</tr>
+<tr class="row-odd"><td><p>netcdf4</p></td>
+<td><p>==1.7.4 <code class="docutils literal notranslate"><span class="pre">nompi_*</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>numpy</p></td>
+<td><p>&gt;=2.0.0,&lt;3.0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>output_viewer</p></td>
+<td><p>==1.3.3</p></td>
+</tr>
+<tr class="row-even"><td><p>proj</p></td>
+<td><p>==9.9.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>pyproj</p></td>
+<td><p>==3.8.0</p></td>
+</tr>
+<tr class="row-even"><td><p>pytorch</p></td>
+<td><p>==2.13.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>xarray</p></td>
+<td><p>==2026.7.0</p></td>
+</tr>
+<tr class="row-even"><td><p>xesmf</p></td>
+<td><p>==0.9.2</p></td>
+</tr>
+</tbody>
+</table>
+<p>R and the R packages (<code class="docutils literal notranslate"><span class="pre">r-tidyverse</span></code>, <code class="docutils literal notranslate"><span class="pre">r-dplyr</span></code>, <code class="docutils literal notranslate"><span class="pre">r-ggplot2</span></code>) were included in
+<code class="docutils literal notranslate"><span class="pre">1.13.0</span></code> but are not in <code class="docutils literal notranslate"><span class="pre">1.14.0</span></code>. NCO 5.4.2 requires GSL 2.8, the only R built
+against GSL 2.8 is R 4.6, and these R packages do not yet have R 4.6 builds.</p>
+<hr class="docutils" />
+<p>Refer to the recipe itself for the full dependency list and all
+platform/variant-specific conditionals.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="releasing/maintaining-past-versions.html" class="btn btn-neutral float-left" title="Maintaining Past Versions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting &amp; FAQs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Energy Exascale Earth System Model Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+
+  <!-- Meta tags for JS to use -->
+  <meta name="doc-version" content="1.14.0">
+  <meta name="doc-site-root" content="./">
+
+  <!-- Create version switcher container -->
+  <script>
+    const sidebar = document.querySelector('.wy-side-nav-search');
+    if (sidebar) {
+      const versionDiv = document.createElement('div');
+      versionDiv.id = 'version-switcher';
+      versionDiv.style.marginTop = '1em';
+      sidebar.appendChild(versionDiv);
+    }
+  </script>
+
+  <!-- Load version-switcher.js using the correct relative path -->
+  <script src="../shared/version-switcher.js"></script>
+
+
+</body>
+</html>
