@@ -33,12 +33,10 @@ conda create -n e3sm-unified -c conda-forge python=3.13 e3sm-unified
 conda activate e3sm-unified
 ```
 
-If you need a specific package variant, you can select it explicitly, for
-example:
-
-```bash
-conda create -n e3sm-unified -c conda-forge python=3.13 "e3sm-unified=*=mpi_mpich_*"
-```
+This installs the default `nompi` package variant, which is the right choice
+outside of supported HPC machines. Conda-forge MPI variants (`mpich` and
+`openmpi`) have not been built since E3SM-Unified 1.12.0; see
+[the package catalog](docs/packages.md) for details.
 
 The authoritative recipe and package list live in
 `recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml`.
