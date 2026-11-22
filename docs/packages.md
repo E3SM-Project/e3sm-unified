@@ -32,9 +32,9 @@ E3SM-Unified `1.12.0`. Starting with `1.13.0`, they are not built because
 | cdo | unpinned, Linux only |
 | chemdyg | ==1.1.1 |
 | cprnc | ==1.1.7 |
-| e3sm_compareview | ==1.11.3 |
+| e3sm_compareview | ==1.11.5 |
 | e3sm_diags | ==3.3.0 |
-| e3sm-quickview | ==2.10.5 |
+| e3sm-quickview | ==2.11.0 |
 | e3sm_to_cmip | ==1.15.0 |
 | e3sm-tools | ==3.1.0 on Linux |
 | geometric_features | ==1.6.3 |
