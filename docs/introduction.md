@@ -38,7 +38,6 @@ scripts for users.
 
 E3SM-Unified is available on many E3SM-supported systems:
 
-* Andes
 * Anvil
 * Chrysalis
 * Compy

@@ -38,9 +38,9 @@ the requester cannot reach this way.
   directories by hand.  Fix the repo on the requester's computer, with
   their agreement.  Commit the fix and push it (with permission), then sync
   and deploy again.
-- **Deploy one machine at a time per base path.**  These machines share an
-  E3SM-Unified base path, so deploy each group one machine after another:
-  Chrysalis, Bebop and Improv; Frontier and Andes.
+- **Deploy one machine at a time per base path.**  Chrysalis, Bebop and
+  Improv share an E3SM-Unified base path, so deploy them one after
+  another.
 - **Show the requester things in your reply**, in fenced code blocks: the
   config file, `status` output and your summary.  They often cannot see your
   command output.
@@ -185,5 +185,6 @@ differences:
 
 The requester says which machines to deploy on.  As of 1.14.0, Compy is left
 out until its OS is upgraded: its glibc 2.17 is too old for pixi and
-matplotlib 3.11.  pm-gpu is not a separate deployment: Perlmutter has only
-pm-cpu's, since no Spack tools need anything on pm-gpu.
+matplotlib 3.11.  Andes was decommissioned in 2026.  pm-gpu is not a separate
+deployment: Perlmutter has only pm-cpu's, since no Spack tools need anything
+on pm-gpu.

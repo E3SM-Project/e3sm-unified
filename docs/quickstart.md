@@ -13,9 +13,6 @@ ready to use via a generated load script.
 ### Example Activation Commands
 
 ```bash
-# Andes
-source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified_andes.sh
-
 # Anvil
 source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_anvil.sh
 
