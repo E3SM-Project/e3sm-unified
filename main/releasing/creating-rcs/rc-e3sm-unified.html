@@ -114,7 +114,7 @@ metapackage can be built and tested.</p>
 on those RC dependencies.</p>
 <hr class="docutils" />
 <section id="create-a-branch-for-the-new-version">
-<h2>1. Create a Branch for the New Version<a class="headerlink" href="#create-a-branch-for-the-new-version" title="Link to this heading"></a></h2>
+<span id="1-create-a-branch-for-the-new-version"></span><h2>1. Create a Branch for the New Version<a class="headerlink" href="#create-a-branch-for-the-new-version" title="Link to this heading"></a></h2>
 <p>Create a feature branch on your fork of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code>, typically called:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>update-to-&lt;version&gt;
 </pre></div>
@@ -126,7 +126,7 @@ on those RC dependencies.</p>
 </section>
 <hr class="docutils" />
 <section id="update-the-conda-recipe">
-<h2>2. Update the Conda Recipe<a class="headerlink" href="#update-the-conda-recipe" title="Link to this heading"></a></h2>
+<span id="2-update-the-conda-recipe"></span><h2>2. Update the Conda Recipe<a class="headerlink" href="#update-the-conda-recipe" title="Link to this heading"></a></h2>
 <p>Edit the feedstock recipe in the submodule at
 <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/recipe/recipe.yaml</span></code>:</p>
 <ul class="simple">
@@ -142,7 +142,7 @@ release candidate.</p>
 </section>
 <hr class="docutils" />
 <section id="run-build-packages-py">
-<h2>3. Run <code class="docutils literal notranslate"><span class="pre">build_packages.py</span></code><a class="headerlink" href="#run-build-packages-py" title="Link to this heading"></a></h2>
+<span id="3-run-build_packagespy"></span><h2>3. Run <code class="docutils literal notranslate"><span class="pre">build_packages.py</span></code><a class="headerlink" href="#run-build-packages-py" title="Link to this heading"></a></h2>
 <p>The script builds the full variant matrix defined in
 <code class="docutils literal notranslate"><span class="pre">recipes/e3sm-unified/e3sm-unified-feedstock/.ci_support</span></code> for the current
 platform. Use the <code class="docutils literal notranslate"><span class="pre">--python</span></code> and <code class="docutils literal notranslate"><span class="pre">--mpi</span></code> flags to filter that matrix.</p>
@@ -153,7 +153,7 @@ and the rattler-build workflow. From the root of the repo:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>e3sm-unified/recipes/e3sm-unified
 git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init
 conda<span class="w"> </span>install<span class="w"> </span>rattler-build
-./build_packages.py<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>--mpi<span class="w"> </span>hpc<span class="w"> </span>mpich<span class="w"> </span>nompi
+./build_packages.py<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>--mpi<span class="w"> </span>hpc<span class="w"> </span>nompi
 </pre></div>
 </div>
 <p>This will produce a set of packages in:</p>
@@ -165,7 +165,7 @@ conda<span class="w"> </span>install<span class="w"> </span>rattler-build
 </section>
 <hr class="docutils" />
 <section id="troubleshoot">
-<h2>4. Troubleshoot<a class="headerlink" href="#troubleshoot" title="Link to this heading"></a></h2>
+<span id="4-troubleshoot"></span><h2>4. Troubleshoot<a class="headerlink" href="#troubleshoot" title="Link to this heading"></a></h2>
 <p>If builds fail, consult the
 <a class="reference internal" href="rc-troubleshooting.html"><span class="std std-doc">Troubleshooting Pixi Solve Failures</span></a> guide.
 This includes how to use <code class="docutils literal notranslate"><span class="pre">pixi_first_failure.py</span></code> to debug dependency
@@ -173,7 +173,7 @@ resolution issues.</p>
 </section>
 <hr class="docutils" />
 <section id="make-a-draft-pr">
-<h2>5. Make a draft PR<a class="headerlink" href="#make-a-draft-pr" title="Link to this heading"></a></h2>
+<span id="5-make-a-draft-pr"></span><h2>5. Make a draft PR<a class="headerlink" href="#make-a-draft-pr" title="Link to this heading"></a></h2>
 <p>Push the branch to your fork of <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> and make a draft PR to the
 main <code class="docutils literal notranslate"><span class="pre">e3sm-unified</span></code> repo.  Use that PR to document progress and highlight
 important version updates in this release for the public (those without
@@ -182,7 +182,7 @@ acces to E3SM’s Confluence pages). See
 </section>
 <hr class="docutils" />
 <section id="keeping-updated-on-confluence">
-<h2>6. Keeping updated on Confluence<a class="headerlink" href="#keeping-updated-on-confluence" title="Link to this heading"></a></h2>
+<span id="6-keeping-updated-on-confluence"></span><h2>6. Keeping updated on Confluence<a class="headerlink" href="#keeping-updated-on-confluence" title="Link to this heading"></a></h2>
 <p>As deployment and testing progresses, you needs to make sure that the packages
 in your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch match the
 <a class="reference external" href="https://e3sm.atlassian.net/wiki/spaces/DOC/pages/129732419/Packages+in+the+E3SM+Unified+conda+environment#Next-versions">agreed-upon versions on Confluence</a>.
@@ -197,7 +197,7 @@ jargon</strong>) what is new in their package that would be of interest to users
 </section>
 <hr class="docutils" />
 <section id="tag-and-publish-the-rc">
-<h2>7. Tag and Publish the RC<a class="headerlink" href="#tag-and-publish-the-rc" title="Link to this heading"></a></h2>
+<span id="7-tag-and-publish-the-rc"></span><h2>7. Tag and Publish the RC<a class="headerlink" href="#tag-and-publish-the-rc" title="Link to this heading"></a></h2>
 <p>After test builds are successful:</p>
 <section id="tag-a-release-candidate">
 <h3>Tag a Release Candidate<a class="headerlink" href="#tag-a-release-candidate" title="Link to this heading"></a></h3>

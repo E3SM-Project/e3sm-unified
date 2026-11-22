@@ -21,8 +21,9 @@ scripts for users.
 ## Key Features
 
 * Combines analysis, diagnostics, and workflow tools into one install.
-* Supports multiple package variants, including `nompi`, `mpich`, `openmpi`,
-  and `hpc`.
+* Provides a `nompi` package variant for laptops and workstations and an `hpc`
+  variant for supported HPC machines, where system MPI and Spack-built tools are
+  used. (Conda-forge `mpich` and `openmpi` variants were last built for 1.12.0.)
 * Uses machine-aware deployment on supported HPC systems through `mache`.
 * Is fully open source and maintained in GitHub.
 
@@ -37,7 +38,6 @@ scripts for users.
 
 E3SM-Unified is available on many E3SM-supported systems:
 
-* Andes
 * Anvil
 * Chrysalis
 * Compy

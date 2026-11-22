@@ -19,7 +19,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Updating the E3SM Spack Fork" href="spack-updates.html" />
+    <link rel="next" title="Updating Spack Packages" href="spack-updates.html" />
     <link rel="prev" title="Deployment and Testing" href="index.html" />
     <link href="../../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -60,7 +60,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#audience">Audience</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating the E3SM Spack Fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating Spack Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="deploying-on-hpcs.html">Deploying on HPCs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="troubleshooting-deploy.html">Troubleshooting Deployment</a></li>
@@ -133,11 +133,13 @@ correctly</p></li>
 <h2>Key Components of the Deployment Process<a class="headerlink" href="#key-components-of-the-deployment-process" title="Link to this heading"></a></h2>
 <p>The following steps and infrastructure are used when testing and deploying a
 new release:</p>
-<section id="updating-the-e3sm-spack-fork">
-<h3>🛠️ <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating the E3SM Spack Fork</span></a><a class="headerlink" href="#updating-the-e3sm-spack-fork" title="Link to this heading"></a></h3>
+<section id="updating-spack-packages">
+<h3>🛠️ <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating Spack Packages</span></a><a class="headerlink" href="#updating-spack-packages" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Add new versions of performance-critical tools (e.g., NCO, ESMF, MOAB)</p></li>
-<li><p>Create <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> branches for use in <code class="docutils literal notranslate"><span class="pre">mache</span></code></p></li>
+<li><p>Add new versions of performance-critical tools (e.g., NCO, ESMF, MOAB) to
+<code class="docutils literal notranslate"><span class="pre">e3sm-spack-packages</span></code></p></li>
+<li><p>Pin them in <code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code> for testing, and tag them before the
+final release</p></li>
 </ul>
 </section>
 <section id="updating-mache">
@@ -173,7 +175,7 @@ machine-specific <code class="docutils literal notranslate"><span class="pre">ma
 <p>This section is primarily intended for E3SM-Unified maintainers and release
 engineers. Familiarity with Spack, Conda, and HPC system environments is
 assumed.</p>
-<p>➡ Start with: <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating the E3SM Spack Fork</span></a></p>
+<p>➡ Start with: <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating Spack Packages</span></a></p>
 </section>
 </section>
 
@@ -182,7 +184,7 @@ assumed.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Deployment and Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="spack-updates.html" class="btn btn-neutral float-right" title="Updating the E3SM Spack Fork" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="spack-updates.html" class="btn btn-neutral float-right" title="Updating Spack Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

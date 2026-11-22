@@ -90,7 +90,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting-faqs">
-<h1>Troubleshooting &amp; FAQs<a class="headerlink" href="#troubleshooting-faqs" title="Link to this heading"></a></h1>
+<span id="troubleshooting--faqs"></span><h1>Troubleshooting &amp; FAQs<a class="headerlink" href="#troubleshooting-faqs" title="Link to this heading"></a></h1>
 <p>This page collects common problems users encounter when working with
 E3SM-Unified and how to resolve them. If you encounter an issue not listed
 here, please reach out via Slack or GitHub.</p>
@@ -145,19 +145,25 @@ the login environment instead of the compute-node environment.</p>
 <hr class="docutils" />
 <section id="local-install-solves-to-the-wrong-package-variant">
 <h3>Local Install Solves to the Wrong Package Variant<a class="headerlink" href="#local-install-solves-to-the-wrong-package-variant" title="Link to this heading"></a></h3>
-<p><strong>Symptom:</strong> You expected MPI-enabled tools but installed the default package.</p>
-<p><strong>Cause:</strong> <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">e3sm-unified</span> <span class="pre">e3sm-unified</span></code> will typically resolve
-to the default <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant unless you constrain the build string.</p>
-<p><strong>Solution:</strong> Create a fresh environment and request the desired variant
-explicitly, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span><span class="s2">"e3sm-unified=*=mpi_mpich_*"</span>
+<p><strong>Symptom:</strong> You expected MPI-enabled tools but installed the default package,
+or a command like
+<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">...</span> <span class="pre">&quot;e3sm-unified=*=mpi_mpich_*&quot;</span></code> fails to solve or installs an
+old version.</p>
+<p><strong>Cause:</strong> Conda-forge MPI variants (<code class="docutils literal notranslate"><span class="pre">mpich</span></code> and <code class="docutils literal notranslate"><span class="pre">openmpi</span></code>) were last published
+for E3SM-Unified 1.12.0. Starting with 1.13.0, only the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> and <code class="docutils literal notranslate"><span class="pre">hpc</span></code>
+variants are built, because <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code> requires the <code class="docutils literal notranslate"><span class="pre">nompi</span></code> build of <code class="docutils literal notranslate"><span class="pre">esmf</span></code>
+(<a class="reference external" href="https://github.com/E3SM-Project/e3sm_diags/issues/1051">e3sm_diags#1051</a>).</p>
+<p><strong>Solution:</strong> For local installs, use the default <code class="docutils literal notranslate"><span class="pre">nompi</span></code> variant:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>e3sm-unified<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.13<span class="w"> </span>e3sm-unified
 </pre></div>
 </div>
+<p>For MPI-enabled tools on an HPC machine, use the shared E3SM-Unified deployment
+on a compute node, where the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant uses the system MPI.</p>
 </section>
 </section>
 <hr class="docutils" />
 <section id="tips-best-practices">
-<h2>Tips &amp; Best Practices<a class="headerlink" href="#tips-best-practices" title="Link to this heading"></a></h2>
+<span id="tips--best-practices"></span><h2>Tips &amp; Best Practices<a class="headerlink" href="#tips-best-practices" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Always check you’re in the correct conda environment.</p></li>
 <li><p>On HPC systems, prefer running MPI-enabled tools on compute nodes.</p></li>

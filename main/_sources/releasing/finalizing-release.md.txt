@@ -36,6 +36,16 @@ and:
   `mache` release candidate, remove that label once the final `mache` package
   is available on the main `conda-forge` channel
 
+Then update the user-facing docs so they match the final recipe:
+
+* Regenerate `docs/packages.md` from the final `recipe.yaml` (version in the
+  intro, every pinned version, and the list of published platforms and
+  package variants)
+* Check that `README.md`, `docs/introduction.md`, `docs/quickstart.md` and
+  `docs/troubleshooting.md` only describe package variants and platforms that
+  `recipe/conda_build_config.yaml` and the rerendered `.ci_support` files
+  actually build
+
 Commit the changes to your `update-to-<version>` branch.
 
 ### 2. Tag Final Release in Source Repo
@@ -62,6 +72,8 @@ Go to the [e3sm-unified-feedstock](https://github.com/conda-forge/e3sm-unified-f
 * Update the version number and `sha256` hash.
 * Target the `main` branch (not `dev`)
 * Ensure final versions of all dependencies are listed
+* Remove `channel_sources` and `channel_targets` (the `*_dev` labels and
+  `e3sm_unified_dev`) from `recipe/conda_build_config.yaml`, then rerender
 
 Once CI passes, merge the PR.
 

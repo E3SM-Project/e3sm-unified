@@ -56,7 +56,7 @@ and the rattler-build workflow. From the root of the repo:
 cd e3sm-unified/recipes/e3sm-unified
 git submodule update --init
 conda install rattler-build
-./build_packages.py --python 3.13 --mpi hpc mpich nompi
+./build_packages.py --python 3.13 --mpi hpc nompi
 ```
 
 This will produce a set of packages in:

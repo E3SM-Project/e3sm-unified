@@ -55,7 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../creating-rcs/index.html">Creating Release Candidates</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Deployment and Testing</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Deployment and Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating the E3SM Spack Fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating Spack Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="deploying-on-hpcs.html">Deploying on HPCs</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Troubleshooting Deployment</a><ul>
@@ -116,13 +116,13 @@ outlines common categories of issues and how to diagnose and resolve them.</p>
 you have encountered and solutions you have found.</p>
 <hr class="docutils" />
 <section id="spack-build-failures">
-<h2>1. 🛠️ Spack Build Failures<a class="headerlink" href="#spack-build-failures" title="Link to this heading"></a></h2>
+<span id="1--spack-build-failures"></span><h2>1. 🛠️ Spack Build Failures<a class="headerlink" href="#spack-build-failures" title="Link to this heading"></a></h2>
 <section id="common-causes">
 <h3>Common Causes<a class="headerlink" href="#common-causes" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Missing or incompatible system modules (<code class="docutils literal notranslate"><span class="pre">cmake</span></code>, <code class="docutils literal notranslate"><span class="pre">perl</span></code>, <code class="docutils literal notranslate"><span class="pre">bison</span></code>, etc.)</p></li>
-<li><p>Outdated Spack package definitions in the <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code>
-branch on the E3SM fork</p></li>
+<li><p>Outdated Spack package definitions in the pinned <code class="docutils literal notranslate"><span class="pre">e3sm-spack-packages</span></code> or
+<code class="docutils literal notranslate"><span class="pre">spack-packages</span></code> refs</p></li>
 <li><p>Spack build cache pollution</p></li>
 <li><p>Environment not set correctly for Spack to detect compilers/libraries</p></li>
 </ul>
@@ -138,13 +138,15 @@ add their system versions to the Spack templates in <code class="docutils litera
 <li><p>Load required modules manually before re-running</p></li>
 <li><p>Rebuild: <code class="docutils literal notranslate"><span class="pre">spack</span> <span class="pre">uninstall</span> <span class="pre">-y</span> <span class="pre">&lt;package&gt;</span></code> or delete the full deployment
 directory</p></li>
-<li><p>Double-check you are using the correct <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code> branch</p></li>
+<li><p>Double-check the Spack pins (<code class="docutils literal notranslate"><span class="pre">spack.pins</span></code> in <code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--spack-pins</span></code> and the <code class="docutils literal notranslate"><span class="pre">mache</span></code> release’s <code class="docutils literal notranslate"><span class="pre">pins.yaml</span></code>); see
+<a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating Spack Packages</span></a></p></li>
 </ul>
 </section>
 </section>
 <hr class="docutils" />
 <section id="activation-script-or-module-issues">
-<h2>2. 🔢 Activation Script or Module Issues<a class="headerlink" href="#activation-script-or-module-issues" title="Link to this heading"></a></h2>
+<span id="2--activation-script-or-module-issues"></span><h2>2. 🔢 Activation Script or Module Issues<a class="headerlink" href="#activation-script-or-module-issues" title="Link to this heading"></a></h2>
 <section id="symptoms">
 <h3>Symptoms<a class="headerlink" href="#symptoms" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -165,7 +167,7 @@ etc.)</p></li>
 </section>
 <hr class="docutils" />
 <section id="pixi-conda-environment-problems">
-<h2>3. 🚫 Pixi / Conda Environment Problems<a class="headerlink" href="#pixi-conda-environment-problems" title="Link to this heading"></a></h2>
+<span id="3--pixi--conda-environment-problems"></span><h2>3. 🚫 Pixi / Conda Environment Problems<a class="headerlink" href="#pixi-conda-environment-problems" title="Link to this heading"></a></h2>
 <section id="id1">
 <h3>Symptoms<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -185,7 +187,7 @@ etc.)</p></li>
 </section>
 <hr class="docutils" />
 <section id="filesystem-and-permission-issues">
-<h2>4. 💾 Filesystem and Permission Issues<a class="headerlink" href="#filesystem-and-permission-issues" title="Link to this heading"></a></h2>
+<span id="4--filesystem-and-permission-issues"></span><h2>4. 💾 Filesystem and Permission Issues<a class="headerlink" href="#filesystem-and-permission-issues" title="Link to this heading"></a></h2>
 <section id="id3">
 <h3>Symptoms<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -207,7 +209,7 @@ under the E3SM-Unified base environment)</p></li>
 </section>
 <hr class="docutils" />
 <section id="mache-configuration-problems">
-<h2>5. 🧰 <code class="docutils literal notranslate"><span class="pre">mache</span></code> Configuration Problems<a class="headerlink" href="#mache-configuration-problems" title="Link to this heading"></a></h2>
+<span id="5--mache-configuration-problems"></span><h2>5. 🧰 <code class="docutils literal notranslate"><span class="pre">mache</span></code> Configuration Problems<a class="headerlink" href="#mache-configuration-problems" title="Link to this heading"></a></h2>
 <section id="id5">
 <h3>Symptoms<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -231,7 +233,7 @@ config</p></li>
 </section>
 <hr class="docutils" />
 <section id="spack-caching-and-environment-contamination">
-<h2>6. 🪖 Spack Caching and Environment Contamination<a class="headerlink" href="#spack-caching-and-environment-contamination" title="Link to this heading"></a></h2>
+<span id="6--spack-caching-and-environment-contamination"></span><h2>6. 🪖 Spack Caching and Environment Contamination<a class="headerlink" href="#spack-caching-and-environment-contamination" title="Link to this heading"></a></h2>
 <section id="id7">
 <h3>Symptoms<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -254,7 +256,7 @@ config</p></li>
 </section>
 <hr class="docutils" />
 <section id="common-fix-full-clean-re-run">
-<h2>7. ⚠️ Common Fix: Full Clean + Re-run<a class="headerlink" href="#common-fix-full-clean-re-run" title="Link to this heading"></a></h2>
+<span id="7--common-fix-full-clean--re-run"></span><h2>7. ⚠️ Common Fix: Full Clean + Re-run<a class="headerlink" href="#common-fix-full-clean-re-run" title="Link to this heading"></a></h2>
 <p>When in doubt, remove and rebuild everything:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rm<span class="w"> </span>-rf<span class="w"> </span>&lt;base_path&gt;/spack/e3sm_unified_&lt;version&gt;_&lt;machine&gt;_&lt;compiler&gt;_&lt;mpi&gt;
 ./deploy.py<span class="w"> </span>--machine<span class="w"> </span>&lt;machine&gt;<span class="w"> </span>--recreate
@@ -265,7 +267,7 @@ build.</p>
 </section>
 <hr class="docutils" />
 <section id="related-tools-tips">
-<h2>📎 Related Tools &amp; Tips<a class="headerlink" href="#related-tools-tips" title="Link to this heading"></a></h2>
+<span id="-related-tools--tips"></span><h2>📎 Related Tools &amp; Tips<a class="headerlink" href="#related-tools-tips" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">screen</span></code>, <code class="docutils literal notranslate"><span class="pre">tmux</span></code>, or <code class="docutils literal notranslate"><span class="pre">nohup</span></code> for long deployments</p></li>
 <li><p>Always log output: <code class="docutils literal notranslate"><span class="pre">...</span> <span class="pre">2&gt;&amp;1</span> <span class="pre">|</span> <span class="pre">tee</span> <span class="pre">deploy.log</span></code></p></li>

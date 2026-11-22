@@ -55,7 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../creating-rcs/index.html">Creating Release Candidates</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Deployment and Testing</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="overview.html">Overview of Deployment and Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating the E3SM Spack Fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spack-updates.html">Updating Spack Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mache-updates.html">Updating <code class="docutils literal notranslate"><span class="pre">mache</span></code></a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Deploying on HPCs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#deployment-components">Deployment Components</a></li>
@@ -171,6 +171,7 @@ behavior</p></li>
 overridden</p></li>
 <li><p>Selects channels, package source, package MPI, and environment layout</p></li>
 <li><p>Enables or disables Spack dynamically based on the chosen package variant</p></li>
+<li><p>Tests the deployed environment before publishing it (see step 3 below)</p></li>
 <li><p>Adds E3SM-Unified-specific environment variables through <code class="docutils literal notranslate"><span class="pre">deploy/load.sh</span></code></p></li>
 </ul>
 </section>
@@ -236,7 +237,23 @@ prefix. The runs will step on each other’s state.</p>
 <li><p>Activation scripts were generated and symlinked correctly</p></li>
 <li><p>Permissions have been updated successfully (read only for everyone
 except the E3SM-Unified maintainer)</p></li>
+<li><p>The environment tests passed (<code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">tests</span> <span class="pre">passed</span></code> in the log)</p></li>
 </ul>
+<p>Before anything is published, the deployment sources the new load script
+and runs the imports and commands from the <code class="docutils literal notranslate"><span class="pre">tests</span></code> section of the feedstock
+recipe, with the same selectors, so a package commented out of the recipe
+tests is skipped here too. For the <code class="docutils literal notranslate"><span class="pre">hpc</span></code> variant it also checks the tools
+that come from Spack (NCO, ESMF and the Tempest tools) and the packages
+installed from the <code class="docutils literal notranslate"><span class="pre">[hpc]</span></code> pins. Every failure is listed in the log, and a
+failure stops the deployment before the load scripts are published. Pass
+<code class="docutils literal notranslate"><span class="pre">--skip-env-tests</span></code> to publish anyway.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">--env-layout</span> <span class="pre">dual</span></code>, only the environment the load script selects on
+the node you deployed from is tested. The log gives the path of the test
+script (<code class="docutils literal notranslate"><span class="pre">deploy_tmp/test_&lt;load</span> <span class="pre">script&gt;.sh</span></code>); run it on the other kind of
+node as well, e.g. on a compute node:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>srun<span class="w"> </span>-N<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>:00<span class="w"> </span>bash<span class="w"> </span>deploy_tmp/test_&lt;load<span class="w"> </span>script&gt;.sh
+</pre></div>
+</div>
 </li>
 <li><p><strong>Verify compute-node activation</strong></p>
 <p>When <code class="docutils literal notranslate"><span class="pre">--env-layout</span> <span class="pre">dual</span></code> is used, the load scripts are designed to load a
@@ -307,6 +324,16 @@ machine and update the relevant <code class="docutils literal notranslate"><span
 </li>
 <li><p><strong>Deploy more broadly</strong> once core systems pass testing</p></li>
 </ol>
+<section id="driving-deployments-from-your-own-computer">
+<h3>Driving deployments from your own computer<a class="headerlink" href="#driving-deployments-from-your-own-computer" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">utils/hpc_deploy/hpc_deploy.py</span></code> runs steps 2–4 on several machines from
+your own computer, over the ssh connections you open by logging in.  It
+brings each machine’s checkout to your pushed commit, and runs <code class="docutils literal notranslate"><span class="pre">./deploy.py</span></code>
+there in the background with its log in the checkout.  It then reports the
+results and submits the test script as a compute-node job.  An AI agent can
+run it, following <code class="docutils literal notranslate"><span class="pre">utils/hpc_deploy/AGENTS.md</span></code>.  See
+<code class="docutils literal notranslate"><span class="pre">utils/hpc_deploy/README.md</span></code>.</p>
+</section>
 </section>
 <hr class="docutils" />
 <section id="common-flags">
@@ -324,7 +351,9 @@ builds and forked <code class="docutils literal notranslate"><span class="pre">m
 package has been published.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--package-mpi</span></code>: Choose <code class="docutils literal notranslate"><span class="pre">nompi</span></code>, <code class="docutils literal notranslate"><span class="pre">mpich</span></code>, <code class="docutils literal notranslate"><span class="pre">openmpi</span></code>, or <code class="docutils literal notranslate"><span class="pre">hpc</span></code>.</p>
-<p>On supported HPC systems, <code class="docutils literal notranslate"><span class="pre">hpc</span></code> is typically the target release variant.</p>
+<p>On supported HPC systems, <code class="docutils literal notranslate"><span class="pre">hpc</span></code> is typically the target release variant.
+Since 1.13.0, only <code class="docutils literal notranslate"><span class="pre">nompi</span></code> and <code class="docutils literal notranslate"><span class="pre">hpc</span></code> packages are published on conda-forge,
+so <code class="docutils literal notranslate"><span class="pre">mpich</span></code> and <code class="docutils literal notranslate"><span class="pre">openmpi</span></code> will not resolve with <code class="docutils literal notranslate"><span class="pre">--package-source</span> <span class="pre">conda-forge</span></code>.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--env-layout</span></code>: Choose <code class="docutils literal notranslate"><span class="pre">single</span></code> or <code class="docutils literal notranslate"><span class="pre">dual</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">dual</span></code> is typically used for shared HPC deployments so login and compute
@@ -352,6 +381,7 @@ and supported alternatives by looking in the configs and templates in
 <code class="docutils literal notranslate"><span class="pre">mache</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--load-script-dir</span></code>: Write a copy of the generated load script to a specific
 directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--skip-env-tests</span></code>: Publish without first testing the deployed environment.</p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -360,9 +390,9 @@ directory.</p></li>
 <ul class="simple">
 <li><p>A partial deployment is expected during RC testing; not all systems must be
 built initially. Chrysalis and Perlmutter are good places to start.</p></li>
-<li><p>Always ensure that the E3SM spack fork has a <code class="docutils literal notranslate"><span class="pre">spack_for_mache_&lt;version&gt;</span></code>
-branch (e.g. <code class="docutils literal notranslate"><span class="pre">spack_for_mache_1.32.0</span></code>) for the version of <code class="docutils literal notranslate"><span class="pre">mache</span></code> you are
-testing (e.g. <code class="docutils literal notranslate"><span class="pre">mache</span></code> 1.32.0rc1).</p></li>
+<li><p>Make sure any Spack package versions in <code class="docutils literal notranslate"><span class="pre">deploy/pins.cfg</span></code> that the
+<code class="docutils literal notranslate"><span class="pre">mache</span></code> release does not provide are pinned in <code class="docutils literal notranslate"><span class="pre">spack.pins</span></code> in
+<code class="docutils literal notranslate"><span class="pre">deploy/config.yaml.j2</span></code> (see <a class="reference internal" href="spack-updates.html"><span class="std std-doc">Updating Spack Packages</span></a>).</p></li>
 <li><p>Be aware of potential permission or filesystem issues when writing to
 shared software locations.</p></li>
 </ul>

@@ -1,121 +1,101 @@
-# Updating the E3SM Spack Fork
+# Updating Spack Packages
 
-E3SM-Unified relies on a custom fork of Spack to build performance-critical
-software components that are not managed by Conda. This fork includes
-specialized packages (e.g., `moab`, `tempestremap`, `esmf`) and system-aware
-configurations to support a wide range of HPC environments.
-
-This page outlines the steps for updating and managing the E3SM Spack fork
-during an E3SM-Unified release cycle.
+The `hpc` variant of E3SM-Unified builds performance-critical tools (NCO,
+ESMF, MOAB, TempestRemap, TempestExtremes and, on some machines, HDF5 and
+NetCDF) with Spack against each machine's compilers and MPI. This page
+explains where the Spack recipes come from and how to pick up a new package
+version during a release cycle without waiting for a new `mache` release.
 
 ---
 
-## Repo Location
+## Where the Recipes Come From
 
-The E3SM Spack fork lives at:
-🔗 [https://github.com/E3SM-Project/spack](https://github.com/E3SM-Project/spack)
+`mache` 5 uses Spack 1.x, which keeps packages in repositories separate from
+Spack itself. A deployment checks out three repositories:
 
----
+| Repository | Spack namespace | Contents |
+|------------|-----------------|----------|
+| [spack/spack](https://github.com/spack/spack) | — | the Spack tool |
+| [E3SM-Project/e3sm-spack-packages](https://github.com/E3SM-Project/e3sm-spack-packages) | `e3sm` | versions and fixes E3SM needs ahead of upstream |
+| [spack/spack-packages](https://github.com/spack/spack-packages) | `builtin` | upstream recipes |
 
-## Key Tasks
+The `e3sm` repository is searched ahead of `builtin`, so a recipe there
+shadows the upstream one. Each `mache` release pins a tag of each repository
+in `mache/spack/pins.yaml`. The old `E3SM-Project/spack` fork and its
+`spack_for_mache_<version>` branches are retired.
 
-### 1. Add or Update Package Versions
-
-You may need to:
-
-* Add new versions of packages like `nco`, `moab`, `esmf`, `tempestremap`, etc.
-* Update build configurations, variants, or patches
-* rebase onto new releases of the main [spack repo](https://github.com/spack/spack)
-
-Follow Spack’s standard packaging conventions. Builds will typically be tested
-as part of E3SM-Unified deployment (or deployment of Polaris or Compass), so
-no other testing is typically necessary or practical.
-
-After changes are validated, push them to the appropriate branch or branches
-(see next section).
+The Spack checkout for a deployment lives under that version's prefix, and
+every deployment hard-resets the package repositories to the pinned refs, so
+changing a pin takes effect on the next deployment.
 
 ---
 
-### 2. Create `spack_for_mache_<version>` Branches
+## Adding a Package Version
 
-The main development branch on E3SM's spack for is `develop`.  Each release of
-`mache` also references a specific Spack branch named:
+1. Open a pull request against
+   [e3sm-spack-packages](https://github.com/E3SM-Project/e3sm-spack-packages)
+   adding the version (its README explains how recipes subclass upstream).
+   Submit the same version upstream to `spack-packages` so the `e3sm` copy can
+   be dropped later.
 
-```
-spack_for_mache_<version>
-```
+2. Once it is merged, pin the merge commit in `spack.pins` in
+   `deploy/config.yaml.j2`:
 
-Example:
+   ```yaml
+   spack:
+     pins:
+       repos:
+         e3sm:
+           # nco 5.4.1 (E3SM-Project/e3sm-spack-packages#2), not yet tagged
+           commit: <merge commit hash>
+   ```
 
-```
-spack_for_mache_1.32.0
-```
+   An override replaces only the ref of the repository it names; the others
+   keep the tags from the `mache` release. `spack` and `builtin` can be
+   overridden the same way.
 
-To create one from a local clone of the E3SM spack repo:
+3. Update the version in the `[spack]` section of `deploy/pins.cfg` to match
+   the feedstock recipe.
+
+No new tag, `mache` pull request, `mache` release candidate or conda-forge
+package is needed to test a release candidate.
+
+### Testing an unmerged recipe
+
+To try a recipe before it is merged, point a single deployment at a branch,
+on a fork if needed, with `--spack-pins`, which takes precedence over
+`deploy/config.yaml.j2`:
 
 ```bash
-git checkout develop
-git checkout -b spack_for_mache_1.32.0
-git push origin spack_for_mache_1.32.0
-```
-This ensures that the version of `mache` used for deployment has a stable and
-reproducible Spack reference.  During development of a `mache` version, this
-also let you make potentially breaking changes to `spack_for_mache_<version>`
-for testing without breaking the `develop` branch.  (Make sure to always push
-your changes to `origin` so they are available during E3SM-Unified deployment.)
-
-**Note**: Your `spack_for_mache_<version>` branch name should not include
-`rc<n>` even if you are testing a release candidate of `mache` as part of your
-E3SM-Unified deployment.  The deployment scripts automatically strip off the
-`rc<n>` part when determining the name of the appropriate spack branch.
-
-Once you have a relatively stable `spack_for_mache_<version>` branch, you can
-push the changes you have made to `develop` so they are available for future
-`mache` versions and other users of E3SM's spack fork.
-
-```bash
-git checkout develop
-git reset --hard spack_for_mache_1.32.0
-git push origin develop
-```
-Please be careful not to use `git push --force` here.  You should only be
-adding new commits, not changing the history of `develop`.
-
-### 3. Rebasing `develop` onto Spack Releases
-
-One important maintenance task for the E3SM Spack fork is to keep it up-to-date
-with the [main Spack repo](https://github.com/spack/spack).  This requires
-interactively rebasing the `develop` branch onto the release, interactively
-selecting only commits authored within the E3SM Spack fork (i.e., excluding
-upstream Spack commits), and troubleshooting any merge conflicts that arise.
-
-Because this will involve a force-push, it is important to coordinate with
-other users of the fork. Make an issue similar to
-[this exampe](https://github.com/E3SM-Project/spack/issues/36) and ping
-relevant developers to arrange a good time for the update.
-
-```bash
-git checkout develop
-git remote add spack/spack git@github.com:spack/spack.git
-git fetch --all -p
-git rebase -i spack/spack/v0.23.1
-# edit the list of commits so the first is "Add v2.1.0 to v2.1.6 to TempestRemap"
-git push --force origin develop
+cat > my_pins.yaml << EOF
+repos:
+  e3sm:
+    git: https://github.com/<user>/e3sm-spack-packages.git
+    branch: <branch>
+EOF
+./deploy.py --machine <machine> --spack-pins my_pins.yaml
 ```
 
-You may wish to perform the rebase using a new branch (e.g.,
-`rebase-onto-v0.23.1`) that you can point to in the issue you post to
-coordinate with other developers.  This way, you can ask for guidance if you
-are unsure about the way you resolved any merge conflicts that arose.
+Prefer a commit in `deploy/config.yaml.j2` over a branch for anything shared
+with other maintainers, so every machine builds the same recipes.
 
 ---
 
-## Best Practices
+## Before the Final Release
 
-* Keep `develop` clean and stable — avoid experimental changes
-* Use branches to track specific `mache` releases
-* Coordinate with other E3SM package maintainers when rebasing the `develop`
-  branch or updating shared packages
+A `--release` deployment refuses Spack sources that are not tags from
+`github.com/spack` or `github.com/E3SM-Project`. Before the final release:
+
+1. Tag `e3sm-spack-packages` following the `vYYYY.MM.N` convention in its
+   README.
+2. Change the `commit` in `spack.pins` to that `tag`, or remove the
+   override if the `mache` release used for E3SM-Unified already pins a tag
+   that includes the change.
+
+A new `mache` release is not required: a tag pinned in
+`deploy/config.yaml.j2` is enough. The next `mache` release can pick up the
+tag through an ordinary pull request that edits `mache/spack/pins.yaml`, after
+which the override here can be removed.
 
 ---
 

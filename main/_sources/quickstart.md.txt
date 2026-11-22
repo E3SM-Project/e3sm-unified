@@ -13,9 +13,6 @@ ready to use via a generated load script.
 ### Example Activation Commands
 
 ```bash
-# Andes
-source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified_andes.sh
-
 # Anvil
 source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_anvil.sh
 
@@ -60,8 +57,8 @@ On HPC systems, you can also check which package variant is active:
 echo "$E3SMU_MPI"
 ```
 
-Typical values are `NOMPI`, `mpich`, `openmpi`, or `SYSTEM` (for the `hpc`
-variant).
+Typical values are `NOMPI` (the `nompi` variant, used on login nodes) or
+`SYSTEM` (the `hpc` variant, used on compute nodes).
 
 ## Running on Compute Nodes (Optional but Recommended)
 
@@ -74,10 +71,11 @@ Check your system documentation for how to launch interactive compute sessions
 
 ## Installing E3SM-Unified on an Unsupported System
 
-E3SM-Unified can also be installed directly from conda-forge on Linux or macOS
-systems using `miniforge3`.
+E3SM-Unified can also be installed directly from conda-forge on Linux
+(`x86_64` and `aarch64`) or macOS (Intel and Apple Silicon) systems using
+`miniforge3`.
 
-### Step-by-Step (Linux):
+### Step-by-Step (Linux and macOS):
 
 ```bash
 # Install miniforge3
@@ -91,39 +89,14 @@ conda create -n e3sm-unified -c conda-forge python=3.13 e3sm-unified
 conda activate e3sm-unified
 ```
 
-If you need an MPI-enabled conda package instead of the default `nompi`
-variant, select one explicitly:
+This installs the default `nompi` package variant. Conda-forge MPI variants
+(`mpich` and `openmpi`) have not been built since E3SM-Unified 1.12.0, so
+`"e3sm-unified=*=mpi_mpich_*"` and similar build-string constraints will not
+find 1.13.0 or newer. See the [Package Catalog](packages.md) for details.
 
-```bash
-conda create -n e3sm-unified -c conda-forge python=3.13 "e3sm-unified=*=mpi_mpich_*"
-```
-
-**Note**: The above instructions also work for macOS machines with Intel
-hardware.
-
-### Step-by-Step (macOS with Apple Silicon)
-
-```bash
-# starts a shell in "Rosetta" mode
-arch -x86_64 /bin/bash --login
-
-# create the conda environment to install e3sm-unified within
-CONDA_SUBDIR=osx-64 conda create -n e3sm-unified python=3.13
-
-# activate the environment and set an environmental variable
-conda activate e3sm-unified
-conda env config vars set CONDA_SUBDIR=osx-64
-
-# deactivate and re-activate the environment for the above command to propagate
-conda deactivate
-conda activate e3sm-unified
-
-# now you can actually install e3sm-unified
-conda install -c conda-forge e3sm-unified
-
-# exit the "Rosetta" mode shell
-exit
-```
+**Note**: Starting with 1.14.0, E3SM-Unified is built natively for Apple
+Silicon (`osx-arm64`), so the above instructions work on all Macs. Earlier
+versions required installing the `osx-64` package under Rosetta.
 
 ## Notes for Maintainers Testing HPC Deployments
 
@@ -131,12 +104,6 @@ This branch uses `mache deploy` to create the HPC environments and load
 scripts. If you are validating a fresh deployment rather than consuming an
 existing shared install, start with the maintainer docs in
 [Deployment and Testing](releasing/testing/overview.md).
-
-**Checking if your macOS machine has Apple Silicon**:
-1. Click the Apple menu at the top-left of your screen.
-2. Select "About This Mac": from the dropdown menu.
-3. If you see "Chip" followed by M1, M2, M3, or M4, your Mac has Apple
-   silicon.
 
 ## Related Pages
 

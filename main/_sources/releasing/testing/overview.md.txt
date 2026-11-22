@@ -32,10 +32,12 @@ maintainers to:
 The following steps and infrastructure are used when testing and deploying a
 new release:
 
-### 🛠️ [Updating the E3SM Spack Fork](spack-updates.md)
+### 🛠️ [Updating Spack Packages](spack-updates.md)
 
-* Add new versions of performance-critical tools (e.g., NCO, ESMF, MOAB)
-* Create `spack_for_mache_<version>` branches for use in `mache`
+* Add new versions of performance-critical tools (e.g., NCO, ESMF, MOAB) to
+  `e3sm-spack-packages`
+* Pin them in `deploy/config.yaml.j2` for testing, and tag them before the
+  final release
 
 ### 🧩 [Updating `mache`](mache-updates.md)
 
@@ -65,4 +67,4 @@ This section is primarily intended for E3SM-Unified maintainers and release
 engineers. Familiarity with Spack, Conda, and HPC system environments is
 assumed.
 
-➡ Start with: [Updating the E3SM Spack Fork](spack-updates.md)
+➡ Start with: [Updating Spack Packages](spack-updates.md)

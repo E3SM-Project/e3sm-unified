@@ -109,7 +109,7 @@ final release can be published. This page outlines the process of finalizing
 and distributing an official E3SM-Unified release.</p>
 <hr class="docutils" />
 <section id="pre-release-checklist">
-<h2>✅ Pre-Release Checklist<a class="headerlink" href="#pre-release-checklist" title="Link to this heading"></a></h2>
+<span id="-pre-release-checklist"></span><h2>✅ Pre-Release Checklist<a class="headerlink" href="#pre-release-checklist" title="Link to this heading"></a></h2>
 <p>Before publishing:</p>
 <ul class="simple">
 <li><p>[ ] All RC versions of dependencies (e.g., <code class="docutils literal notranslate"><span class="pre">e3sm_diags</span></code>, <code class="docutils literal notranslate"><span class="pre">zppy</span></code>, <code class="docutils literal notranslate"><span class="pre">mache</span></code>)
@@ -137,6 +137,16 @@ and:</p>
 <code class="docutils literal notranslate"><span class="pre">mache</span></code> release candidate, remove that label once the final <code class="docutils literal notranslate"><span class="pre">mache</span></code> package
 is available on the main <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> channel</p></li>
 </ul>
+<p>Then update the user-facing docs so they match the final recipe:</p>
+<ul class="simple">
+<li><p>Regenerate <code class="docutils literal notranslate"><span class="pre">docs/packages.md</span></code> from the final <code class="docutils literal notranslate"><span class="pre">recipe.yaml</span></code> (version in the
+intro, every pinned version, and the list of published platforms and
+package variants)</p></li>
+<li><p>Check that <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/introduction.md</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/quickstart.md</span></code> and
+<code class="docutils literal notranslate"><span class="pre">docs/troubleshooting.md</span></code> only describe package variants and platforms that
+<code class="docutils literal notranslate"><span class="pre">recipe/conda_build_config.yaml</span></code> and the rerendered <code class="docutils literal notranslate"><span class="pre">.ci_support</span></code> files
+actually build</p></li>
+</ul>
 <p>Commit the changes to your <code class="docutils literal notranslate"><span class="pre">update-to-&lt;version&gt;</span></code> branch.</p>
 </section>
 <section id="tag-final-release-in-source-repo">
@@ -161,6 +171,8 @@ description of your recently merged PR), similar to
 <li><p>Update the version number and <code class="docutils literal notranslate"><span class="pre">sha256</span></code> hash.</p></li>
 <li><p>Target the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch (not <code class="docutils literal notranslate"><span class="pre">dev</span></code>)</p></li>
 <li><p>Ensure final versions of all dependencies are listed</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">channel_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">channel_targets</span></code> (the <code class="docutils literal notranslate"><span class="pre">*_dev</span></code> labels and
+<code class="docutils literal notranslate"><span class="pre">e3sm_unified_dev</span></code>) from <code class="docutils literal notranslate"><span class="pre">recipe/conda_build_config.yaml</span></code>, then rerender</p></li>
 </ul>
 <p>Once CI passes, merge the PR.</p>
 <p>This will trigger CI to publish the new release to the standard conda-forge
@@ -205,7 +217,7 @@ final deployment.</p>
 </section>
 <hr class="docutils" />
 <section id="post-release-maintenance">
-<h2>🔁 Post-Release Maintenance<a class="headerlink" href="#post-release-maintenance" title="Link to this heading"></a></h2>
+<span id="-post-release-maintenance"></span><h2>🔁 Post-Release Maintenance<a class="headerlink" href="#post-release-maintenance" title="Link to this heading"></a></h2>
 <p>On each supported machine:</p>
 <ul class="simple">
 <li><p>Clean up outdated <code class="docutils literal notranslate"><span class="pre">test_...</span></code> activation scripts</p></li>
